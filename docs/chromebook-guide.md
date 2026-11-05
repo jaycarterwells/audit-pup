@@ -6,7 +6,7 @@ Audit Pup checks the TaxSlayer Practice Lab PDF for one step of a training case 
 
 ## Before you start
 
-* Sign in to your Chromebook with your own account. **Guest mode does not save progress.**
+* Sign in to your Chromebook with your own account and use a normal Chrome window. **In Guest mode or an Incognito window, your progress is erased when you close the window**, with no warning.
 * Use the Chrome browser. Do not open Audit Pup from a Google Drive preview.
 
 ## 1. Save the PDF from TaxSlayer
@@ -15,7 +15,7 @@ After you finish a step in TaxSlayer, print the full return.
 
 * If the return opens in a new tab, click the **Download** arrow at the top right.
 * If a print window opens, set **Destination** to **Save as PDF**, then click **Save**.
-* Save it to **Downloads** with a clear name, such as `Quinn-Step-B.pdf`.
+* Save it to **Downloads** with a clear name that includes the case and the step.
 
 Print a **new** PDF after every step. Audit Pup warns you if you reuse the same file for a later step.
 
@@ -29,8 +29,10 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 * The score at the top shows how many lines match the answer key. It stays in view while you scroll.
 * Each line that needs another look has a **hint** with the answer key value.
-* Some items, like the **TS Note**, cannot be read from the PDF. Check the box yourself once you have done it.
-* Steps D and F should show **no change** from the step before them.
+* **Worksheet entries:** some steps ask you to type values from a worksheet you completed, or to pick the option you chose. Type them in the boxes shown.
+* **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it.
+* **No-change steps:** some steps should show **no change** from an earlier step. The step picker names the step it is compared to.
+* **Did you pick the right step?** A yellow box appears if your PDF looks like it is from a later step than the one you picked. Click the button in the box to check against the right step.
 * When everything matches, a dog appears. Tap it for another dog.
 
 To fix something: go back to TaxSlayer, correct it, print a new PDF, and check again.
@@ -56,5 +58,5 @@ The **Theme** button switches between light and dark. The **Version** button sho
 
 * **"That file is not a PDF"**: save the return from TaxSlayer as a PDF and try again.
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
-* **"This browser is not saving progress"**: you are in Guest mode or an Incognito window. Use a normal Chrome window while signed in.
+* **"This browser is not saving progress"**: your browser is blocking saved data. Use a normal Chrome window, signed in to your own account.
 * **No dog picture**: the dog needs internet. Checking still works without it.
