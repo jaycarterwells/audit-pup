@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit Pup</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,__ASSET_favicon.png__">
+<style>
+  /* Fonts are built into the file so the page looks the same offline:
+     Atkinson Hyperlegible (made for readers with low vision) for text, Bitter for headings. */
+  @font-face{font-family:"Atkinson"; font-weight:400; font-display:swap; src:url(data:font/woff2;base64,__ASSET_atkinson-400.woff2__) format("woff2")}
+  @font-face{font-family:"Atkinson"; font-weight:700; font-display:swap; src:url(data:font/woff2;base64,__ASSET_atkinson-700.woff2__) format("woff2")}
+  @font-face{font-family:"Bitter"; font-weight:800; font-display:swap; src:url(data:font/woff2;base64,__ASSET_bitter-800.woff2__) format("woff2")}
+  /* The three dogs. Zion: something to fix (red). Bailey: more to do (yellow). Zeke: all done (green), and the guide. */
+  .dog-zeke{background-image:url(data:image/jpeg;base64,__ASSET_av_zeke.jpg__)}
+  .dog-zion{background-image:url(data:image/jpeg;base64,__ASSET_av_zion.jpg__)}
+  .dog-bailey{background-image:url(data:image/jpeg;base64,__ASSET_av_bailey.jpg__)}
+
+  /* Sketchbook colors taken from Zeke's drawing: cream paper, pencil gray, El Dorado gold.
+     Red, yellow, and green are kept for results only. */
+  :root{
+    --bg:#f3ecdc; --surface:#fffdf7; --surface-2:#faf5ea; --border:#e2d6ba;
+    --text:#2a2e35; --muted:#525966; --accent:#2a2e35; --accent-ink:#fffdf7;
+    --gold:#b8892c; --gold-ink:#86610f; --gold-lt:#efe0b4;
+    --pass:#1b7a3d; --pass-bg:#e2f2e2; --pass-bd:#b6dcbc;
+    --fail:#b42318; --fail-bg:#fbe9e5; --fail-bd:#efc3ba;
+    --warn:#8f600a; --warn-bg:#fbf0d2; --warn-bd:#ead494; --todo:#dea414;
+    --shadow:0 1px 2px rgba(60,45,15,.06),0 8px 22px rgba(60,45,15,.07);
+    --radius:16px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#17191d; --surface:#212328; --surface-2:#292c32; --border:#3b3e45;
+      --text:#efe8d8; --muted:#bfb7a6; --accent:#ecd9a6; --accent-ink:#1d1f24;
+      --gold:#d4ad59; --gold-ink:#e3c47e; --gold-lt:#4a3d1f;
+      --pass:#5fcf86; --pass-bg:#15301f; --pass-bd:#265339;
+      --fail:#f2877c; --fail-bg:#3a1a17; --fail-bd:#67312b;
+      --warn:#efc65c; --warn-bg:#33290f; --warn-bd:#5c4a1c; --todo:#efc65c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#17191d; --surface:#212328; --surface-2:#292c32; --border:#3b3e45;
+    --text:#efe8d8; --muted:#bfb7a6; --accent:#ecd9a6; --accent-ink:#1d1f24;
+    --gold:#d4ad59; --gold-ink:#e3c47e; --gold-lt:#4a3d1f;
+    --pass:#5fcf86; --pass-bg:#15301f; --pass-bd:#265339;
+    --fail:#f2877c; --fail-bg:#3a1a17; --fail-bd:#67312b;
+    --warn:#efc65c; --warn-bg:#33290f; --warn-bd:#5c4a1c; --todo:#efc65c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg); color:var(--text); font-family:"Atkinson",Verdana,"Segoe UI",Arial,sans-serif;
+    font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px; margin:0 auto; padding:20px 16px 72px}
+  .hd{font-family:"Bitter",Georgia,serif; font-weight:800}
+  button{font-family:inherit}
+  :focus-visible{outline:3px solid var(--gold); outline-offset:2px}
+  .hidden{display:none !important}
+
+  /* header */
+  header.app{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:14px; min-width:0}
+  .brand .seal{width:84px; height:84px; flex:none}
+  h1{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:34px; line-height:1.05; margin:0; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:17px; margin:3px 0 0}
+  .hdr-btns{flex:none; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+  .theme-btn{flex:none; background:var(--surface); color:var(--text); border:1.5px solid var(--border);
+    border-radius:999px; padding:9px 16px; font-size:15px; font-weight:700; cursor:pointer; min-height:42px}
+  .ver-btn{position:relative}
+  .newtag{display:none; margin-left:7px; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    background:var(--gold); color:#fffdf7; border-radius:999px; padding:1px 8px; vertical-align:1px}
+  .ver-btn.isnew .newtag{display:inline-block}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:16px}
+  .label{font-size:14px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-ink); font-weight:700; margin:0 0 10px}
+  .startup{background:var(--fail-bg); border:1px solid var(--fail-bd); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:16px; line-height:1.5}
+
+  /* Zeke, the guide, with a speech bubble */
+  .guide{display:flex; align-items:center; gap:16px; margin-bottom:18px}
+  .avatar{flex:none; width:84px; height:84px; border-radius:50%; background-size:cover; background-position:center;
+    border:3px solid var(--text); box-shadow:4px 4px 0 var(--gold-lt)}
+  .bubble{position:relative; flex:1; min-width:0; background:var(--surface); border:2px solid var(--text); border-radius:16px; padding:11px 16px}
+  .bubble::before{content:""; position:absolute; left:-11px; top:50%; margin-top:-9px; width:16px; height:16px; background:inherit;
+    border-left:2px solid var(--text); border-bottom:2px solid var(--text); transform:rotate(45deg)}
+  .guide .say{font-size:19px; line-height:1.4}
+  .guide .who{font-size:14.5px; color:var(--muted); margin-top:2px}
+
+  select{font:inherit; appearance:none; background:var(--surface-2); color:var(--text); border:1.5px solid var(--border);
+    border-radius:12px; padding:12px 40px 12px 14px; font-size:17px; width:100%;
+    background-image:linear-gradient(45deg,transparent 50%,var(--text) 50%),linear-gradient(135deg,var(--text) 50%,transparent 50%);
+    background-position:right 18px center,right 12px center; background-size:6px 6px,6px 6px; background-repeat:no-repeat}
+  .row{display:flex; flex-wrap:wrap; gap:12px}
+  .field{flex:1 1 240px; min-width:200px}
+
+  /* paw-print step trail: wraps onto more rows for long cases */
+  .progress{margin-top:16px}
+  .ptop{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:4px}
+  .plabel{font-size:14px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-ink); font-weight:700}
+  .pend{font-size:15px; color:var(--muted); display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+  .nosave{display:block; font-size:15px; color:var(--warn); margin:4px 0}
+  .trail{display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); row-gap:6px}
+  .pchip{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none;
+    color:var(--muted); padding:6px 2px 8px; border-radius:14px; cursor:pointer; font-size:15px; min-height:44px}
+  .pchip::after{content:""; position:absolute; top:31px; left:calc(50% + 30px); width:calc(100% - 60px);
+    border-top:3px dotted var(--border)}
+  .pchip:last-child::after,.pchip[data-end]::after{display:none}
+  .pchip.done::after{border-top-color:var(--pass)}
+  .pchip .paw{position:relative; width:50px; height:50px; border-radius:50%; display:grid; place-items:center;
+    background:var(--surface-2); border:2.5px solid var(--border)}
+  .pchip .paw svg{width:26px; height:26px; fill:var(--border)}
+  .pchip .pm{position:absolute; right:-5px; bottom:-3px; width:21px; height:21px; border-radius:50%; display:grid; place-items:center;
+    font-size:12px; font-weight:700; color:#fff; border:2px solid var(--surface)}
+  .pchip .pm:empty{display:none}
+  .pchip b{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:16.5px; color:var(--text); margin-top:3px}
+  .pchip .pst{font-size:14px; font-weight:700}
+  .pchip.done .paw{background:var(--pass-bg); border-color:var(--pass)} .pchip.done .paw svg{fill:var(--pass)} .pchip.done .pm{background:var(--pass)} .pchip.done .pst{color:var(--pass)}
+  .pchip.fix .paw{background:var(--fail-bg); border-color:var(--fail)} .pchip.fix .paw svg{fill:var(--fail)} .pchip.fix .pm{background:var(--fail)} .pchip.fix .pst{color:var(--fail)}
+  .pchip.todo .paw{background:var(--warn-bg); border-color:var(--todo)} .pchip.todo .paw svg{fill:var(--warn)} .pchip.todo .pm{background:var(--todo); color:#2a2e35} .pchip.todo .pst{color:var(--warn)}
+  .pchip.none .pst{font-weight:400}
+  .pchip.sel{background:color-mix(in srgb,var(--gold) 16%,transparent)}
+  .pchip.sel .paw{box-shadow:0 0 0 4px var(--gold)}
+  .pchip.sel.none .paw{background:var(--gold-lt); border-color:var(--gold)} .pchip.sel.none .paw svg{fill:var(--text)}
+
+  /* drop box that names the step */
+  .drop{margin-top:14px; display:flex; align-items:center; gap:18px; border:2px dashed var(--gold); border-radius:var(--radius);
+    background:var(--surface-2); padding:20px 22px; cursor:pointer; transition:border-color .15s,background .15s}
+  .drop:hover,.drop.over{border-style:solid; background:color-mix(in srgb,var(--gold) 10%,var(--surface-2))}
+  .pdfic{flex:none; width:54px; height:66px}
+  .drop .big{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:22px; line-height:1.2}
+  .drop .small{font-size:16px; color:var(--muted); margin-top:3px}
+  .filename{font-size:17.5px; color:var(--muted); margin-top:8px; overflow-wrap:anywhere}
+  .filename:empty{display:none}
+  .filename b{color:var(--text)}
+  button.primary{margin-top:14px; width:100%; background:var(--accent); color:var(--accent-ink); border:none;
+    border-radius:14px; padding:15px 16px; font-size:19px; font-weight:700; cursor:pointer}
+  button.primary:disabled{opacity:.45; cursor:not-allowed}
+  .err{color:var(--fail); font-size:16px; margin-top:10px}
+
+  /* results: pinned frame */
+  .sticky{position:sticky; top:0; z-index:10; background:var(--surface); margin:-20px -20px 14px; padding:12px 20px 13px;
+    border-bottom:1px solid var(--border); border-radius:var(--radius) var(--radius) 0 0; box-shadow:0 6px 14px -10px rgba(60,45,15,.4)}
+  .ctx{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px}
+  @media (max-width:560px){ .ctx{grid-template-columns:1fr} }
+  .tile{border:1px solid var(--border); background:var(--surface-2); border-radius:12px; padding:7px 12px; min-width:0}
+  .tile .k{font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); font-weight:700}
+  .tile .val{font-size:17.5px; font-weight:700; overflow-wrap:anywhere; display:flex; align-items:center; gap:9px; margin-top:2px}
+  .tile .sub{display:block; font-size:14px; color:var(--muted); font-weight:400; margin:0}
+  .colbadge{flex:none; width:32px; height:32px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+    display:grid; place-items:center; font-family:"Bitter",Georgia,serif; font-weight:800; font-size:17px}
+  .stepwarn{display:flex; gap:10px; align-items:flex-start; background:var(--warn-bg); border:1px solid var(--warn-bd);
+    border-radius:12px; padding:9px 12px; margin-bottom:10px; font-size:16px}
+  .stepwarn .ic{flex:none; width:24px; height:24px; border-radius:50%; background:var(--warn); color:var(--surface);
+    display:grid; place-items:center; font-weight:700; font-size:15px; margin-top:1px}
+  .stepwarn .btns{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
+  .stepwarn button{font-size:15.5px; font-weight:700; background:var(--surface); color:var(--text);
+    border:1.5px solid var(--warn-bd); border-radius:10px; padding:8px 13px; min-height:40px; cursor:pointer}
+
+  .summary{display:none; align-items:center; gap:14px; flex-wrap:wrap}
+  .mood{flex:none; display:flex; flex-direction:column; align-items:center; gap:2px}
+  .mood .avatar{width:76px; height:76px; box-shadow:none; border-width:4px}
+  .mood.red .avatar{border-color:var(--fail)} .mood.yellow .avatar{border-color:var(--todo)} .mood.green .avatar{border-color:var(--pass)}
+  .mood .mname{text-align:center; line-height:1.2; margin-top:2px} .mood .mname b{display:block; font-size:14.5px}
+  .mood .mname span{display:block; font-size:13px; color:var(--muted); white-space:nowrap}
+  .verdict{flex:1 1 260px; padding:9px 14px}
+  .verdict .v{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:20px; line-height:1.25}
+  .verdict .d{font-size:16px; color:var(--muted); margin-top:2px}
+  .score{flex:none; font-family:"Bitter",Georgia,serif; font-weight:800; font-size:46px; line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+  .score small{font-size:21px; color:var(--muted)}
+  .bar{height:12px; border-radius:999px; background:var(--border); overflow:hidden; margin-top:12px}
+  .bar > i{display:block; height:100%; background:var(--todo); width:0; transition:width .5s ease, background-color .3s ease}
+
+  /* the reward: a random dog photo in an "Approved!" snapshot, with a few paw prints */
+  .reward{position:relative; flex:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;
+    background:none; border:none; padding:0; color:inherit; font:inherit}
+  .reward .pic{position:relative; width:118px; height:132px; background:#fff; padding:6px 6px 22px; border-radius:4px;
+    box-shadow:0 2px 6px rgba(0,0,0,.18); transform:rotate(-3deg)}
+  .reward .ph{position:relative; display:grid; place-items:center; width:100%; height:100%; overflow:hidden; background:var(--pass-bg); border-radius:2px}
+  .reward img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .4s ease}
+  .reward.hasdog img{opacity:1}
+  .reward .stamp{position:absolute; left:50%; bottom:2px; transform:translateX(-50%) rotate(-4deg); white-space:nowrap;
+    font-family:"Bitter",Georgia,serif; font-weight:800; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:#1b7a3d}
+  .reward .bigcheck{width:60px; height:60px}
+  .reward.hasdog .bigcheck{position:absolute; right:3px; bottom:3px; width:28px; height:28px; background:#1b7a3d; border-radius:50%; padding:4px}
+  .reward.hasdog .bigcheck path{stroke:#fff}
+  .reward .bigcheck circle{display:none}
+  .reward:not(.hasdog) .bigcheck circle{display:block}
+  .reward .bigcheck path{stroke:#1b7a3d; stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:60; stroke-dashoffset:60; animation:draw .5s .1s ease forwards}
+  .reward .cap{font-size:14px; color:var(--muted); max-width:170px; text-align:center; line-height:1.25}
+  .reward.pop .pic{animation:pop .45s ease}
+  /* paw prints fly up and to the left only, so they never push the page sideways */
+  .burst{position:absolute; left:50%; top:45%; width:0; height:0; pointer-events:none}
+  .burst svg{position:absolute; width:20px; height:20px; margin:-10px; fill:var(--gold); opacity:0}
+  .reward.pop .burst svg{animation:pawout 1.1s ease-out forwards}
+  .burst svg:nth-child(1){--dx:-82px; --dy:-46px; --r:-25deg}
+  .burst svg:nth-child(2){--dx:-70px; --dy:30px; --r:-60deg; animation-delay:.08s !important}
+  .burst svg:nth-child(3){--dx:12px; --dy:-74px; --r:20deg; animation-delay:.14s !important}
+  .burst svg:nth-child(4){--dx:-96px; --dy:-8px; --r:-80deg; animation-delay:.2s !important}
+  .burst svg:nth-child(5){--dx:-40px; --dy:-86px; --r:-10deg; animation-delay:.26s !important}
+  @keyframes pawout{0%{opacity:0; transform:translate(0,0) scale(.4) rotate(var(--r))}25%{opacity:1}
+    100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1) rotate(var(--r))}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes pop{0%{transform:rotate(-3deg) scale(.6)}70%{transform:rotate(-3deg) scale(1.08)}100%{transform:rotate(-3deg) scale(1)}}
+  @media (prefers-reduced-motion:reduce){ .reward .bigcheck path{animation:none; stroke-dashoffset:0} .reward.pop .pic{animation:none}
+    .reward img{transition:none} .burst{display:none} }
+
+  /* result lines */
+  .groupttl{font-size:14px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); margin:18px 0 8px}
+  ul.checks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+  li.check{border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface)}
+  .check .head{display:flex; align-items:center; gap:13px; padding:13px 15px}
+  .mark{flex:none; width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:16px; font-weight:700}
+  .pass .mark{background:var(--pass-bg); color:var(--pass); border:1px solid var(--pass-bd)}
+  .fail .mark{background:var(--fail-bg); color:var(--fail); border:1px solid var(--fail-bd)}
+  .warn .mark{background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-bd)}
+  .todo .mark{background:var(--surface-2); color:var(--muted); border:1px solid var(--border)}
+  .check .name{flex:1; font-size:17px; font-weight:700}
+  .check .line{display:block; font-size:14.5px; color:var(--muted); font-weight:400}
+  .check .state{font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .pass .state{color:var(--pass)} .fail .state{color:var(--fail)} .warn .state{color:var(--warn)} .todo .state{color:var(--muted)}
+  .check .amt{font-size:15.5px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .chip{display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:.05em; color:var(--gold-ink);
+    border:1px solid var(--gold); border-radius:999px; padding:1px 8px; margin-right:7px; vertical-align:1px}
+  .yours,.notecopy{font-size:15.5px; color:var(--muted); padding:0 15px 8px 56px}
+  .yours b{color:var(--text); font-variant-numeric:tabular-nums}
+  .hintbtn{margin:2px 15px 12px 56px; background:transparent; color:var(--text); border:1.5px solid var(--gold);
+    border-radius:10px; padding:9px 14px; min-height:42px; font-size:15.5px; font-weight:700; cursor:pointer}
+  .hint{margin:0 15px 13px 56px; padding:13px 15px; background:var(--surface-2); border:1px solid var(--border);
+    border-left:4px solid var(--gold); border-radius:10px; font-size:16.5px; display:none}
+  .hint.show{display:block}
+  .hint .ans{font-size:15px; color:var(--muted); margin-bottom:5px}
+  .hint .ans b{color:var(--text); font-size:16.5px; font-variant-numeric:tabular-nums}
+  .hint .example{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px; background:var(--surface); border:1px solid var(--border);
+    border-radius:6px; padding:8px 10px; margin:2px 0 8px}
+  .tablewrap{overflow-x:auto; margin:4px 0 8px}
+  .hint table{border-collapse:collapse; width:100%; font-size:15px; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .hint th,.hint td{border-bottom:1px solid var(--border); padding:5px 7px; text-align:right}
+  .hint th{font-size:13px; color:var(--muted); font-weight:700}
+  .hint th:first-child,.hint td:first-child{text-align:left}
+  .hint tr.circled td{font-weight:700; background:color-mix(in srgb,var(--gold) 18%,transparent)}
+  .ws-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:10px; padding:0 15px 10px 56px}
+  .ws-grid label{font-size:14px; color:var(--muted); display:flex; flex-direction:column; gap:3px}
+  .ws-grid input,.ws-grid select{font:inherit; font-size:17.5px; padding:10px 11px; border:1.5px solid var(--border); border-radius:10px;
+    background:var(--surface-2); color:var(--text); font-variant-numeric:tabular-nums; width:100%; appearance:auto; background-image:none}
+  .ws-grid .bad{border-color:var(--fail); background:var(--fail-bg)}
+  .confirm{display:flex; gap:8px; align-items:center; padding:0 15px 10px 56px; font-size:17px; cursor:pointer}
+  .confirm input{width:24px; height:24px; accent-color:var(--pass)}
+  .note{font-size:15.5px; color:var(--muted); background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:11px 13px; margin-top:12px}
+
+  footer{color:var(--muted); font-size:14.5px; text-align:center; margin-top:24px}
+  footer .ver{font-weight:700; margin-bottom:3px}
+  .linkbtn{font:inherit; font-weight:700; color:var(--gold-ink); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline}
+
+  /* What's new panel */
+  .wn-back{position:fixed; inset:0; z-index:50; background:rgba(30,25,15,.5); display:flex; align-items:center; justify-content:center; padding:16px}
+  .wn{background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
+    width:min(720px,100%); max-height:86vh; display:flex; flex-direction:column; outline:none}
+  .wn-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border)}
+  .wn-head h2{margin:0; font-family:"Bitter",Georgia,serif; font-weight:800; font-size:22px}
+  .wn-body{overflow:auto; padding:6px 18px 18px; font-size:16.5px}
+  .wn-rel{padding:12px 0; border-bottom:1px solid var(--border)}
+  .wn-rel:last-child{border-bottom:none}
+  .wn-rel h3{margin:0 0 2px; font-family:"Bitter",Georgia,serif; font-weight:800; font-size:19px}
+  .wn-rel .when{font-size:14.5px; color:var(--muted); margin-bottom:6px}
+  .wn-rel .cur{display:inline-block; margin-left:8px; font-family:"Atkinson",Verdana,sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--pass); border:1px solid var(--pass-bd); background:var(--pass-bg); border-radius:999px; padding:1px 8px; vertical-align:2px}
+  .wn-rel h4{margin:10px 0 4px; font-size:14px; text-transform:uppercase; letter-spacing:.07em; color:var(--gold-ink)}
+  .wn-rel ul{margin:0; padding-left:22px} .wn-rel li{margin:3px 0}
+  .wn-note{font-size:15px; color:var(--muted); padding-top:12px}
+
+  @media (max-width:560px){
+    .brand .seal{width:64px; height:64px} h1{font-size:28px} .sub{font-size:15.5px}
+    .avatar{width:64px; height:64px} .guide .say{font-size:17.5px}
+    .pdfic{display:none} .drop .big{font-size:19.5px}
+  }
+  /* Chromebook screens are short (about 650px of page at 100% zoom, about 440px at 150%),
+     so the pinned score frame compacts itself to stay a modest share of the screen. */
+  @media (max-height:760px){
+    .sticky{padding:9px 18px 10px}
+    .tile{padding:5px 10px} .tile .sub{display:none} .ctx{margin-bottom:8px}
+    .mood .avatar{width:52px; height:52px; border-width:3px} .mood .mname b{font-size:13.5px} .mood .mname span{font-size:12.5px} .verdict{padding:7px 12px} .verdict .v{font-size:18.5px}
+    .score{font-size:40px}
+    .reward .pic{width:96px; height:108px; padding:5px 5px 19px} .reward .stamp{font-size:11.5px} .reward .bigcheck{width:48px; height:48px}
+    .reward .cap{white-space:nowrap; max-width:none; font-size:13px}
+    .bar{margin-top:9px}
+    .stepwarn{padding:7px 10px; margin-bottom:8px} .stepwarn .why{display:none} .stepwarn .btns{margin-top:5px}
+  }
+  @media (max-height:540px){
+    .wrap{padding-top:10px} header.app{margin-bottom:10px} .brand .seal{width:58px; height:58px} h1{font-size:26px} .sub{font-size:15px}
+    .theme-btn{min-height:38px; padding:6px 13px} .card{padding:16px} .sticky{margin:-16px -16px 12px}
+    .guide{margin-bottom:12px; gap:12px} .guide .avatar{width:56px; height:56px} .guide .say{font-size:17px} .guide .who{display:none}
+    .pchip .paw{width:42px; height:42px} .pchip .paw svg{width:22px; height:22px} .pchip::after{top:27px; left:calc(50% + 26px); width:calc(100% - 52px)}
+    .tile .k{display:none} .tile .val{font-size:16px} .colbadge{width:26px; height:26px; font-size:15px}
+    .mood .avatar{width:48px; height:48px; border-width:3px} .mood .mname{display:none}
+    .score{font-size:34px} .score small{font-size:17px} .verdict .v{font-size:17px} .verdict .d{display:none}
+    .reward .pic{width:70px; height:80px; padding:4px 4px 15px} .reward .stamp{font-size:9.5px} .reward .cap{display:none}
+    .tile{padding:3px 9px} .stepwarn{font-size:15px; padding:6px 10px; margin-bottom:6px} .stepwarn button{min-height:36px; padding:5px 11px; font-size:15px}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pawprint" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="14" ry="12"/><ellipse cx="14" cy="27" rx="6" ry="8" transform="rotate(-20 14 27)"/>
+    <ellipse cx="25" cy="16" rx="6" ry="8.5" transform="rotate(-6 25 16)"/><ellipse cx="39" cy="16" rx="6" ry="8.5" transform="rotate(6 39 16)"/>
+    <ellipse cx="50" cy="27" rx="6" ry="8" transform="rotate(20 50 27)"/></symbol>
+</svg>
+<div class="wrap">
+  <header class="app">
+    <div class="brand">
+      <svg class="seal" viewBox="0 0 300 300" role="img" aria-label="Audit Pup seal with a drawing of Zeke">
+        <defs><clipPath id="sealclip"><circle cx="150" cy="150" r="88"/></clipPath>
+          <path id="sealtop" d="M 44,150 A 106,106 0 0,1 256,150"/><path id="sealbot" d="M 34,150 A 116,116 0 0,0 266,150"/>
+          <g id="sealbone"><rect x="-4.5" y="-11" width="9" height="22" rx="2"/><circle cx="-4.5" cy="-12" r="6"/><circle cx="4.5" cy="-12" r="6"/><circle cx="-4.5" cy="12" r="6"/><circle cx="4.5" cy="12" r="6"/></g></defs>
+        <circle cx="150" cy="150" r="146" fill="#b8892c"/><circle cx="150" cy="150" r="138" fill="#2a2e35"/><circle cx="150" cy="150" r="96" fill="#ead39a"/>
+        <image href="data:image/jpeg;base64,__ASSET_seal_zeke.jpg__" x="62" y="62" width="176" height="176" clip-path="url(#sealclip)"/>
+        <text font-family="Bitter,Georgia,serif" font-weight="800" font-size="30" letter-spacing="5" fill="#f6f0e1"><textPath href="#sealtop" startOffset="50%" text-anchor="middle">AUDIT PUP</textPath></text>
+        <text font-family="Atkinson,Verdana,sans-serif" font-weight="700" font-size="15.5" letter-spacing="3" fill="#ead39a"><textPath href="#sealbot" startOffset="50%" text-anchor="middle">EL DORADO TAX-AIDE</textPath></text>
+        <use href="#sealbone" x="33" y="150" fill="#d9b25c"/><use href="#sealbone" x="267" y="150" fill="#d9b25c"/>
+      </svg>
+      <div>
+        <h1>Audit Pup</h1>
+        <p class="sub">El Dorado Tax-Aide Case Checker</p>
+      </div>
+    </div>
+    <div class="hdr-btns">
+      <button class="theme-btn ver-btn" id="verbtn" title="See what changed in each version" aria-haspopup="dialog">Version __APP_VERSION__<span class="newtag" id="newtag">New</span></button>
+      <button class="theme-btn" id="theme" title="Switch light or dark">Theme</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="startup" id="startup" role="alert"><b>Audit Pup did not start.</b> This usually means the file is being shown in a preview
+      (from email, Google Drive, or the Mac's Quick Look) instead of opened in a web browser. Save the file to your computer first, then open it
+      in Chrome or Safari. On a Mac: right-click the file, choose <b>Open With</b>, then <b>Google Chrome</b> or <b>Safari</b>.
+      If this message stays, download a fresh copy.</div>
+    <div class="guide" id="guide">
+      <span class="avatar dog-zeke" role="img" aria-label="Zeke"></span>
+      <div class="bubble"><div class="say" id="guidesay" aria-live="polite">Hi, I'm Zeke. Pick your step below.</div><div class="who">Zeke, Audit Pup's chief inspector</div></div>
+    </div>
+    <p class="label">Choose what you are checking</p>
+    <div class="row">
+      <div class="field">
+        <select id="assignment" aria-label="Case">
+          <option value="quinn">Case: Quinn (Raymond Quinn, 2025)</option>
+        </select>
+      </div>
+      <div class="field">
+        <select id="step" aria-label="Step"></select>
+      </div>
+    </div>
+    <div class="progress" id="progress" aria-live="polite"></div>
+
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose or drop your PDF">
+      <svg class="pdfic" viewBox="0 0 54 66" aria-hidden="true"><path d="M3 3h34l14 14v46H3z" fill="var(--surface)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M37 3v14h14" fill="var(--text)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
+        <text x="27" y="51" text-anchor="middle" font-family="Bitter,Georgia,serif" font-weight="800" font-size="15" fill="var(--fail)">PDF</text></svg>
+      <div>
+        <div class="big" id="dropbig">Drop your TaxSlayer PDF here</div>
+        <div class="small">or click to choose the PDF you saved for this step</div>
+        <div class="filename" id="filename"></div>
+      </div>
+    </div>
+    <input type="file" id="file" accept="application/pdf,.pdf" class="hidden">
+    <button class="primary" id="grade" data-state="ready" disabled>Check this step</button>
+    <div class="err hidden" id="error"></div>
+  </div>
+
+  <div class="card" id="results" style="display:none">
+    <div class="sticky" id="sticky">
+      <div class="ctx" id="ctx"></div>
+      <div class="stepwarn hidden" id="stepwarn" role="alert"></div>
+      <div class="stepwarn hidden" id="reusewarn" role="alert"></div>
+      <div class="summary" id="summary">
+        <div class="mood" id="mood"><span class="avatar" id="moodimg" role="img" aria-label=""></span><span class="mname" id="moodname"></span></div>
+        <div class="bubble verdict" aria-live="polite">
+          <div class="v" id="verdictV"></div>
+          <div class="d" id="verdictD"></div>
+        </div>
+        <div class="score" id="score">0<small>/0</small></div>
+        <button class="reward hidden" id="reward" title="Tap for another dog" aria-label="Approved. Tap for another dog.">
+          <span class="burst" aria-hidden="true"><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg></span>
+          <span class="pic"><span class="ph">
+            <img id="dogimg" alt="">
+            <svg class="bigcheck" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#1b7a3d" stroke-width="3"></circle><path d="M14 27 l8 8 l16 -18"></path></svg>
+          </span><span class="stamp">Approved!</span></span>
+          <span class="cap" id="dogcap">All done!</span>
+        </button>
+      </div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <div id="stepnote"></div>
+    <div id="groups"></div>
+  </div>
+
+  <div class="wn-back hidden" id="wnback">
+    <div class="wn" id="wn" role="dialog" aria-modal="true" aria-labelledby="wntitle" tabindex="-1">
+      <div class="wn-head"><h2 id="wntitle">What's new in Audit Pup</h2><button class="theme-btn" id="wnclose">Close</button></div>
+      <div class="wn-body" id="wnbody"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="ver">Audit Pup version __APP_VERSION__, built __BUILD_DATE__. <button class="linkbtn" id="verlink">What's new</button></div>
+    Runs entirely in your browser. Nothing is uploaded. Checking works offline; the reward dog photo needs internet.
+  </footer>
+</div>
+<script>
+/* ---------- PDF engine: decoded from the data at the bottom of this file the first time it is needed ---------- */
+function b64ToBytes(b64){
+  var bin=atob(b64.replace(/\s+/g,'')), len=bin.length, bytes=new Uint8Array(len);
+  for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes;
+}
+function fileComplete(){ return !!document.getElementById('aup-end'); }
+function ensurePdfjs(){
+  if(window.pdfjsLib && window.pdfjsWorker) return;
+  var libEl=document.getElementById('pdfjslib-b64'), wrkEl=document.getElementById('pdfjsworker-b64');
+  if(!fileComplete() || !libEl || !wrkEl) throw new Error('INCOMPLETE');
+  var s1=document.createElement('script'); s1.textContent=new TextDecoder('utf-8').decode(b64ToBytes(libEl.textContent)); document.head.appendChild(s1);
+  /* Run the PDF engine on the page itself instead of in a background worker: some viewers block worker links.
+     Loading the worker code here defines window.pdfjsWorker, which pdf.js uses directly. */
+  var s2=document.createElement('script'); s2.textContent=new TextDecoder('utf-8').decode(b64ToBytes(wrkEl.textContent)); document.head.appendChild(s2);
+  if(!window.pdfjsLib || !window.pdfjsWorker) throw new Error('OLDBROWSER');   /* file is complete, so the browser could not run the engine */
+}
+var MSG_OLDBROWSER='This browser is too old to read PDFs in Audit Pup. Update Safari to version 15 or newer (Apple menu, System Settings, Software Update), or open the file in Google Chrome.';
+var MSG_INCOMPLETE=(location.protocol==='file:')
+  ? 'This copy of Audit Pup is incomplete. Part of the file was lost when it was sent or downloaded. Download a fresh copy and open it again.'
+  : 'Audit Pup did not finish loading. Reload the page (Ctrl + R) and try again.';
+/* Older Safari has no File.arrayBuffer() */
+function readFile(f){
+  if(f.arrayBuffer) return f.arrayBuffer();
+  return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){res(r.result);}; r.onerror=function(){rej(r.error);}; r.readAsArrayBuffer(f); });
+}
+
+/* ---------- answer key + hints for the Quinn problem ---------- */
+/* Values are NOT shown to the student. Only pass/fail and a single hint. */
+var LINES = {
+  fed_1a:  {form:'fed', line:'Line 1a',  name:'Wages (W-2 box 1)',
+    hint:'Line 1a comes straight from box 1 of the W-2 you entered. Re-open that W-2 in TaxSlayer and compare box 1 to the source document.'},
+  fed_1d:  {form:'fed', line:'Line 1d',  name:'Medicaid Waiver Payment not on a W-2',
+    hint:'Line 1d is where a Medicaid Waiver Payment with no W-2 is reported. Look again at the MWP handout and at the Medicaid Waiver Payment field below Box 14 on the W-2 screen.'},
+  fed_8:   {form:'fed', line:'Line 8',   name:'Additional income (Schedule 1)',
+    hint:'Line 8 pulls from Schedule 1, where the excludable MWP is subtracted back out. Revisit the handout on how the payment is removed from taxable income, and check your Medicaid Waiver Payment entry.'},
+  fed_9:   {form:'fed', line:'Line 9',   name:'Total income',
+    hint:'Line 9 is a sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself.'},
+  fed_11a: {form:'fed', line:'Line 11a', name:'Adjusted gross income',
+    hint:'Line 11a is total income minus adjustments. If total income is right, look for an unexpected adjustment above this line.'},
+  fed_12e: {form:'fed', line:'Line 12e', name:'Standard or itemized deduction',
+    hint:'The standard deduction follows from filing status. Re-check the filing status for this taxpayer, using the dependent and head of household notes in the problem.'},
+  fed_25d: {form:'fed', line:'Line 25d', name:'Federal tax withheld',
+    hint:'Line 25d is federal withholding from your W-2 entries. Re-open the W-2 and compare box 2 to the source document.'},
+  fed_27:  {form:'fed', line:'Line 27',  name:'Earned income credit (EIC)',
+    hint:'The EIC depends on earned income and the qualifying person. Re-check the dependent entry and whether earned income was entered as the problem intends.'},
+  fed_33:  {form:'fed', line:'Line 33',  name:'Total payments',
+    hint:'Line 33 totals your payments and refundable credits. If it is off, the mistake is in a withholding or credit line above it.'},
+  fed_35a: {form:'fed', line:'Line 35a', name:'Refund',
+    hint:'The refund is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow.'},
+
+  ca540_12:  {form:'ca540', line:'Line 12',  name:'State wages (W-2 box 16)',
+    hint:'Line 12 is state wages from box 16 of the W-2. For an MWP return the handout explains how box 16 is set. Re-check box 16 and the handout note on California wages.'},
+  ca540_17:  {form:'ca540', line:'Line 17',  name:'California AGI',
+    hint:'CA AGI builds from federal AGI and the Schedule CA adjustments. If federal AGI is right, look at the Schedule CA entries.'},
+  ca540_18:  {form:'ca540', line:'Line 18',  name:'California deduction',
+    hint:'The California deduction follows from filing status. Confirm the filing status first, then confirm which standard deduction applies.'},
+  ca540_19:  {form:'ca540', line:'Line 19',  name:'California taxable income',
+    hint:'CA taxable income is CA AGI minus the deduction. If both of those are right, this follows. Otherwise re-check them.'},
+  ca540_31:  {form:'ca540', line:'Line 31',  name:'California tax',
+    hint:'CA tax comes from taxable income through the tax table. If taxable income is right, re-check that the correct table or method was used.'},
+  ca540_32:  {form:'ca540', line:'Line 32',  name:'Exemption credit',
+    hint:'The exemption credit depends on the taxpayer and the dependents claimed. Re-check the dependent and exemption entries.'},
+  ca540_71:  {form:'ca540', line:'Line 71',  name:'California tax withheld',
+    hint:'Line 71 is California withholding from box 17 of the W-2. Re-open the W-2 and compare box 17 to the source document.'},
+  ca540_75:  {form:'ca540', line:'Line 75',  name:'California EITC',
+    hint:'CA EITC depends on California earned income. Re-check the earned income entries, and for an MWP return see the handout on how California treats the payment for the credit.'},
+  ca540_78:  {form:'ca540', line:'Line 78',  name:'Total payments',
+    hint:'Line 78 totals California payments and credits. If it is off, the mistake is in a withholding or EITC line above it.'},
+  ca540_115: {form:'ca540', line:'Line 115', name:'California refund',
+    hint:'The California refund is the end result. If it is wrong, one of the checked California lines above it is wrong. Fix those first.'},
+
+  ca3514_2:  {form:'ca3514', line:'Line 2',  name:'Federal AGI',
+    hint:'Line 2 carries federal AGI onto the 3514. If federal AGI is right this will match. Otherwise fix federal AGI first.'},
+  ca3514_13: {form:'ca3514', line:'Line 13', name:'California wages',
+    hint:'Line 13 is California wages used for the credit. For an MWP return the handout explains how the payment affects this figure. Re-check the handout and box 16.'},
+  ca3514_14: {form:'ca3514', line:'Line 14', name:'IHSS / MWP payments',
+    hint:'Line 14 is where IHSS and Medicaid Waiver Payments are reported for the California credit. Revisit the handout on how the payment flows to the 3514, and the Medicaid Waiver Payment field in TaxSlayer.'},
+  ca3514_19: {form:'ca3514', line:'Line 19', name:'California earned income',
+    hint:'Line 19 is your California earned income for the credit. Whether the MWP is included here depends on the option you chose. Re-check the option you selected on the MWP Worksheet.'}
+};
+var FORM_TITLES = {fed:'Federal Form 1040', ca540:'California Form 540', ca3514:'California Form 3514 (EITC)'};
+var FORM_ORDER = ['fed','ca540','ca3514'];
+
+var EXP_B = {fed_1a:15000, fed_9:15000, fed_11a:15000, fed_12e:23625, fed_25d:1800, fed_27:312, fed_33:2112, fed_35a:2112,
+  ca540_12:15000, ca540_17:15000, ca540_18:11412, ca540_19:3588, ca540_31:36, ca540_32:628, ca540_71:750, ca540_75:165, ca540_78:915, ca540_115:915,
+  ca3514_2:15000, ca3514_13:15000, ca3514_19:15000};
+var EXP_E = Object.assign({}, EXP_B, {fed_1d:15679, fed_8:-15679, ca540_12:30679, ca3514_13:30679, ca3514_14:15679});
+var EXP_A = {fed_12e:23625, ca540_18:11412, ca540_32:628};
+
+var STEPS = [
+  {id:'A', name:'Step A: Basic information', type:'check', expected:EXP_A, notes:['N1']},
+  {id:'B', name:'Step B: W-2 income entered', type:'check', expected:EXP_B, notes:[]},
+  {id:'D', name:'Step D: no change expected from Step B', type:'nochange', basis:'Step B', expected:EXP_B, notes:[]},
+  {id:'E', name:'Step E: Medicaid Waiver Payment (MWP)', type:'check', expected:EXP_E, notes:['N2','N3','NN']},
+  {id:'F', name:'Step F: no change expected from Step E', type:'nochange', basis:'Step E', expected:EXP_E, notes:['N2','N3','NN']}
+];
+
+/* Output order follows the answer key, top to bottom. Notes sit where the key places them. */
+var ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_25d','fed_27','fed_33','fed_35a','N2','N1','NN',
+  'ca540_12','ca540_17','ca540_18','ca540_19','ca540_31','ca540_32','ca540_71','ca540_75','ca540_78','ca540_115',
+  'ca3514_2','ca3514_13','ca3514_14','ca3514_19','N3'];
+
+/* Answer key MWP Worksheet (attached to the answer sheet). Option 1 is circled. */
+var WORKSHEET = {
+  circled:1,
+  cols:['Federal AGI','Federal EITC','Federal refund','CA EITC','CA refund','CA 3514 wages / EI','Total refund'],
+  rows:[ [1,'NNN',15000,312,2112,165,915,15000,3027],
+         [2,'NNY',15000,312,2112,21,771,30679,2883],
+         [3,'NYN',15000,0,1800,165,915,15000,2715],
+         [4,'NYY',15000,0,1800,21,771,30679,2571],
+         [5,'YYY',30679,0,1592,21,771,30679,2363] ]
+};
+
+var NOTES = {
+  N1:{form:'fed', name:'Filing status and dependent',
+    key:'Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).',
+    coach:'Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.'},
+  N2:{form:'fed', name:'Both refunds match the option you chose',
+    coach:'Both refunds should equal the results of the option you circled on your MWP Worksheet. If they do not, the W-2 screen in TaxSlayer is probably still set up for another option you tested. Re-check the Medicaid Waiver Payment field, the include in earned income box, and Box 16.'},
+  N3:{form:'ca3514', name:'MWP Worksheet scenarios',
+    coach:'For any option that does not match, set the W-2 screen back to that option\'s three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.'},
+  NN:{form:'fed', name:'TS Note added for this step',
+    example:'STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.',
+    coach:'Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year\'s counselor should know.'}
+};
+var NSTATE = {n3:{v:['','','','',''], sel:''}, nn:false};   /* student entries for the manual notes */
+
+/* ---------- Saved progress ----------
+   Kept in the browser's local storage (not cookies) on this computer only. Nothing leaves the machine.
+   One record per case: each step's latest result, the N3 worksheet entries, the NN checkbox,
+   and the same-file fingerprints. "Start over" erases it. */
+var CASE_ID='quinn', STORE_KEY='auditpup.progress.v1.'+CASE_ID, storageOK=true;
+function blankStore(){ return {steps:{}, n3:null, nn:false, seen:{}}; }
+function loadStore(){
+  try{ localStorage.setItem('auditpup.test','1'); localStorage.removeItem('auditpup.test'); }catch(e){ storageOK=false; return blankStore(); }
+  try{ var t=localStorage.getItem(STORE_KEY); if(!t) return blankStore();
+    var o=JSON.parse(t), b=blankStore(); for(var k in b) if(o[k]==null) o[k]=b[k]; return o; }catch(e){ return blankStore(); }
+}
+function saveStore(){ if(!storageOK) return; try{ localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); }catch(e){ storageOK=false; } }
+var STORE=loadStore();
+if(STORE.n3 && STORE.n3.v && STORE.n3.v.length===5) NSTATE.n3=STORE.n3;
+NSTATE.nn=!!STORE.nn;
+
+/* ---------- extraction engine (identical logic validated against the 5 PDFs) ---------- */
+function parseNum(str){
+  if(str==null) return null;
+  var s=String(str).replace(/\s+/g,'');
+  if(s==='.'||s==='') return null;
+  var neg=/^\(.*\)$/.test(s)||/^-/.test(s);
+  s=s.replace(/[()$,\-]/g,'');
+  var m=s.match(/^(\d+)(?:\.(\d{2}))?$/);
+  if(!m) return null;
+  var v=parseInt(m[1],10);
+  return neg?-v:v;
+}
+function isMoney(s){ return parseNum(s)!==null && s!=='00' && s!=='.'; }
+
+function rowsOf(items,tol){
+  tol=tol||4;
+  var sorted=items.slice().sort(function(a,b){return b.y-a.y||a.x-b.x;});
+  var out=[];
+  sorted.forEach(function(it){
+    var r=null;
+    for(var i=0;i<out.length;i++){ if(Math.abs(out[i].y-it.y)<=tol){r=out[i];break;} }
+    if(!r){ r={y:it.y,items:[]}; out.push(r); }
+    r.items.push(it); r.y=(r.y*(r.items.length-1)+it.y)/r.items.length;
+  });
+  out.forEach(function(r){ r.items.sort(function(a,b){return a.x-b.x;}); r.text=r.items.map(function(i){return i.s;}).join(' '); });
+  return out;
+}
+function fedValue(pages,token,labelRe,needToken){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var rs=rowsOf(pages[p].items,4);
+    for(var i=0;i<rs.length;i++){ var r=rs[i];
+      if(!labelRe.test(r.text)) continue;
+      if(needToken && !r.items.some(function(it){return it.s===token;})) continue;
+      var nums=r.items.filter(function(it){return it.x>=430 && isMoney(it.s) && it.s!==token;});
+      if(nums.length) return parseNum(nums[nums.length-1].s);
+      return null;
+    }
+  }
+  return undefined;
+}
+function caValue(pages,form,token,valueMin,tokXMin,tokXMax,tol){
+  tokXMin=tokXMin||0; tokXMax=tokXMax||470; tol=tol||9;
+  var sawLine=false;
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!==form) continue;
+    var toks=pages[p].items.filter(function(it){return it.s===token && it.x>=tokXMin && it.x<=tokXMax;});
+    if(toks.length) sawLine=true;
+    var vals=pages[p].items.filter(function(it){return it.x>=valueMin && isMoney(it.s);});
+    var best=null;
+    toks.forEach(function(t){ vals.forEach(function(v){
+      var dy=Math.abs(v.y-t.y);
+      if(dy<=tol && (!best||dy<best.dy||(dy===best.dy && v.x>best.v.x))) best={dy:dy,v:v};
+    });});
+    if(best) return parseNum(best.v.s);
+  }
+  return sawLine?null:undefined;   /* line printed but empty = blank; line not found = undefined */
+}
+function extractAll(pages){
+  return {
+    fed_1a: fedValue(pages,'1a',/Total amount from Form\(s\) W-2, box 1/),
+    fed_1d: fedValue(pages,'1d',/Medicaid waiver payments not reported/),
+    fed_8:  fedValue(pages,'8',/Additional income from Schedule 1, line 10/),
+    fed_9:  fedValue(pages,'9',/This is your total income/),
+    fed_11a:fedValue(pages,'11a',/This is your adjusted gross income/),
+    fed_12e:fedValue(pages,'12e',/Standard deduction or itemized deductions/),
+    fed_25d:fedValue(pages,'25d',/Add lines 25a through 25c/),
+    fed_27: fedValue(pages,'27a',/Earned income credit \(EIC\)/),
+    fed_33: fedValue(pages,'33',/Add lines 25d, 26, and 32/),
+    fed_35a:fedValue(pages,'35a',/you want refunded to you/,true),
+    ca540_12: caValue(pages,'ca540','12',330),
+    ca540_17: caValue(pages,'ca540','17',500),
+    ca540_18: caValue(pages,'ca540','18',500),
+    ca540_19: caValue(pages,'ca540','19',500),
+    ca540_31: caValue(pages,'ca540','31',500),
+    ca540_32: caValue(pages,'ca540','32',500),
+    ca540_71: caValue(pages,'ca540','71',500),
+    ca540_75: caValue(pages,'ca540','75',500),
+    ca540_78: caValue(pages,'ca540','78',500),
+    ca540_115: caValue(pages,'ca540','115',500),
+    ca3514_2:  caValue(pages,'ca3514','2',500,430,460),
+    ca3514_13: caValue(pages,'ca3514','13',500,430,460),
+    ca3514_14: caValue(pages,'ca3514','14',500,430,460),
+    ca3514_19: caValue(pages,'ca3514','19',500,430,460)
+  };
+}
+/* N1 helpers: filing status box checked on the 1040, and the dependent row in TaxSlayer's client summary */
+function filingStatus(pages){
+  var re=/^(Single|Married filing jointly|Married filing separately|Head of household|Qualifying surviving spouse)/;
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, labels=its.filter(function(i){return re.test(i.s);}), xs=its.filter(function(i){return i.s==='X';});
+    for(var a=0;a<labels.length;a++) for(var b=0;b<xs.length;b++){
+      var gap=labels[a].x-xs[b].x;
+      if(Math.abs(xs[b].y-labels[a].y)<=4 && gap>0 && gap<30) return labels[a].s.match(re)[1];
+    }
+  }
+  for(var q=0;q<pages.length;q++){ var rs=rowsOf(pages[q].items,4);
+    for(var i=0;i<rs.length;i++){ var m=rs[i].text.match(/^STATUS\s*:\s*([A-Z ]+)$/);
+      if(m){ var t=m[1].trim().toLowerCase(); return t.charAt(0).toUpperCase()+t.slice(1); } } }
+  return null;
+}
+function dependentInfo(pages,first){
+  var re=/^(.+?)\s+\d{2}\/\d{2}\/\d{4}\s+\d+\s+\S+\s+([A-Z][A-Z ]*?)\s+(\d{1,2})$/;
+  for(var p=0;p<pages.length;p++){ var rs=rowsOf(pages[p].items,4);
+    for(var i=0;i<rs.length;i++){ var m=rs[i].text.match(re);
+      if(m && m[1].toUpperCase().indexOf(first)===0) return {name:m[1], rel:m[2], months:parseInt(m[3],10)}; } }
+  for(var q=0;q<pages.length;q++){ if(pages[q].form!=='fed') continue;
+    if(pages[q].items.some(function(i){return i.s.toUpperCase()===first;})) return {name:first, rel:null, months:null}; }
+  return null;
+}
+function cap1(s){ s=String(s); return s.charAt(0).toUpperCase()+s.slice(1); }
+function cap(s){ s=String(s||'').toLowerCase(); return s.replace(/\b\w/g,function(c){return c.toUpperCase();}); }
+
+async function loadPages(arrayBuffer){
+  ensurePdfjs();
+  var doc=await window.pdfjsLib.getDocument({data:new Uint8Array(arrayBuffer), isEvalSupported:false, verbosity:0}).promise;
+  var pages=[];
+  for(var p=1;p<=doc.numPages;p++){
+    var page=await doc.getPage(p);
+    var tc=await page.getTextContent();
+    var items=tc.items.filter(function(i){return i.str && i.str.trim();})
+      .map(function(i){return {x:i.transform[4], y:i.transform[5], s:i.str.trim()};});
+    pages.push({page:p, form:classifyPage(items), items:items});
+  }
+  return pages;
+}
+/* Identify the form on a page from its printed header. Any page we do not
+   recognize is marked 'other' and ignored, so extra or new forms are harmless. */
+function classifyPage(items){
+  var lead=items.slice(0,14).map(function(i){return i.s;}).join(' ').replace(/\s+/g,' ');
+  if(/^\d{7} (Side \d+ )?Form 540 \d{4}/.test(lead)) return 'ca540';
+  if(/^\d{7} (Side \d+ )?FTB 3514 \d{4}/.test(lead)) return 'ca3514';
+  if(/^Form 1040(-SR)?\b.{0,24}U\.S\. (Individual )?Income Tax Return/.test(lead)) return 'fed';
+  if(/^Form 1040(-SR)? \(\d{4}\) Page \d/.test(lead)) return 'fed';
+  return 'other';
+}
+function fmt(n){ if(n===null||n===undefined) return 'blank'; return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US'); }
+var FORM_MISSING = {
+  fed:'TaxSlayer always produces the Form 1040, so this PDF may be incomplete. Print the full return for this step and check again.',
+  ca540:'The California Form 540 is not in this PDF. Check that the state return was started for this taxpayer in TaxSlayer.',
+  ca3514:'TaxSlayer adds the FTB 3514 only when a California EITC is claimed. Look at the earned income and qualifying information that drive the California credit.'
+};
+function matches(got,exp,present){
+  if(!present) return 'missing';
+  if(got===undefined) return 'warn';
+  if(got===null) return exp===0?'pass':'fail';
+  return got===exp?'pass':'fail';   /* exact: TaxSlayer and the key are whole dollars, so any difference is a real mistake */
+}
+
+/* ---------- UI ---------- */
+var stepSel=document.getElementById('step');
+STEPS.forEach(function(s){ var o=document.createElement('option'); o.value=s.id; o.textContent=s.name; stepSel.appendChild(o); });
+var fileInput=document.getElementById('file'), drop=document.getElementById('drop'),
+    fnEl=document.getElementById('filename'), gradeBtn=document.getElementById('grade'),
+    errEl=document.getElementById('error'), chosen=null;
+function setFile(f){
+  if(f && f.type!=='application/pdf' && !/\.pdf$/i.test(f.name)){ showErr('That file is not a PDF. Save the step from TaxSlayer as a PDF and try again.'); return; }
+  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; gradeBtn.disabled=!f; errEl.classList.add('hidden');
+  if(f) justDone=null;
+  freshFile=!!f;
+  updateGuide();
+}
+function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function showErr(m){ errEl.textContent=m; errEl.classList.remove('hidden'); }
+drop.addEventListener('click',function(){ fileInput.click(); });
+drop.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fileInput.click(); } });
+fileInput.addEventListener('change',function(e){ if(e.target.files[0]) setFile(e.target.files[0]); });
+['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+window.addEventListener('dragover',function(e){ e.preventDefault(); });
+window.addEventListener('drop',function(e){ e.preventDefault(); drop.classList.remove('over');
+  if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+
+gradeBtn.addEventListener('click',async function(){
+  if(!chosen) return;
+  errEl.classList.add('hidden'); gradeBtn.disabled=true; gradeBtn.dataset.state='busy'; gradeBtn.textContent='Reading the PDF...';
+  try{
+    var buf=await readFile(chosen);
+    var fp=fingerprint(buf);
+    var pages=await loadPages(buf);
+    var step=STEPS.filter(function(s){return s.id===stepSel.value;})[0];
+    var present={};
+    pages.forEach(function(pg){ present[pg.form]=true; });
+    gradedName=chosen.name;
+    var got=extractAll(pages);
+    var alt=laterMatches(step, got, present);
+    /* same file reused for a later step: the student probably did not print a new PDF */
+    var prev=SEEN[fp], reuse=(prev && stepIndex(step.id)>stepIndex(prev.stepId))?prev:null;
+    render(step, got, present, pages, alt, reuse);
+    /* the first clean pass (all lines right, no wrong-step warning) claims the file for that step */
+    if(!prev && !alt.length && linesPass(step, got, present)){ SEEN[fp]={stepId:step.id, name:gradedName}; STORE.seen=SEEN; saveStore(); }
+  }catch(err){
+    if(err && err.message==='INCOMPLETE') showErr(MSG_INCOMPLETE);
+    else if(err && err.message==='OLDBROWSER') showErr(MSG_OLDBROWSER);
+    else showErr('Could not read that PDF. Make sure it is the TaxSlayer PDF for this step. ('+(err&&err.message?err.message:err)+')');
+  }
+  freshFile=false; gradeBtn.disabled=!chosen; gradeBtn.dataset.state='ready'; setStepLabels();   /* stays off after auto-advance until a new file is chosen */
+});
+
+var CTX=null, gradedName='';
+
+function el(tag,cls,html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+
+function makeRow(form,title,sub,chip){
+  var li=el('li','check'), head=el('div','head');
+  var mark=el('span','mark'), name=el('span','name'), amt=el('span','amt'), state=el('span','state');
+  name.innerHTML=(chip?'<span class="chip">'+chip+'</span>':'')+title+'<span class="line">'+sub+'</span>';
+  head.appendChild(mark); head.appendChild(name); head.appendChild(amt); head.appendChild(state);
+  li.appendChild(head);
+  var body=el('div'); li.appendChild(body);
+  return {form:form, li:li, mark:mark, amt:amt, state:state, body:body, st:null};
+}
+function setStatus(r,st,opts){
+  opts=opts||{};
+  r.st=st;
+  r.li.className='check '+({pass:'pass',fail:'fail',missing:'fail',warn:'warn',todo:'todo'}[st]);
+  r.mark.textContent=st==='pass'?'✓':(st==='todo'?'•':(st==='warn'?'?':'✗'));
+  r.state.textContent={pass:(opts.passLabel||'Correct'), fail:(opts.nochange?'Changed':'Check'),
+    missing:'Form missing', warn:'Unread', todo:'To do'}[st];
+}
+function addHint(r,label,fill){
+  var btn=el('button','hintbtn'); btn.textContent=label||'Show a hint';
+  var box=el('div','hint'); fill(box);
+  btn.addEventListener('click',function(){ box.classList.toggle('show'); btn.textContent=box.classList.contains('show')?'Hide hint':(label||'Show a hint'); });
+  r.body.appendChild(btn); r.body.appendChild(box);
+  return {btn:btn, box:box};
+}
+function answerLine(html){ return el('div','ans','Answer key: '+html); }
+
+/* ----- answer key line ----- */
+function lineRow(step,k,got,present){
+  var L=LINES[k], f=L.form, nochange=step.type==='nochange', exp=step.expected[k];
+  var r=makeRow(f, L.name, FORM_TITLES[f]+', '+L.line);
+  var st=matches(got[k],exp,present[f]);
+  setStatus(r,st,{nochange:nochange});
+  if(st==='pass'){ r.amt.textContent=fmt(got[k]); return r; }
+  var yours=el('div','yours');
+  if(st==='missing') yours.innerHTML='This form is not in your PDF.';
+  else if(st==='warn') yours.innerHTML='The checker could not find this line in your PDF.';
+  else yours.innerHTML='Your return shows <b>'+fmt(got[k])+'</b> on '+L.line+'.';
+  r.body.appendChild(yours);
+  addHint(r,null,function(box){
+    box.appendChild(answerLine('<b>'+fmt(exp)+'</b>'+(nochange?' (same as at '+step.basis+')':'')));
+    var c=el('div');
+    if(st==='missing') c.textContent=FORM_MISSING[f];
+    else if(st==='warn') c.textContent='Compare '+FORM_TITLES[f]+', '+L.line+' to the answer key by hand. '+L.hint;
+    else if(nochange) c.textContent='This value should not have changed at this step, so look at what you entered since '+step.basis+'. '+L.hint;
+    else c.textContent=L.hint;
+    box.appendChild(c);
+  });
+  return r;
+}
+
+/* ----- answer key notes ----- */
+function noteRow(step,id,got,present,pages){
+  var N=NOTES[id], nochange=step.type==='nochange';
+  var r=makeRow(N.form, N.name, 'Answer key note '+id, id);
+  var w=WORKSHEET.rows[WORKSHEET.circled-1];
+
+  if(id==='N1'){
+    var fs=filingStatus(pages), dep=dependentInfo(pages,'JAMES');
+    var ok=!!(fs && /head of household/i.test(fs) && dep && (dep.months==null || dep.months>=7));
+    setStatus(r, ok?'pass':'fail', {nochange:nochange});
+    var parts=[];
+    parts.push('filing status <b>'+(fs||'not found')+'</b>');
+    if(dep) parts.push('dependent <b>'+cap(dep.name)+'</b>'+(dep.rel?' ('+cap(dep.rel)+')':'')+(dep.months!=null?', <b>'+dep.months+' months</b> in the home':''));
+    else parts.push('<b>no dependent named James</b>');
+    r.body.appendChild(el('div','yours','Your return shows '+parts.join('; ')+'.'));
+    if(!ok) addHint(r,null,function(box){ box.appendChild(answerLine(N.key)); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
+
+  if(id==='N2'){
+    var a=got.fed_35a, b=got.ca540_115, fr=w[4], cr=w[6];
+    var ok2=present.fed && present.ca540 && a!=null && b!=null && a===fr && b===cr;
+    setStatus(r, ok2?'pass':'fail', {nochange:nochange});
+    r.body.appendChild(el('div','yours','Your return shows a federal refund of <b>'+fmt(a)+'</b> and a California refund of <b>'+fmt(b)+'</b>.'));
+    if(!ok2) addHint(r,null,function(box){
+      box.appendChild(answerLine('Option '+WORKSHEET.circled+', federal refund <b>'+fmt(fr)+'</b>, California refund <b>'+fmt(cr)+'</b>'));
+      box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
+
+  if(id==='N3'){
+    r.body.appendChild(el('div','notecopy','The checker cannot see your paper worksheet. Enter the Total Refund you recorded for each option and the option you circled.'));
+    var grid=el('div','ws-grid'), inputs=[];
+    for(var i=0;i<5;i++){
+      var lab=el('label',null,'Option '+(i+1)+' total');
+      var inp=document.createElement('input'); inp.type='text'; inp.inputMode='numeric'; inp.placeholder='$'; inp.value=NSTATE.n3.v[i];
+      inp.setAttribute('aria-label','Option '+(i+1)+' total refund');
+      lab.appendChild(inp); grid.appendChild(lab); inputs.push(inp);
+    }
+    var sl=el('label',null,'Option you circled'), sel=document.createElement('select');
+    ['','1','2','3','4','5'].forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v?('Option '+v):'Choose'; sel.appendChild(o); });
+    sel.value=NSTATE.n3.sel; sl.appendChild(sel); grid.appendChild(sl);
+    r.body.appendChild(grid);
+    var h=addHint(r,null,function(box){
+      box.appendChild(answerLine('the worksheet attached to the answer sheet, Option '+WORKSHEET.circled+' circled'));
+      var wrap=el('div','tablewrap'), t='<table><thead><tr><th>Option</th>';
+      WORKSHEET.cols.forEach(function(c){ t+='<th>'+c+'</th>'; });
+      t+='</tr></thead><tbody>';
+      WORKSHEET.rows.forEach(function(row){
+        t+='<tr'+(row[0]===WORKSHEET.circled?' class="circled"':'')+'><td>'+row[0]+' ('+row[1]+')</td>';
+        for(var c=2;c<row.length;c++) t+='<td>'+fmt(row[c])+'</td>';
+        t+='</tr>';
+      });
+      wrap.innerHTML=t+'</tbody></table>'; box.appendChild(wrap);
+      box.appendChild(el('div',null,N.coach));
+    });
+    function evalN3(){
+      NSTATE.n3.v=inputs.map(function(x){return x.value;}); NSTATE.n3.sel=sel.value; STORE.n3=NSTATE.n3; saveStore();
+      var filled=inputs.every(function(x){return x.value.trim()!=='';}) && sel.value!=='';
+      var good=true;
+      inputs.forEach(function(x,j){
+        var v=parseNum(x.value.trim()), want=WORKSHEET.rows[j][8];
+        var bad=x.value.trim()!=='' && (v===null || v!==want);
+        x.classList.toggle('bad',bad); if(bad||x.value.trim()==='') good=false;
+      });
+      var selBad=sel.value!=='' && parseInt(sel.value,10)!==WORKSHEET.circled;
+      sel.classList.toggle('bad',selBad); if(selBad) good=false;
+      var st=!filled?(inputs.some(function(x){return x.classList.contains('bad');})||selBad?'fail':'todo'):(good?'pass':'fail');
+      setStatus(r,st,{nochange:nochange});
+      h.btn.style.display=st==='fail'?'':'none';
+      if(st!=='fail'){ h.box.classList.remove('show'); h.btn.textContent='Show a hint'; }
+      if(CTX) updateSummary();
+    }
+    inputs.forEach(function(x){ x.addEventListener('input',evalN3); }); sel.addEventListener('change',evalN3);
+    r.init=evalN3;
+    return r;
+  }
+
+  if(id==='NN'){
+    r.body.appendChild(el('div','notecopy','TaxSlayer does not print TS Notes in the return PDF, so the checker cannot see them. Confirm this one yourself.'));
+    var cl=el('label','confirm'), cb=document.createElement('input'); cb.type='checkbox'; cb.checked=NSTATE.nn;
+    cl.appendChild(cb); cl.appendChild(document.createTextNode(' I added a TS Note for Step E in TaxSlayer'));
+    r.body.appendChild(cl);
+    addHint(r,'See an example note',function(box){
+      box.appendChild(el('div','ans','Example from the answer sheet:'));
+      box.appendChild(el('div','example',N.example));
+      box.appendChild(el('div',null,N.coach)); });
+    function evalNN(){ NSTATE.nn=cb.checked; STORE.nn=NSTATE.nn; saveStore(); setStatus(r, cb.checked?'pass':'todo', {passLabel:'Confirmed'}); if(CTX) updateSummary(); }
+    cb.addEventListener('change',evalNN);
+    r.init=evalNN;
+    return r;
+  }
+}
+
+/* Wrong-step guard: if the chosen column passes, see whether a column with MORE checks also passes
+   completely. That means the PDF holds a later step's work. Only ever warns, never changes the score. */
+function linesPass(s,got,present){
+  return Object.keys(s.expected).every(function(k){ return matches(got[k], s.expected[k], present[LINES[k].form])==='pass'; });
+}
+function laterMatches(step,got,present){
+  if(!linesPass(step,got,present)) return [];
+  var n=Object.keys(step.expected).length, hits=[], top=0;
+  STEPS.forEach(function(s){ var m=Object.keys(s.expected).length;
+    if(m>n && linesPass(s,got,present)){ if(m>top){ top=m; hits=[]; } if(m===top) hits.push(s); } });
+  return hits;
+}
+/* Same-file check. A quick fingerprint of the file's bytes (FNV-1a plus length). A reprint from TaxSlayer is a new file. */
+var SEEN=STORE.seen||{};   /* fingerprint -> {stepId, name}; saved with the case's progress */
+function fingerprint(buf){
+  var u=new Uint8Array(buf), h1=0x811c9dc5, h2=0x01000193^u.length;
+  for(var i=0;i<u.length;i++){ h1^=u[i]; h1=Math.imul(h1,16777619)>>>0; h2=Math.imul(h2^u[i],2654435761)>>>0; }
+  return u.length+'-'+h1.toString(16)+'-'+h2.toString(16);
+}
+/* next step after this one that is not done yet; wraps to earlier unfinished steps; null when every step is done */
+function nextStepAfter(id){
+  var i=stepIndex(id), n=STEPS.length;
+  for(var k=1;k<n;k++){ var s=STEPS[(i+k)%n], r=STORE.steps[s.id]; if(!r || r.status!=='done') return s; }
+  return null;
+}
+function clearChosenFile(){ chosen=null; try{ fileInput.value=''; }catch(e){} fnEl.innerHTML=''; gradeBtn.disabled=true; }
+function stepIndex(id){ for(var i=0;i<STEPS.length;i++) if(STEPS[i].id===id) return i; return -1; }
+function render(step, got, present, pages, alt, reuse){
+  CTX=null;
+  var rows=[], notes=step.notes||[];
+  ORDER.forEach(function(id){
+    if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)) rows.push(lineRow(step,id,got,present)); }
+    else if(notes.indexOf(id)>=0) rows.push(noteRow(step,id,got,present,pages));
+  });
+  rows.forEach(function(r){ if(r.init) r.init(); });
+  CTX={step:step, rows:rows, celebrated:false, alt:alt||[], reuse:reuse||null};
+  hideReward();
+  var colTitle=step.name.replace(/^Step \w+:\s*/,''), colSub=step.type==='nochange'?'No column in the answer key':'Answer key column '+step.id;
+  document.getElementById('ctx').innerHTML=
+    '<div class="tile"><div class="k">File checked</div><div class="val">'+esc(gradedName)+'</div></div>'+
+    '<div class="tile"><div class="k">Checked against</div><div class="val"><span class="colbadge">'+esc(step.id)+'</span>'+
+    '<span>Step '+esc(step.id)+': '+esc(cap1(colTitle))+'<span class="sub">'+esc(colSub)+'</span></span></div></div>';
+  var sw=document.getElementById('stepwarn');
+  if(CTX.alt.length){
+    var names=CTX.alt.map(function(s){return 'Step '+s.id;}).join(' or ');
+    sw.innerHTML='<span class="ic">!</span><div><b>Did you pick the right step?</b> This PDF also passes every check for '+names+(CTX.alt.length>1?', which come later and check more lines.':', which comes later and checks more lines.')+' <span class="why">Step '+esc(step.id)+' checks only '+Object.keys(step.expected).length+
+      ' lines, so a later step\'s PDF can pass it too.</span><div class="btns"></div></div>';
+    var bx=sw.querySelector('.btns');
+    CTX.alt.forEach(function(s){ var b=document.createElement('button'); b.textContent='Check against Step '+s.id+' instead';
+      b.addEventListener('click',function(){ stepSel.value=s.id; gradeBtn.click(); }); bx.appendChild(b); });
+    sw.classList.remove('hidden');
+  } else { sw.classList.add('hidden'); sw.innerHTML=''; }
+  var rw2=document.getElementById('reusewarn');
+  if(CTX.reuse){
+    rw2.innerHTML='<span class="ic">!</span><div><b>This is the same file you checked for Step '+esc(CTX.reuse.stepId)+'.</b> '+
+      'Print a new PDF from TaxSlayer after finishing Step '+esc(step.id)+', then check that one.'+
+      ' <span class="why">Do this even when nothing should change at this step, so the checker sees your current return.</span></div>';
+    rw2.classList.remove('hidden');
+  } else { rw2.classList.add('hidden'); rw2.innerHTML=''; }
+
+  var groups=document.getElementById('groups'); groups.innerHTML='';
+  var cur=null, ul=null;
+  rows.forEach(function(r){
+    if(r.form!==cur){ cur=r.form; groups.appendChild(el('div','groupttl',FORM_TITLES[cur])); ul=el('ul','checks'); groups.appendChild(ul); }
+    ul.appendChild(r.li);
+  });
+  document.getElementById('stepnote').innerHTML='';
+  document.getElementById('results').style.display='block';
+  document.getElementById('summary').style.display='flex';
+  updateSummary();
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function updateSummary(){
+  var rows=CTX.rows, step=CTX.step, nochange=step.type==='nochange';
+  var c={pass:0,fail:0,warn:0,todo:0};
+  rows.forEach(function(r){ c[r.st==='missing'?'fail':r.st]++; });
+  var total=rows.length;
+  document.getElementById('score').innerHTML=c.pass+'<small>/'+total+'</small>';
+  var v=document.getElementById('verdictV'), d=document.getElementById('verdictD');
+  var todoTxt=c.todo?(' '+c.todo+(c.todo===1?' item is':' items are')+' still marked To do.'):'';
+  if(c.fail>0){
+    v.textContent=c.fail+(c.fail===1?' check needs another look.':' checks need another look.');
+    v.style.color='var(--fail)';
+    d.textContent=(nochange?('Something changed since '+step.basis+'. '):'')+
+      'Start with the first flagged line in each form. Later lines are often totals that fix themselves once the earlier entry is right.'+todoTxt;
+  }else if(CTX.reuse && c.todo===0){
+    v.textContent='Passed, but this is the file from Step '+CTX.reuse.stepId+'.'; v.style.color='var(--warn)';
+    d.textContent='Check a new PDF printed after this step. See the note above.';
+  }else if(CTX.alt.length && c.todo===0){
+    v.textContent='Passed, but check the step you picked.'; v.style.color='var(--warn)';
+    d.textContent='This PDF looks like it is from a later step. See the note above.';
+  }else if(c.warn>0){
+    v.textContent='Some lines could not be read.'; v.style.color='var(--warn)';
+    d.textContent='Confirm the lines marked Unread by hand.'+todoTxt;
+  }else if(c.todo>0){
+    v.textContent='The return matches the answer key so far.'; v.style.color='var(--accent)';
+    d.textContent='Finish the '+c.todo+(c.todo===1?' item':' items')+' marked To do below to complete this step.';
+  }else{
+    v.textContent=nochange?'No unexpected changes.':'All checks passed.'; v.style.color='var(--pass)';
+    d.textContent=nochange?('These values still match '+step.basis+', which is correct for this step. Audit Pup approves.'):'Audit Pup approves. You can move on.';
+  }
+  var fill=document.getElementById('barfill');
+  fill.style.width=Math.round(c.pass/total*100)+'%';
+  var done=c.pass===total && !CTX.alt.length && !CTX.reuse;
+  /* red = something to fix, yellow = still to finish (manual items or unread lines), green = all done */
+  fill.style.backgroundColor=c.fail>0?'var(--fail)':(done?'var(--pass)':'var(--todo)');
+  if(done && !CTX.celebrated){ CTX.celebrated=true; celebrate(); }
+  /* step confirmed: select the next unfinished step and clear the old file, so the student is ready for the next PDF */
+  if(done && !CTX.advanced){
+    CTX.advanced=true; CTX.next=nextStepAfter(step.id);
+    if(CTX.next) stepSel.value=CTX.next.id;
+    justDone=step.id;   /* Zeke's guide bubble at the top names the next step */
+    clearChosenFile();
+  }
+  if(!done && CTX.celebrated){ CTX.celebrated=false; hideReward(); }
+  /* the dog beside the verdict matches the bar: Zion red, Bailey yellow, Zeke green */
+  var mood=c.fail>0?'red':(done?'green':'yellow'), who={red:'Zion',yellow:'Bailey',green:'Zeke'}[mood];
+  var title={Zion:'corrections officer', Bailey:'follow-up clerk', Zeke:'chief inspector'}[who];
+  document.getElementById('mood').className='mood '+mood;
+  var mi=document.getElementById('moodimg'); mi.className='avatar dog-'+who.toLowerCase(); mi.setAttribute('aria-label',who);
+  document.getElementById('moodname').innerHTML='<b>'+who+'</b> <span>'+title+'</span>';
+  mi.setAttribute('aria-label',who+', Audit Pup\'s '+title);
+  /* save this step's result, unless the PDF looks like it belongs to a different step */
+  if(!CTX.alt.length){
+    STORE.steps[step.id]={status:c.fail>0?'fix':(done?'done':'todo'), pass:c.pass, total:total, when:Date.now(), file:gradedName};
+    saveStore(); renderProgress();
+  }
+}
+
+/* ----- the "I got it all done" reward: instant check mark, then a random dog from the Dog API ----- */
+var DOG_API='https://dog.ceo/api/breeds/image/random';
+function breedFrom(url){
+  var m=String(url).match(/\/breeds\/([^\/]+)\//); if(!m) return 'a very good dog';
+  return m[1].split('-').reverse().join(' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+}
+function celebrate(){
+  var rw=document.getElementById('reward');
+  rw.classList.remove('hidden','hasdog','pop'); void rw.offsetWidth; rw.classList.add('pop');
+  document.getElementById('dogcap').textContent='All done!';
+  fetchDog();
+}
+function hideReward(){ var rw=document.getElementById('reward'); rw.classList.add('hidden'); rw.classList.remove('hasdog','pop'); }
+function fetchDog(){
+  var rw=document.getElementById('reward'), img=document.getElementById('dogimg'), cap=document.getElementById('dogcap');
+  var ctl=('AbortController' in window)?new AbortController():null;
+  var timer=setTimeout(function(){ if(ctl) ctl.abort(); },7000);
+  fetch(DOG_API,{signal:ctl?ctl.signal:undefined}).then(function(r){return r.json();}).then(function(j){
+    clearTimeout(timer);
+    if(!j || j.status!=='success' || !CTX || !CTX.celebrated) return;
+    img.onload=function(){ if(CTX && CTX.celebrated){ rw.classList.add('hasdog'); cap.textContent='Meet your '+breedFrom(j.message)+'!'; img.alt='A random '+breedFrom(j.message); } };
+    img.onerror=function(){ rw.classList.remove('hasdog'); };
+    img.src=j.message;
+  }).catch(function(){ clearTimeout(timer); /* offline or blocked: the check mark stays */ });
+}
+document.getElementById('reward').addEventListener('click',function(){ if(CTX && CTX.celebrated) fetchDog(); });
+
+/* theme toggle */
+var themeBtn=document.getElementById('theme');
+themeBtn.addEventListener('click',function(){
+  var cur=document.documentElement.getAttribute('data-theme');
+  var dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var next=cur?(cur==='dark'?'light':'dark'):(dark?'light':'dark');
+  document.documentElement.setAttribute('data-theme',next);
+  try{ localStorage.setItem('taxaide-theme',next); }catch(e){}
+});
+try{ var saved=localStorage.getItem('taxaide-theme'); if(saved) document.documentElement.setAttribute('data-theme',saved); }catch(e){}
+
+/* ---------- Version and release notes (semantic versioning: MAJOR.MINOR.PATCH). Newest first. ---------- */
+var APP_VERSION='__APP_VERSION__';
+var CHANGELOG=[
+  {version:'0.13.0', date:'2026-11-05',
+   added:['A new look: the Audit Pup seal with a drawing of Zeke, warm sketchbook colors, and Atkinson Hyperlegible, a typeface made for easy reading.',
+          'Zeke, the chief inspector, tells you what to do next in a speech bubble at the top of the page.',
+          'Three dogs show your result: Zion, the corrections officer, when something needs fixing (red); Bailey, the follow-up clerk, when there is more to do (yellow); and Zeke when the step is done (green).',
+          'Your progress is now a paw-print trail of steps. Long cases wrap onto more rows.',
+          'The drop box and the Check button name the selected step, for example "Drop your Step D PDF here" and "Check Step D".',
+          'The reward dog photo now appears in an "Approved!" snapshot with a few paw prints.'],
+   changed:['The "Check Step D now" button is gone from the results. Zeke names the next step at the top of the page instead, and the trail shows it selected.']},
+  {version:'0.12.0', date:'2026-11-05',
+   added:['When a step is done, Audit Pup selects the next step for you and clears the old file. Tap "Check Step D now" (or whichever step is next) to jump back to the drop box.',
+          'When every step of the case is done, Audit Pup tells you so.'],
+   fixed:['On the website, a page that did not finish loading now says to reload it, instead of asking you to download a fresh copy.']},
+  {version:'0.11.0', date:'2026-11-05',
+   added:['Audit Pup now remembers your progress on this computer: which steps you finished, your MWP Worksheet totals, and your TS Note checkbox. It is still there after you close and reopen the page.',
+          'A progress row under the step picker shows each step as Done, Fix, To finish, or Not checked. Tap a step to select it.',
+          'Audit Pup opens on the first step you have not finished.',
+          'Start over erases your saved progress for the case.'],
+   changed:['Progress is saved only in this browser on this computer. Clearing your browsing history erases it, and it does not follow you to another computer.']},
+  {version:'0.10.0', date:'2026-11-04',
+   added:['A Version button at the top of the page. Tap it to see what changed in each version. A small "New" tag appears on it the first time you open a new version.']},
+  {version:'0.9.0', date:'2026-11-04',
+   added:['Same-file warning: if you check a PDF for a later step that you already checked for an earlier step, Audit Pup asks you to print a new PDF from TaxSlayer first.',
+          'The version number and build date at the bottom of the page and in the file name.',
+          'A clear message if the file is opened in a preview instead of a browser, or if the file was damaged in sending.'],
+   includes:['Case: Quinn (Raymond Quinn, 2025), Steps A, B, D, E, and F.',
+          'Checks for Form 1040, California Form 540, and FTB 3514 in answer key order, plus answer key notes N1, N2, N3, and NN.',
+          'A hint with the answer key value on every line that needs another look.',
+          'A warning if the PDF looks like it belongs to a later step.',
+          'A score that stays at the top while you scroll, and a dog when everything is done.',
+          'Large print, and a layout that fits Chromebook screens.',
+          'Works offline in Chrome, and in Safari 15 or newer on a Mac.']}
+];
+var CHANGELOG_EARLIER='Earlier test copies had no version number (dated October 26 to November 4, 2026). If you still have one, replace it with this version.';
+function niceDate(iso){ var m=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var p=iso.split('-'); return m[parseInt(p[1],10)-1]+' '+parseInt(p[2],10)+', '+p[0]; }
+function fillWhatsNew(){
+  var h='';
+  CHANGELOG.forEach(function(r){
+    h+='<div class="wn-rel"><h3>Version '+esc(r.version)+(r.version===APP_VERSION?'<span class="cur">You have this one</span>':'')+'</h3><div class="when">'+niceDate(r.date)+'</div>';
+    [['added','Added'],['fixed','Fixed'],['changed','Changed'],['includes','What this version includes']].forEach(function(sec){
+      if(r[sec[0]] && r[sec[0]].length){ h+='<h4>'+sec[1]+'</h4><ul>'; r[sec[0]].forEach(function(t){ h+='<li>'+esc(t)+'</li>'; }); h+='</ul>'; } });
+    h+='</div>';
+  });
+  h+='<div class="wn-note">'+esc(CHANGELOG_EARLIER)+'</div>';
+  document.getElementById('wnbody').innerHTML=h;
+}
+var wnBack=document.getElementById('wnback'), verBtn=document.getElementById('verbtn'), wnLastFocus=null;
+function openWhatsNew(){
+  fillWhatsNew(); wnLastFocus=document.activeElement; wnBack.classList.remove('hidden'); document.getElementById('wn').focus();
+  verBtn.classList.remove('isnew'); try{ localStorage.setItem('auditpup-seen-version',APP_VERSION); }catch(e){}
+}
+function closeWhatsNew(){ wnBack.classList.add('hidden'); if(wnLastFocus && wnLastFocus.focus) wnLastFocus.focus(); }
+verBtn.addEventListener('click',openWhatsNew);
+document.getElementById('verlink').addEventListener('click',openWhatsNew);
+document.getElementById('wnclose').addEventListener('click',closeWhatsNew);
+wnBack.addEventListener('click',function(e){ if(e.target===wnBack) closeWhatsNew(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !wnBack.classList.contains('hidden')) closeWhatsNew(); });
+try{ if(localStorage.getItem('auditpup-seen-version')!==APP_VERSION) verBtn.classList.add('isnew'); }catch(e){}
+
+/* ---------- Progress row ---------- */
+var PLABEL={done:'Done', fix:'Fix', todo:'To finish', none:'Not checked'}, PMARK={done:'\u2713', fix:'\u2717', todo:'\u2022', none:''};
+var confirmReset=false;
+function whenText(ms){ var d=new Date(ms); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); }
+function renderProgress(){
+  var box=document.getElementById('progress'), h='<div class="ptop"><span class="plabel">Your progress</span>';
+  h+='<span class="pend">'+(confirmReset
+      ? 'Erase saved progress for this case? <button class="linkbtn" id="resetyes">Erase</button><button class="linkbtn" id="resetno">Keep</button>'
+      : '<button class="linkbtn" id="resetbtn">Start over</button>')+'</span></div>';
+  if(!storageOK) h+='<span class="nosave">This browser is not saving progress, so it resets when you close the page.</span>';
+  h+='<div class="trail">';
+  STEPS.forEach(function(s){
+    var r=STORE.steps[s.id], st=r?r.status:'none', sel=stepSel.value===s.id;
+    var tip='Step '+s.id+': '+PLABEL[st]+(sel?', selected':'')+(r?' ('+r.pass+' of '+r.total+', checked '+whenText(r.when)+(r.file?' with '+r.file:'')+')':'');
+    h+='<button class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(tip)+'"'+(sel?' aria-current="step"':'')+'>'+
+       '<span class="paw"><svg aria-hidden="true"><use href="#pawprint"/></svg><span class="pm">'+PMARK[st]+'</span></span>'+
+       '<b>Step '+s.id+'</b><span class="pst">'+PLABEL[st]+'</span></button>';
+  });
+  box.innerHTML=h+'</div>';
+  markRowEnds();
+  Array.prototype.forEach.call(box.querySelectorAll('.pchip'),function(b){ b.addEventListener('click',function(){ stepSel.value=b.getAttribute('data-step'); justDone=null; renderProgress(); }); });
+  var rb=document.getElementById('resetbtn'); if(rb) rb.addEventListener('click',function(){ confirmReset=true; renderProgress(); document.getElementById('resetno').focus(); });
+  var ry=document.getElementById('resetyes'); if(ry) ry.addEventListener('click',function(){
+    STORE=blankStore(); SEEN=STORE.seen; NSTATE.n3={v:['','','','',''], sel:''}; NSTATE.nn=false; saveStore();
+    confirmReset=false; justDone=null; document.getElementById('results').style.display='none'; CTX=null; hideReward(); pickNextStep(); renderProgress(); });
+  var rn=document.getElementById('resetno'); if(rn) rn.addEventListener('click',function(){ confirmReset=false; renderProgress(); });
+  setStepLabels();
+}
+/* the dotted trail line stops at the end of each row instead of running off the card */
+function markRowEnds(){
+  var cs=document.querySelectorAll('#progress .pchip');
+  for(var i=0;i<cs.length;i++){ var nx=cs[i+1]; if(nx && nx.offsetTop!==cs[i].offsetTop) cs[i].setAttribute('data-end','1'); else cs[i].removeAttribute('data-end'); }
+}
+window.addEventListener('resize',markRowEnds);
+/* The drop box, the Check button, and Zeke's guide all name the selected step, so the wrong PDF is harder to drop. */
+var justDone=null;   /* step just finished; Zeke congratulates and names the next one */
+var freshFile=false; /* a file was chosen and not checked yet */
+function setStepLabels(){
+  var id=stepSel.value;
+  document.getElementById('dropbig').textContent='Drop your Step '+id+' PDF here';
+  drop.setAttribute('aria-label','Choose or drop your Step '+id+' PDF');
+  if(gradeBtn.dataset.state!=='busy') gradeBtn.textContent='Check Step '+id;
+  updateGuide();
+}
+function updateGuide(){
+  var id=stepSel.value, r=STORE.steps[id], st=r?r.status:'none', msg;
+  var allDone=STEPS.every(function(s){ var x=STORE.steps[s.id]; return x && x.status==='done'; });
+  var anyChecked=STEPS.some(function(s){ return !!STORE.steps[s.id]; });
+  var shown=!!(CTX && CTX.step.id===id);   /* results for this step are on the page */
+  if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
+  else if(justDone && allDone) msg='Nice work on Step '+justDone+'! Every step of this case is done.';
+  else if(justDone) msg='Nice work on Step '+justDone+'! Step '+id+' is up next. Finish it in TaxSlayer, print a new PDF, and drop it below.';
+  else if(allDone) msg='Every step of this case is done. Pick any step to check it again.';
+  else if(shown && CTX.reuse) msg='This is the same file you checked for Step '+CTX.reuse.stepId+'. Print a new PDF from TaxSlayer for Step '+id+' and drop it below.';
+  else if(shown && CTX.alt.length) msg='This PDF looks like it is from a later step. Read the yellow box in the results below.';
+  else if(st==='fix') msg='Step '+id+' had lines to fix. Correct them in TaxSlayer, print a new PDF, and drop it below.';
+  else if(st==='todo') msg='Step '+id+' still has items to finish.'+(shown?' They are marked To do in the results below.':' Check your PDF again to see them.');
+  else if(st==='done') msg='Step '+id+' is already done. You can check it again, or tap another step.';
+  else msg=(anyChecked?'':'Hi, I\'m Zeke! ')+'Finish Step '+id+' in TaxSlayer, print the full return as a PDF, and drop it below.';
+  document.getElementById('guidesay').textContent=msg;
+}
+/* open on the first step that is not done yet */
+function pickNextStep(){ for(var i=0;i<STEPS.length;i++){ var r=STORE.steps[STEPS[i].id]; if(!r || r.status!=='done'){ stepSel.value=STEPS[i].id; return; } } stepSel.value=STEPS[STEPS.length-1].id; }
+stepSel.addEventListener('change',function(){ justDone=null; renderProgress(); });
+pickNextStep(); renderProgress();
+
+document.getElementById('startup').classList.add('hidden');
+document.addEventListener('DOMContentLoaded',function(){
+  if(!fileComplete()){ showErr(MSG_INCOMPLETE); gradeBtn.title=MSG_INCOMPLETE; return; }
+  /* unpack the PDF engine in the background while the student picks a file; any problem is reported on Check */
+  setTimeout(function(){ try{ ensurePdfjs(); }catch(e){} }, 250);
+});
+</script>
+<script id="pdfjslib-b64" type="text/plain">__PDFJS_LIB__</script>
+<script id="pdfjsworker-b64" type="text/plain">__PDFJS_WORKER__</script>
+<div id="aup-end" hidden></div>
+</body>
+</html>

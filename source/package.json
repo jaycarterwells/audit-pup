@@ -1,0 +1,15 @@
+{
+  "name": "audit-pup",
+  "private": true,
+  "description": "Builds the single-file Audit Pup page (index.html) from audit-pup-template.html",
+  "scripts": {
+    "build": "node build_html.js",
+    "test": "bash ../tests/run_all.sh"
+  },
+  "dependencies": {
+    "pdfjs-dist": "3.11.174"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

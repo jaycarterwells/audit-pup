@@ -1,0 +1,22 @@
+// What's new panel
+const { chromium } = require('playwright'); const path=require('path');
+const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:1366,height:657}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ const url='file://'+PAGE;
+ await p.goto(url); await p.waitForTimeout(250);
+ const btn=await p.textContent('#verbtn'); const isNew=await p.$eval('#verbtn',e=>e.classList.contains('isnew'));
+ console.log('button:',JSON.stringify(btn),'| New tag on first open:',isNew);
+ await p.click('#verbtn'); await p.waitForTimeout(150);
+ const open=await p.$eval('#wnback',e=>!e.classList.contains('hidden'));
+ const rel=await p.$$eval('.wn-rel h3',e=>e.map(x=>x.textContent)); console.log('panel open:',open,'| releases:',rel.join(' / '));
+ await p.screenshot({path:path.join(OUT,'wn_100.png')});
+ await p.keyboard.press('Escape'); await p.waitForTimeout(100); console.log('Esc closes:',await p.$eval('#wnback',e=>e.classList.contains('hidden')));
+ await p.reload(); await p.waitForTimeout(250); console.log('New tag after seeing it and reopening the page:',await p.$eval('#verbtn',e=>e.classList.contains('isnew')));
+ await p.click('#verlink'); await p.waitForTimeout(100); console.log('footer "What\'s new" link opens panel:',await p.$eval('#wnback',e=>!e.classList.contains('hidden')));
+ await p.mouse.click(5,5); await p.waitForTimeout(100); console.log('click outside closes:',await p.$eval('#wnback',e=>e.classList.contains('hidden')));
+ await p.setViewportSize({width:911,height:438}); await p.click('#verbtn'); await p.waitForTimeout(150);
+ const fit=await p.$eval('#wn',e=>{const r=e.getBoundingClientRect(); return {top:Math.round(r.top),bottom:Math.round(r.bottom),scrolls:document.getElementById('wnbody').scrollHeight>document.getElementById('wnbody').clientHeight};});
+ console.log('150% zoom Chromebook: panel top/bottom',fit.top,fit.bottom,'of 438 | body scrolls inside panel:',fit.scrolls); await p.screenshot({path:path.join(OUT,'wn_150.png')});
+ const c2=await b.newContext({javaScriptEnabled:false}); const p2=await c2.newPage(); await p2.goto(url); await p2.waitForTimeout(200);
+ console.log('scripts blocked, footer still shows:',(await p2.textContent('footer .ver')).trim());
+ console.log('errors:',errs.length?errs:'none'); await b.close(); })();

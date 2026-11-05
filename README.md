@@ -18,6 +18,10 @@ Using a Chromebook? See the one-page [Chromebook guide for counselors](docs/chro
 
 The current version and what changed in each one are shown by the Version button at the top of the page. Each release is tagged in this repository (for example `v0.11.0`), following semantic versioning.
 
+## For maintainers
+
+The page is built from `source/` (template, fonts, dog drawings, build script) into the single file `index.html`. Tests are in `tests/` and use the correct step PDFs in `cases/`. `docs/release-checklist.md` lists the release steps, and `CLAUDE.md` holds the working rules and design decisions.
+
 ## Notes
 
 * All case data is fabricated training data from the TaxSlayer Practice Lab. No real taxpayer information is included.
