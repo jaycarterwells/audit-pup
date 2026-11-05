@@ -12,6 +12,8 @@ Audit Pup (El Dorado Tax-Aide Case Checker) checks a counselor's TaxSlayer train
 
 Everything runs in your browser. Nothing is uploaded. Your progress is saved in your browser on your computer.
 
+Using a Chromebook? See the one-page [Chromebook guide for counselors](docs/chromebook-guide.md).
+
 ## Versions
 
 The current version and what changed in each one are shown by the Version button at the top of the page. Each release is tagged in this repository (for example `v0.11.0`), following semantic versioning.
