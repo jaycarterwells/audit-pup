@@ -342,9 +342,7 @@
     <p class="label">Choose what you are checking</p>
     <div class="row">
       <div class="field">
-        <select id="assignment" aria-label="Case">
-          <option value="quinn">Case: Quinn (Raymond Quinn, 2025)</option>
-        </select>
+        <select id="assignment" aria-label="Case"></select>
       </div>
       <div class="field">
         <select id="step" aria-label="Step"></select>
@@ -434,9 +432,15 @@ function readFile(f){
   return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){res(r.result);}; r.onerror=function(){rej(r.error);}; r.readAsArrayBuffer(f); });
 }
 
+/* ---------- Cases ----------
+   Each case carries its own answer key, hints, steps, notes, and line readers. useCase() copies the
+   selected case into the working names below (LINES, STEPS, ORDER, NOTES, WORKSHEET), which the rest
+   of the page uses. Saved progress is kept separately for each case. */
+var CASES = [], CASE = null, LINES, STEPS, ORDER, NOTES, WORKSHEET;
+
 /* ---------- answer key + hints for the Quinn problem ---------- */
 /* Values are NOT shown to the student. Only pass/fail and a single hint. */
-var LINES = {
+var Q_LINES = {
   fed_1a:  {form:'fed', line:'Line 1a',  name:'Wages (W-2 box 1)',
     hint:'Line 1a comes straight from box 1 of the W-2 you entered. Re-open that W-2 in TaxSlayer and compare box 1 to the source document.'},
   fed_1d:  {form:'fed', line:'Line 1d',  name:'Medicaid Waiver Payment not on a W-2',
@@ -488,16 +492,17 @@ var LINES = {
   ca3514_19: {form:'ca3514', line:'Line 19', name:'California earned income',
     hint:'Line 19 is your California earned income for the credit. Whether the MWP is included here depends on the option you chose. Re-check the option you selected on the MWP Worksheet.'}
 };
-var FORM_TITLES = {fed:'Federal Form 1040', ca540:'California Form 540', ca3514:'California Form 3514 (EITC)'};
-var FORM_ORDER = ['fed','ca540','ca3514'];
+var FORM_TITLES = {fed:'Federal Form 1040', ca540:'California Form 540', ca3514:'California Form 3514 (EITC)',
+  sch1:'Schedule 1 (Additional Income and Adjustments)', sch2:'Schedule 2 (Additional Taxes)', sch3:'Schedule 3 (Additional Credits)',
+  schA:'Schedule A (Itemized Deductions)', f8880:'Form 8880 (Saver\'s Credit)'};
 
-var EXP_B = {fed_1a:15000, fed_9:15000, fed_11a:15000, fed_12e:23625, fed_25d:1800, fed_27:312, fed_33:2112, fed_35a:2112,
+var EXP_B ={fed_1a:15000, fed_9:15000, fed_11a:15000, fed_12e:23625, fed_25d:1800, fed_27:312, fed_33:2112, fed_35a:2112,
   ca540_12:15000, ca540_17:15000, ca540_18:11412, ca540_19:3588, ca540_31:36, ca540_32:628, ca540_71:750, ca540_75:165, ca540_78:915, ca540_115:915,
   ca3514_2:15000, ca3514_13:15000, ca3514_19:15000};
 var EXP_E = Object.assign({}, EXP_B, {fed_1d:15679, fed_8:-15679, ca540_12:30679, ca3514_13:30679, ca3514_14:15679});
 var EXP_A = {fed_12e:23625, ca540_18:11412, ca540_32:628};
 
-var STEPS = [
+var Q_STEPS = [
   {id:'A', name:'Step A: Basic information', type:'check', expected:EXP_A, notes:['N1']},
   {id:'B', name:'Step B: W-2 income entered', type:'check', expected:EXP_B, notes:[]},
   {id:'D', name:'Step D: no change expected from Step B', type:'nochange', basis:'Step B', expected:EXP_B, notes:[]},
@@ -506,12 +511,12 @@ var STEPS = [
 ];
 
 /* Output order follows the answer key, top to bottom. Notes sit where the key places them. */
-var ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_25d','fed_27','fed_33','fed_35a','N2','N1','NN',
+var Q_ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_25d','fed_27','fed_33','fed_35a','N2','N1','NN',
   'ca540_12','ca540_17','ca540_18','ca540_19','ca540_31','ca540_32','ca540_71','ca540_75','ca540_78','ca540_115',
   'ca3514_2','ca3514_13','ca3514_14','ca3514_19','N3'];
 
 /* Answer key MWP Worksheet (attached to the answer sheet). Option 1 is circled. */
-var WORKSHEET = {
+var Q_WORKSHEET = {
   circled:1,
   cols:['Federal AGI','Federal EITC','Federal refund','CA EITC','CA refund','CA 3514 wages / EI','Total refund'],
   rows:[ [1,'NNN',15000,312,2112,165,915,15000,3027],
@@ -521,25 +526,208 @@ var WORKSHEET = {
          [5,'YYY',30679,0,1592,21,771,30679,2363] ]
 };
 
-var NOTES = {
-  N1:{form:'fed', name:'Filing status and dependent',
+var Q_NOTES = {
+  N1:{form:'fed', kind:'filing', name:'Filing status and dependent', status:/head of household/i, dependent:'JAMES', dependentName:'James', minMonths:7,
     key:'Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).',
     coach:'Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.'},
-  N2:{form:'fed', name:'Both refunds match the option you chose',
+  N2:{form:'fed', kind:'mwpRefunds', name:'Both refunds match the option you chose',
     coach:'Both refunds should equal the results of the option you circled on your MWP Worksheet. If they do not, the W-2 screen in TaxSlayer is probably still set up for another option you tested. Re-check the Medicaid Waiver Payment field, the include in earned income box, and Box 16.'},
-  N3:{form:'ca3514', name:'MWP Worksheet scenarios',
+  N3:{form:'ca3514', kind:'mwpWorksheet', name:'MWP Worksheet scenarios',
     coach:'For any option that does not match, set the W-2 screen back to that option\'s three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.'},
-  NN:{form:'fed', name:'TS Note added for this step',
+  NN:{form:'fed', kind:'confirm', name:'TS Note added for this step', mark:'nn', confirm:'I added a TS Note for Step E in TaxSlayer',
     example:'STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.',
     coach:'Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year\'s counselor should know.'}
 };
-var NSTATE = {n3:{v:['','','','',''], sel:''}, nn:false};   /* student entries for the manual notes */
+CASES.push({id:'quinn', label:'Case: Quinn (Raymond Quinn, 2025)',
+  lines:Q_LINES, steps:Q_STEPS, order:Q_ORDER, notes:Q_NOTES, worksheet:Q_WORKSHEET, extract:function(pages){ return extractQuinn(pages); }});
+
+var B_EXP = {
+  A:{fed_1a:0, fed_9:0, fed_11a:0, fed_12e:31500, fed_15:0, fed_16:0, fed_25d:0, fed_27a:0, fed_28:0, fed_33:0, fed_35a:0, fed_37:0, schA_5a:0, f8880_2:0, ca540_12:0, ca540_14:0, ca540_16:0, ca540_18:11412, ca540_19:0, ca540_31:0, ca540_32:781, ca540_46:120, ca540_71:0, ca540_75:0, ca540_78:0, ca540_91:35, ca540_111:35, ca540_115:0},
+  B:{fed_1a:24491, fed_9:24491, fed_11a:24491, fed_12e:31500, fed_15:0, fed_16:0, fed_25d:369, fed_27a:4148, fed_28:1700, fed_33:6217, fed_35a:6217, fed_37:0, schA_5a:45, f8880_2:898, ca540_12:24491, ca540_14:0, ca540_16:1000, ca540_18:11412, ca540_19:14079, ca540_31:141, ca540_32:781, ca540_46:120, ca540_71:0, ca540_75:253, ca540_78:253, ca540_91:35, ca540_111:0, ca540_115:218},
+  C:{fed_1a:57509, fed_9:57509, fed_11a:57509, fed_12e:31500, fed_15:26009, fed_16:2646, fed_25d:1021, fed_27a:0, fed_28:0, fed_33:1021, fed_35a:575, fed_37:0, schA_5a:147, f8880_2:898, ca540_12:57509, ca540_14:0, ca540_16:1000, ca540_18:11412, ca540_19:47097, ca540_31:720, ca540_32:781, ca540_46:120, ca540_71:102, ca540_75:0, ca540_78:102, ca540_91:35, ca540_111:0, ca540_115:67},
+  E:{fed_1a:77941, fed_9:77941, fed_11a:77941, fed_12e:31500, fed_15:46441, fed_16:5094, fed_25d:1221, fed_27a:0, fed_28:0, fed_33:1221, fed_35a:0, fed_37:1673, schA_5a:251, f8880_2:898, ca540_12:76709, ca540_14:1232, ca540_16:1000, ca540_18:11412, ca540_19:66297, ca540_31:1380, ca540_32:781, ca540_46:120, ca540_71:152, ca540_75:0, ca540_78:152, ca540_91:35, ca540_111:362, ca540_115:0},
+  F:{fed_1a:77941, fed_9:77941, fed_11a:77941, fed_12e:31500, fed_15:46441, fed_16:5094, fed_25d:1221, fed_27a:0, fed_28:0, fed_33:1221, fed_35a:0, fed_37:1673, schA_5a:251, f8880_2:898, ca540_12:76709, ca540_14:1232, ca540_16:1000, ca540_18:11412, ca540_19:66297, ca540_31:1380, ca540_32:781, ca540_46:120, ca540_71:152, ca540_75:0, ca540_78:152, ca540_91:35, ca540_111:362, ca540_115:0},
+  G:{fed_1b:0, fed_8:3550, fed_9:81491, fed_11a:81491, fed_12e:31500, fed_15:49991, fed_16:5520, fed_24:3320, fed_25d:1580, fed_33:1580, fed_35a:0, fed_37:1740, sch1_7:3550, sch1_8c:0, sch1_8h:0, sch1_24a:0, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:66297, ca540_31:1380, ca540_47:120, ca540_71:152, ca540_111:362, ca540_115:0},
+  H:{fed_1b:0, fed_8:8950, fed_9:86891, fed_11a:86891, fed_12e:31500, fed_15:55391, fed_16:6168, fed_24:3968, fed_25d:1580, fed_33:1580, fed_35a:0, fed_37:2388, sch1_7:3550, sch1_8c:5400, sch1_8h:0, sch1_24a:0, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:71697, ca540_31:1596, ca540_47:120, ca540_71:152, ca540_111:578, ca540_115:0},
+  I:{fed_1b:150, fed_8:8950, fed_9:87041, fed_11a:87041, fed_12e:31500, fed_15:55541, fed_16:6186, fed_24:3986, fed_25d:1580, fed_33:1580, fed_35a:0, fed_37:2406, sch1_7:3550, sch1_8c:5400, sch1_8h:0, sch1_24a:0, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:71847, ca540_31:1600, ca540_47:120, ca540_71:152, ca540_111:582, ca540_115:0},
+  J:{fed_1b:150, fed_8:9350, fed_9:87441, fed_11a:87241, fed_12e:31500, fed_15:55741, fed_16:6210, fed_24:4010, fed_25d:1580, fed_33:1580, fed_35a:0, fed_37:2430, sch1_7:3550, sch1_8c:5400, sch1_8h:400, sch1_24a:200, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:72047, ca540_31:1608, ca540_47:120, ca540_71:152, ca540_111:590, ca540_115:0},
+  L:{fed_1b:150, fed_2a:0, fed_8:9350, fed_9:87441, fed_11a:87241, fed_12e:31500, fed_15:55741, fed_16:6210, fed_24:3930, fed_33:1580, fed_35a:0, fed_37:2350, sch1_8f:0, sch1_13:0, sch1_20:0, sch2_17c:0, sch3_2:80, sch3_3:0, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:72047, ca540_31:1608, ca540_40:27, ca540_46:120, ca540_111:563, ca540_115:0},
+  M:{fed_1b:150, fed_2a:0, fed_8:9350, fed_9:87441, fed_11a:87241, fed_12e:31500, fed_15:55741, fed_16:6210, fed_24:3930, fed_33:1580, fed_35a:0, fed_37:2350, sch1_8f:0, sch1_13:0, sch1_20:0, sch2_17c:0, sch3_2:80, sch3_3:0, schA_5a:251, schA_17:251, ca540_14:4782, ca540_16:1000, ca540_18:11412, ca540_19:72047, ca540_31:1608, ca540_40:27, ca540_46:120, ca540_111:563, ca540_115:0},
+  N:{fed_1b:150, fed_2a:10, fed_8:9950, fed_9:88041, fed_11a:85841, fed_12e:31500, fed_15:54341, fed_16:6042, fed_24:3882, fed_33:1580, fed_35a:0, fed_37:2302, sch1_8f:600, sch1_13:2000, sch1_20:0, sch2_17c:120, sch3_2:80, sch3_3:0, schA_5a:251, schA_17:251, ca540_14:3382, ca540_16:1010, ca540_18:11412, ca540_19:72057, ca540_31:1612, ca540_40:27, ca540_46:120, ca540_111:567, ca540_115:0},
+  O:{fed_1b:150, fed_2a:10, fed_8:9950, fed_9:88041, fed_11a:85841, fed_12e:31500, fed_15:54341, fed_16:6042, fed_24:3836, fed_33:1580, fed_35a:0, fed_37:2256, sch1_8f:600, sch1_13:2000, sch1_20:0, sch2_17c:120, sch3_2:80, sch3_3:46, schA_5a:251, schA_17:251, ca540_14:3382, ca540_16:1010, ca540_18:11412, ca540_19:72057, ca540_31:1612, ca540_40:27, ca540_46:120, ca540_111:567, ca540_115:0},
+};
+
+/* ---------- answer key + hints for the Baylor problem ----------
+   Expected values come from the Baylor answer sheet (2025). A blank cell in the answer sheet is checked
+   as "must be blank or $0". Hints are drafts until approved. */
+var B_LINES = {
+  fed_1a:  {form:'fed', line:'Line 1a',  name:'Wages (W-2 box 1)', read:['box','fed','1a'],
+    hint:"Line 1a adds box 1 of every W-2 entered so far. Compare each W-2 you entered in TaxSlayer with box 1 of the W-2s in the problem for the steps you have finished."},
+  fed_1b:  {form:'fed', line:'Line 1b',  name:'Household employee wages (election worker pay)', read:['box','fed','1b'],
+    hint:"Line 1b is where the election worker pay goes. See 'Election Worker Income' in Pub 4012 for how to enter pay that came with no W-2 (Step I)."},
+  fed_2a:  {form:'fed', line:'Line 2a',  name:'Tax-exempt interest', read:['box','fed','2a',200,260],
+    hint:"Line 2a is the $10 HSA interest from Step N. The handout 'HSA Notes' explains how to enter it so it is tax-exempt for the IRS but taxable for California."},
+  fed_8:   {form:'fed', line:'Line 8',   name:'Additional income (Schedule 1, line 10)', read:['box','fed','8'],
+    hint:"Line 8 comes from Schedule 1, line 10. Check the Schedule 1 lines in this list first; this total follows from them."},
+  fed_9:   {form:'fed', line:'Line 9',   name:'Total income', read:['box','fed','9'],
+    hint:"Line 9 is a sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself."},
+  fed_11a: {form:'fed', line:'Line 11a', name:'Adjusted gross income', read:['box','fed','11a'],
+    hint:"Line 11a is total income minus the adjustments on Schedule 1, line 26. If total income is right, look at the adjustments (jury pay given to the employer, the HSA deduction)."},
+  fed_12e: {form:'fed', line:'Line 12e', name:'Standard or itemized deduction', read:['box','fed','12e'],
+    hint:"The standard deduction follows from filing status. Michael is a qualifying surviving spouse (Step A, note N1). Itemizing is right only when Schedule A is larger, and here it is not."},
+  fed_15:  {form:'fed', line:'Line 15',  name:'Taxable income', read:['box','fed','15'],
+    hint:"Taxable income is AGI minus the deduction. If lines 11a and 12e are right, this follows."},
+  fed_16:  {form:'fed', line:'Line 16',  name:'Tax', read:['box','fed','16'],
+    hint:"Tax comes from taxable income through the tax table. If taxable income is right, this follows."},
+  fed_24:  {form:'fed', line:'Line 24',  name:'Total tax', read:['box','fed','24'],
+    hint:"Total tax is tax minus credits plus other taxes. Check Willie's child tax credit, the Schedule 3 credits, and the Schedule 2 taxes in this list."},
+  fed_25d: {form:'fed', line:'Line 25d', name:'Federal tax withheld', read:['box','fed','25d'],
+    hint:"Line 25d adds federal withholding from every W-2 (box 2) and the unemployment Form 1099-G (box 4). Compare each one you entered with the problem."},
+  fed_27a: {form:'fed', line:'Line 27a', name:'Earned income credit (EIC)', read:['box','fed','27a'],
+    hint:"The EIC depends on earned income and on Willie as a qualifying child. Re-check his dependent entry from Step A and the W-2 amounts."},
+  fed_28:  {form:'fed', line:'Line 28',  name:'Additional child tax credit (ACTC)', read:['box','fed','28'],
+    hint:"The additional child tax credit depends on Willie qualifying for the child tax credit (note N1) and on earned income. Re-check his dependent screen."},
+  fed_33:  {form:'fed', line:'Line 33',  name:'Total payments', read:['box','fed','33'],
+    hint:"Line 33 totals withholding and refundable credits. If it is off, the mistake is in a withholding or credit line above it."},
+  fed_35a: {form:'fed', line:'Line 35a', name:'Refund', read:['box','fed','35a'],
+    hint:"The refund is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow."},
+  fed_37:  {form:'fed', line:'Line 37',  name:'Amount you owe', read:['box','fed','37'],
+    hint:"The amount owed is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow."},
+
+  sch1_7:  {form:'sch1', line:'Line 7',   name:'Unemployment compensation', read:['box','sch1','7'],
+    hint:"Schedule 1, line 7 is box 1 of the unemployment Form 1099-G in Step G."},
+  sch1_8c: {form:'sch1', line:'Line 8c',  name:'Cancellation of debt', read:['box','sch1','8c'],
+    hint:"Line 8c is box 2 of the Form 1099-C in Step H. Michael is not insolvent and the debt is personal, so the whole amount is income."},
+  sch1_8f: {form:'sch1', line:'Line 8f',  name:'Income from Form 8889 (HSA)', read:['box','sch1','8f'],
+    hint:"Line 8f is HSA money not spent on qualified medical expenses. Go through each Step N distribution and decide which ones qualify (the Zumba classes had no letter of medical necessity)."},
+  sch1_8h: {form:'sch1', line:'Line 8h',  name:'Jury duty pay', read:['box','sch1','8h'],
+    hint:"Line 8h is all of the jury duty pay from Step J: 10 weekdays at $40 a day."},
+  sch1_13: {form:'sch1', line:'Line 13',  name:'HSA deduction', read:['box','sch1','13'],
+    hint:"Line 13 is the HSA deduction from Form 8889: the contribution Michael made himself in Step N."},
+  sch1_20: {form:'sch1', line:'Line 20',  name:'IRA deduction', read:['box','sch1','20'],
+    hint:"Nothing in this case is an IRA contribution. Look for an HSA or retirement amount that was entered as an IRA."},
+  sch1_24a:{form:'sch1', line:'Line 24a', name:'Jury pay given to the employer', read:['box','sch1','24a'],
+    hint:"Line 24a is the jury pay Michael had to give his employer: the 5 weekdays his salary continued, at $40 a day."},
+  sch2_17c:{form:'sch2', line:'Line 17c', name:'Additional tax on HSA distributions', read:['box','sch2','17c'],
+    hint:"Line 17c is the 20% additional tax on HSA money not spent on qualified medical expenses (Schedule 1, line 8f)."},
+  sch3_2:  {form:'sch3', line:'Line 2',   name:'Child and dependent care credit', read:['box','sch3','2'],
+    hint:"Schedule 3, line 2 is the child and dependent care credit from Form 2441, for Willie's care in Step L."},
+  sch3_3:  {form:'sch3', line:'Line 3',   name:'Education credit', read:['box','sch3','3'],
+    hint:"Line 3 is the education credit from Form 8863 for the Step O Form 1098-T. Read the Step O notes to decide which credit Michael qualifies for, and do not rely on the TaxSlayer pop-up."},
+  schA_5a: {form:'schA', line:'Line 5a',  name:'State and local income tax', read:['box','schA','5a'],
+    hint:"Schedule A, line 5a picks up California withholding (box 17) and CASDI (box 14) from the W-2s. Compare boxes 14 and 17 on each W-2 you entered with the problem."},
+  schA_17: {form:'schA', line:'Line 17',  name:'Total itemized deductions', read:['box','schA','17'],
+    hint:"Schedule A, line 17 totals the itemized deductions entered. Only the state taxes from the W-2s belong here in this case."},
+  f8880_2: {form:'f8880', line:'Line 2',  name:'Elective deferrals', read:['box','f8880','2',400,440],
+    hint:"Form 8880, line 2 is the elective deferral in box 12 (code D) of the Betts Technology W-2."},
+
+  ca540_12:  {form:'ca540', line:'Line 12',  name:'State wages (W-2 box 16)', read:['ca','12',330],
+    hint:"Line 12 is state wages from box 16 of every W-2 entered so far. Compare box 16 of each W-2 in TaxSlayer with the problem."},
+  ca540_14:  {form:'ca540', line:'Line 14',  name:'California subtractions', read:['ca','14',500],
+    hint:"Line 14 comes from Schedule CA. California does not tax unemployment, and some differences need a manual entry. See the 'CA Adjustments Worksheet'."},
+  ca540_16:  {form:'ca540', line:'Line 16',  name:'California additions', read:['ca','16',500],
+    hint:"Line 16 comes from Schedule CA. California taxes the HSA money that the IRS does not (box 12 code W on the Betts W-2, and later the HSA interest). See the 'CA Adjustments Worksheet'."},
+  ca540_18:  {form:'ca540', line:'Line 18',  name:'California deduction', read:['ca','18',500],
+    hint:"The California deduction follows from filing status. Confirm the filing status first (note N1)."},
+  ca540_19:  {form:'ca540', line:'Line 19',  name:'California taxable income', read:['ca','19',500],
+    hint:"CA taxable income is CA AGI minus the deduction. If the subtraction and addition lines are right, this follows."},
+  ca540_31:  {form:'ca540', line:'Line 31',  name:'California tax', read:['ca','31',500],
+    hint:"CA tax comes from taxable income through the tax table. If taxable income is right, this follows."},
+  ca540_32:  {form:'ca540', line:'Line 32',  name:'Exemption credit', read:['ca','32',500],
+    hint:"The exemption credit depends on filing status and dependents. Re-check the Step A filing status and Willie's dependent entry."},
+  ca540_40:  {form:'ca540', line:'Line 40',  name:'California child and dependent care credit', read:['ca','40',500],
+    hint:"Line 40 follows from the Step L care expenses. Check the qualified expense amount you entered."},
+  ca540_46:  {form:'ca540', line:'Line 46',  name:'Renter’s credit', read:['ca','46',500],
+    hint:"Line 46 is the nonrefundable renter's credit. Michael rents the land under his mobile home (Interview Notes)."},
+  ca540_47:  {form:'ca540', line:'Line 47',  name:'Total California credits', read:['ca','47',500],
+    hint:"Line 47 totals the California credits. Check the renter's credit first."},
+  ca540_71:  {form:'ca540', line:'Line 71',  name:'California tax withheld', read:['ca','71',500],
+    hint:"Line 71 is California withholding from box 17 of each W-2. Compare box 17 of each W-2 in TaxSlayer with the problem."},
+  ca540_75:  {form:'ca540', line:'Line 75',  name:'California EITC', read:['ca','75',500],
+    hint:"The California EITC depends on California earned income and on Willie as a qualifying child."},
+  ca540_78:  {form:'ca540', line:'Line 78',  name:'Total payments', read:['ca','78',500],
+    hint:"Line 78 totals California payments and credits. If it is off, the mistake is in a withholding or EITC line above it."},
+  ca540_91:  {form:'ca540', line:'Line 91',  name:'Use tax', read:['ca','91',440],
+    hint:"Michael said he owes $35 in California use tax (Interview Notes). Line 91 must not be left blank."},
+  ca540_111: {form:'ca540', line:'Line 111', name:'Amount you owe', read:['ca','111',500],
+    hint:"The amount owed to California is the end result. Fix the checked California lines above it first."},
+  ca540_115: {form:'ca540', line:'Line 115', name:'California refund', read:['ca','115',500],
+    hint:"The California refund is the end result. If it is wrong, one of the checked California lines above it is wrong. Fix those first."}
+};
+
+/* Answer sheet notes that point at one line at one step replace that line's hint at that step */
+var B_N3="Note N3: read the information on Renter's Credit in the Duck Book if your answer does not match.";
+var B_N5="Note N5: always enter the state information on a W-2, even when nothing is withheld. That is the only way TaxSlayer knows the income also belongs to California.";
+var B_N6="Note N6: review what you entered for box 14 of the W-2. The STRS amount was a required contribution, not an elective one.";
+var B_N7="Note N7: this needs a manual entry on the state return. The Eskaton W-2 box 1 and box 16 differ, so note the Fed/CA wage difference on line B-8z of the 'CA Adjustments Worksheet' and make the manual adjustment described under 'Line A-1 Wages' in the handout 'CA CA Instructions'.";
+var B_N8="Note N8: the Form 1099-G for last year's California refund should not be entered, because Michael did not itemize last year.";
+var B_N9="Note N9: see Jury Duty in Pub 4012. The jury pay and the amount given to the employer cannot be netted against each other.";
+var B_N11="Note N11: Willie qualifies for only 4 months of care, because he turned 13 on May 1. Enter only the qualified expenses, not the total paid.";
+var B_N12="Note N12: Michael did not need to itemize. Compare the itemized total with his standard deduction before entering Step M.";
+var B_N13="Note N13: double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'.";
+
+var B_STEPS = [
+  {id:'A', name:'Step A: Basic information', type:'check', expected:B_EXP.A, notes:['N1','N2','NN_A'], hints:{ca540_46:B_N3}},
+  {id:'B', name:'Step B: W-2 from Betts Technology', type:'check', expected:B_EXP.B, notes:['N4'], hints:{ca540_12:B_N5}},
+  {id:'C', name:'Step C: W-2 from El Dorado County Schools', type:'check', expected:B_EXP.C, notes:[], hints:{f8880_2:B_N6}},
+  {id:'E', name:'Step E: W-2 from Eskaton Properties', type:'check', expected:B_EXP.E, notes:['NN_E'], hints:{ca540_14:B_N7}},
+  {id:'F', name:'Step F: Last year’s California refund', type:'check', expected:B_EXP.F, notes:[], tip:B_N8, hints:{ca540_14:B_N7}},
+  {id:'G', name:'Step G: Unemployment (1099-G)', type:'check', expected:B_EXP.G, notes:[]},
+  {id:'H', name:'Step H: Cancelled debt (1099-C)', type:'check', expected:B_EXP.H, notes:[]},
+  {id:'I', name:'Step I: Election worker pay', type:'check', expected:B_EXP.I, notes:['NP','NN_I']},
+  {id:'J', name:'Step J: Jury duty pay', type:'check', expected:B_EXP.J, notes:[], hints:{sch1_8h:B_N9, sch1_24a:B_N9}},
+  {id:'L', name:'Step L: Child and dependent care', type:'check', expected:B_EXP.L, notes:[], hints:{sch3_2:B_N11, ca540_40:B_N11}},
+  {id:'M', name:'Step M: Itemize or not', type:'check', expected:B_EXP.M, notes:[], hints:{fed_12e:B_N12, schA_5a:B_N12, schA_17:B_N12}},
+  {id:'N', name:'Step N: Health savings account (HSA)', type:'check', expected:B_EXP.N, notes:['NN_N'], hints:{ca540_14:B_N13, ca540_16:B_N13}},
+  {id:'O', name:'Step O: Education credit (1098-T)', type:'check', expected:B_EXP.O, notes:[]},
+  {id:'P', name:'Step P: no change expected from Step O', type:'nochange', basis:'Step O', expected:B_EXP.O, notes:[]},
+  {id:'R', name:'Step R: no change expected from Step O', type:'nochange', basis:'Step O', expected:B_EXP.O, notes:[]}
+];
+
+var B_ORDER = ['fed_1a','fed_1b','fed_2a','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_24','fed_25d','fed_27a','fed_28','fed_33','fed_35a','fed_37',
+  'N1','N2','NN_A','N4','NP','NN_E','NN_I','NN_N',
+  'sch1_7','sch1_8c','sch1_8f','sch1_8h','sch1_13','sch1_20','sch1_24a','sch2_17c','sch3_2','sch3_3','schA_5a','schA_17','f8880_2',
+  'ca540_12','ca540_14','ca540_16','ca540_18','ca540_19','ca540_31','ca540_32','ca540_40','ca540_46','ca540_47','ca540_71','ca540_75','ca540_78','ca540_91','ca540_111','ca540_115'];
+
+var B_TSNOTE_COACH="Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.";
+var B_NOTES = {
+  N1:{form:'fed', kind:'filing', name:'Filing status and dependent', status:/qualifying surviving spouse/i, dependent:'WILLIAM', dependentName:'Willie (William)', minMonths:7, ctc:true,
+    key:"Filing status = QSS. Using the 'Qualifying Child or Relative Resource Tool', Willie = Box 35, CTC.",
+    coach:"Joan died in 2023 and Michael supports his son, so check the qualifying surviving spouse rules. Walk Willie through the Resource Tool and the handout 'CTC ODC Chart' to decide his dependent status and the child tax credit box. Then check the filing status and dependent screens in TaxSlayer."},
+  N2:{form:'fed', kind:'ippin', name:'Identity Protection PIN entered', pin:'543456',
+    coach:"Michael's IP PIN is in the Interview Notes. Enter it in TaxSlayer where the taxpayer's Identity Protection PIN is asked for, and add a TS Note about it (the next item)."},
+  NN_A:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step A', mark:'nn_A', confirm:'I added a TS Note for Step A (the IP PIN) in TaxSlayer',
+    example:'STEP A - IP PIN: TP HAS AN IP PIN', coach:B_TSNOTE_COACH},
+  N4:{form:'fed', kind:'w2text', name:'Betts W-2 address matches the form', employer:'BETTS', text:'PO BOX 540', shown:'PO Box 540',
+    coach:"The Betts Technology W-2 shows Michael's address as PO Box 540. Enter the address on the W-2 screen in TaxSlayer exactly as it is printed on the form."},
+  NP:{form:'fed', kind:'prepnote', name:'Preparer Note added',
+    coach:"Pub 4012, 'Election Worker Income', says to add a Preparer Note when election worker pay is entered. Add one in TaxSlayer and print a new PDF."},
+  NN_E:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step E', mark:'nn_E', confirm:'I added a TS Note for Step E (the wage difference) in TaxSlayer',
+    example:'STEP E - FED/STATE WAGE DIFFERENCE: ESKATON PROPERTIES W-2 HAD A FED/STATE WAGE DIFFERENCE. A MANUAL ADJUSTMENT WAS MADE TO THE CA STATE RETURN.', coach:B_TSNOTE_COACH},
+  NN_I:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step I', mark:'nn_I', confirm:'I added a TS Note for Step I (election worker pay) in TaxSlayer',
+    example:'STEP I - ELECTION WORKER PAY: ELECTION WORKER PAY ENTERED AS HOUSEHOLD EMPLOYEE INCOME.', coach:B_TSNOTE_COACH},
+  NN_N:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step N', mark:'nn_N', confirm:'I added a TS Note for Step N (the HSA interest) in TaxSlayer',
+    example:'STEP N - HSA INTEREST: INTEREST AMOUNT OF $10 MUST BE REPORTED AS TAXABLE FOR CA. ENTERED ON 1099-INT, FED TAX EXEMPT MADE TAXABLE FOR CA.', coach:B_TSNOTE_COACH}
+};
+
+/* Read every Baylor line with the reader named in its definition */
+function extractByLines(lines,pages){
+  var got={};
+  Object.keys(lines).forEach(function(k){ var r=lines[k].read;
+    got[k]= r[0]==='box' ? boxValue(pages,r[1],r[2],r[3],r[4]) : caValue(pages,'ca540',r[1],r[2]); });
+  return got;
+}
+CASES.push({id:'baylor', label:'Case: Baylor (Michael Baylor, 2025)',
+  lines:B_LINES, steps:B_STEPS, order:B_ORDER, notes:B_NOTES, worksheet:null, extract:function(pages){ return extractByLines(B_LINES,pages); }});
+
+var NSTATE = {n3:{v:['','','','',''], sel:''}};   /* student entries for the worksheet note; checkboxes live in STORE (see markGet) */
 
 /* ---------- Saved progress ----------
    Kept in the browser's local storage (not cookies) on this computer only. Nothing leaves the machine.
-   One record per case: each step's latest result, the N3 worksheet entries, the NN checkbox,
-   and the same-file fingerprints. "Start over" erases it. */
-var CASE_ID='quinn', STORE_KEY='auditpup.progress.v1.'+CASE_ID, storageOK=true;
+   One record per case: each step's latest result, the N3 worksheet entries, the TS Note checkboxes,
+   and the same-file fingerprints. "Start over" erases it. Quinn's single TS Note checkbox stays in
+   the "nn" field it has always used; cases with a TS Note at several steps keep one checkbox per step in "marks". */
+var CASE_ID, STORE_KEY, storageOK=true, STORE, SEEN;
 function blankStore(){ return {steps:{}, n3:null, nn:false, seen:{}}; }
 function loadStore(){
   try{ localStorage.setItem('auditpup.test','1'); localStorage.removeItem('auditpup.test'); }catch(e){ storageOK=false; return blankStore(); }
@@ -547,9 +735,18 @@ function loadStore(){
     var o=JSON.parse(t), b=blankStore(); for(var k in b) if(o[k]==null) o[k]=b[k]; return o; }catch(e){ return blankStore(); }
 }
 function saveStore(){ if(!storageOK) return; try{ localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); }catch(e){ storageOK=false; } }
-var STORE=loadStore();
-if(STORE.n3 && STORE.n3.v && STORE.n3.v.length===5) NSTATE.n3=STORE.n3;
-NSTATE.nn=!!STORE.nn;
+function markGet(key){ return key==='nn' ? !!STORE.nn : !!(STORE.marks && STORE.marks[key]); }
+function markSet(key,v){ if(key==='nn') STORE.nn=v; else { STORE.marks=STORE.marks||{}; STORE.marks[key]=v; } saveStore(); }
+/* switch the page to a case: its answer key, steps, and saved progress */
+function useCase(id){
+  CASE=CASES.filter(function(c){return c.id===id;})[0]||CASES[0];
+  LINES=CASE.lines; STEPS=CASE.steps; ORDER=CASE.order; NOTES=CASE.notes; WORKSHEET=CASE.worksheet||null;
+  CASE_ID=CASE.id; STORE_KEY='auditpup.progress.v1.'+CASE_ID;
+  STORE=loadStore(); SEEN=STORE.seen||{};
+  NSTATE.n3={v:['','','','',''], sel:''};
+  if(STORE.n3 && STORE.n3.v && STORE.n3.v.length===5) NSTATE.n3=STORE.n3;
+}
+function extractAll(pages){ return CASE.extract(pages); }
 
 /* ---------- extraction engine (identical logic validated against the 5 PDFs) ---------- */
 function parseNum(str){
@@ -607,7 +804,7 @@ function caValue(pages,form,token,valueMin,tokXMin,tokXMax,tol){
   }
   return sawLine?null:undefined;   /* line printed but empty = blank; line not found = undefined */
 }
-function extractAll(pages){
+function extractQuinn(pages){
   return {
     fed_1a: fedValue(pages,'1a',/Total amount from Form\(s\) W-2, box 1/),
     fed_1d: fedValue(pages,'1d',/Medicaid waiver payments not reported/),
@@ -683,24 +880,107 @@ function classifyPage(items){
   if(/^\d{7} (Side \d+ )?FTB 3514 \d{4}/.test(lead)) return 'ca3514';
   if(/^Form 1040(-SR)?\b.{0,24}U\.S\. (Individual )?Income Tax Return/.test(lead)) return 'fed';
   if(/^Form 1040(-SR)? \(\d{4}\) Page \d/.test(lead)) return 'fed';
+  var sch=lead.match(/^SCHEDULE ([123A]) \(Form 1040\)/)||lead.match(/^Schedule ([123A]) \(Form 1040\) \d{4} Page \d/);
+  if(sch) return 'sch'+sch[1];
+  if(/^Form 8880 Department of the Treasury/.test(lead)) return 'f8880';
   return 'other';
+}
+/* Generic reader for IRS forms whose amount sits just right of a line-number box (Form 1040 boxes,
+   Schedules 1, 2, 3, A, Form 8880). The box label is found by its exact text inside the box column
+   (x from xMin to xMax). If the same box appears more than once with different amounts, the line is
+   reported as unread rather than guessed. Returns a number, null (box printed but empty), or
+   undefined (box not found). */
+function boxValue(pages,form,token,xMin,xMax){
+  xMin=xMin||370; xMax=xMax||500;
+  var saw=false, vals=[];
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!==form) continue;
+    var its=pages[p].items;
+    its.forEach(function(t){
+      if(t.s!==token || t.x<xMin || t.x>xMax) return;
+      saw=true;
+      var row=its.filter(function(i){ return Math.abs(i.y-t.y)<=4 && i.x>t.x+3 && i.x<t.x+140 && isMoney(i.s); });
+      row.sort(function(a,b){return a.x-b.x;});
+      vals.push(row.length?parseNum(row[row.length-1].s):null);
+    });
+  }
+  if(!saw) return undefined;
+  var nums=vals.filter(function(v){return v!==null;});
+  if(!nums.length) return null;
+  return nums.every(function(v){return v===nums[0];}) ? nums[0] : undefined;
+}
+/* The taxpayer's Identity Protection PIN, printed one digit per box beside the 1040 signature line */
+function ipPin(pages){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, lab=its.filter(function(i){return i.s==='Protection PIN, enter it here';})[0];
+    if(!lab) continue;
+    var d=its.filter(function(i){ return /^\d$/.test(i.s) && i.x>lab.x+30 && i.x<lab.x+120 && i.y<lab.y && i.y>lab.y-18; });
+    d.sort(function(a,b){return a.x-b.x;});
+    return d.map(function(i){return i.s;}).join('');
+  }
+  return null;
+}
+/* Child tax credit box for the first dependent on the 1040 (an X just left of the "Child tax" label) */
+function firstDependentCTC(pages){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, labs=its.filter(function(i){return i.s==='Child tax';});
+    if(!labs.length) continue;
+    labs.sort(function(a,b){return a.x-b.x;});
+    var lab=labs[0];
+    return its.some(function(i){ var gap=lab.x-i.x; return i.s==='X' && Math.abs(i.y-lab.y)<=4 && gap>0 && gap<30; });
+  }
+  return null;
+}
+/* Text of TaxSlayer's Preparer Notes page, if one was printed */
+function preparerNotes(pages){
+  for(var p=0;p<pages.length;p++){ var its=pages[p].items;
+    if(!its.length || its[0].s!=='Preparer Notes') continue;
+    var rule=its.filter(function(i){return /^_{20,}$/.test(i.s);})[0]; if(!rule) continue;
+    var lines=its.filter(function(i){ return i.y<rule.y && i.y>rule.y-200; }).map(function(i){return i.s;});
+    return lines.join(' ').replace(/\s+/g,' ').trim();
+  }
+  return null;
+}
+/* Is this text printed on the same page as an employer's W-2 (for example the employee address)? */
+function onW2(pages,employer,text){
+  var found=null;
+  for(var p=0;p<pages.length;p++){ var its=pages[p].items;
+    var lead=its.slice(0,6).map(function(i){return i.s;}).join(' ').replace(/\s+/g,' ');
+    if(!/^a Employee.s social security number/.test(lead)) continue;
+    if(!its.some(function(i){return i.s.toUpperCase().indexOf(employer)>=0;})) continue;
+    found=its.some(function(i){return i.s.toUpperCase().indexOf(text)>=0;});
+    if(found) return true;
+  }
+  return found;
 }
 function fmt(n){ if(n===null||n===undefined) return 'blank'; return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US'); }
 var FORM_MISSING = {
   fed:'TaxSlayer always produces the Form 1040, so this PDF may be incomplete. Print the full return for this step and check again.',
   ca540:'The California Form 540 is not in this PDF. Check that the state return was started for this taxpayer in TaxSlayer.',
-  ca3514:'TaxSlayer adds the FTB 3514 only when a California EITC is claimed. Look at the earned income and qualifying information that drive the California credit.'
+  ca3514:'TaxSlayer adds the FTB 3514 only when a California EITC is claimed. Look at the earned income and qualifying information that drive the California credit.',
+  sch1:'TaxSlayer prints Schedule 1 only when there is additional income or an adjustment to income. Check that the income or adjustment for this step was entered.',
+  sch2:'TaxSlayer prints Schedule 2 only when there is an additional tax. Check the entries for this step that create the tax.',
+  sch3:'TaxSlayer prints Schedule 3 only when there is an additional credit. Check the entries for this step that create the credit.',
+  schA:'TaxSlayer prints Schedule A when state taxes or itemized deductions are entered. Check the state information on each W-2.',
+  f8880:'TaxSlayer prints Form 8880 only when there is a retirement contribution. Check box 12 of the W-2s.'
 };
-function matches(got,exp,present){
-  if(!present) return 'missing';
+/* Schedules and forms TaxSlayer leaves out when nothing goes on them. A blank answer on one of these
+   is correct when the form is not printed at all. The 1040 and 540 are always required. */
+var OPTIONAL_FORMS = {sch1:1, sch2:1, sch3:1, schA:1, f8880:1};
+function matches(got,exp,present,form){
+  if(!present) return (exp===0 && OPTIONAL_FORMS[form]) ? 'pass' : 'missing';
   if(got===undefined) return 'warn';
   if(got===null) return exp===0?'pass':'fail';
   return got===exp?'pass':'fail';   /* exact: TaxSlayer and the key are whole dollars, so any difference is a real mistake */
 }
 
 /* ---------- UI ---------- */
-var stepSel=document.getElementById('step');
-STEPS.forEach(function(s){ var o=document.createElement('option'); o.value=s.id; o.textContent=s.name; stepSel.appendChild(o); });
+var stepSel=document.getElementById('step'), caseSel=document.getElementById('assignment');
+CASES.forEach(function(c){ var o=document.createElement('option'); o.value=c.id; o.textContent=c.label; caseSel.appendChild(o); });
+function fillSteps(){ stepSel.innerHTML=''; STEPS.forEach(function(s){ var o=document.createElement('option'); o.value=s.id; o.textContent=s.name; stepSel.appendChild(o); }); }
+/* open on the case used last time on this computer, else the first case */
+(function(){ var last=null; try{ last=localStorage.getItem('auditpup.case'); }catch(e){}
+  if(!CASES.some(function(c){return c.id===last;})) last=CASES[0].id;
+  caseSel.value=last; useCase(last); fillSteps(); })();
 var fileInput=document.getElementById('file'), drop=document.getElementById('drop'),
     fnEl=document.getElementById('filename'), gradeBtn=document.getElementById('grade'),
     errEl=document.getElementById('error'), chosen=null;
@@ -782,7 +1062,7 @@ function answerLine(html){ return el('div','ans','Answer key: '+html); }
 function lineRow(step,k,got,present){
   var L=LINES[k], f=L.form, nochange=step.type==='nochange', exp=step.expected[k];
   var r=makeRow(f, L.name, FORM_TITLES[f]+', '+L.line);
-  var st=matches(got[k],exp,present[f]);
+  var st=matches(got[k],exp,present[f],f);
   setStatus(r,st,{nochange:nochange});
   if(st==='pass'){ r.amt.textContent=fmt(got[k]); return r; }
   var yours=el('div','yours');
@@ -790,38 +1070,66 @@ function lineRow(step,k,got,present){
   else if(st==='warn') yours.innerHTML='The checker could not find this line in your PDF.';
   else yours.innerHTML='Your return shows <b>'+fmt(got[k])+'</b> on '+L.line+'.';
   r.body.appendChild(yours);
+  /* a note from the answer sheet for this line at this step replaces the line's usual hint */
+  var hint=(step.hints && step.hints[k]) || L.hint;
   addHint(r,null,function(box){
-    box.appendChild(answerLine('<b>'+fmt(exp)+'</b>'+(nochange?' (same as at '+step.basis+')':'')));
+    box.appendChild(answerLine('<b>'+(exp===0 && L.read ? 'blank or $0' : fmt(exp))+'</b>'+(nochange?' (same as at '+step.basis+')':'')));
     var c=el('div');
     if(st==='missing') c.textContent=FORM_MISSING[f];
-    else if(st==='warn') c.textContent='Compare '+FORM_TITLES[f]+', '+L.line+' to the answer key by hand. '+L.hint;
-    else if(nochange) c.textContent='This value should not have changed at this step, so look at what you entered since '+step.basis+'. '+L.hint;
-    else c.textContent=L.hint;
+    else if(st==='warn') c.textContent='Compare '+FORM_TITLES[f]+', '+L.line+' to the answer key by hand. '+hint;
+    else if(nochange) c.textContent='This value should not have changed at this step, so look at what you entered since '+step.basis+'. '+hint;
+    else if(exp===0 && L.read) c.textContent='Nothing should be on this line yet at Step '+step.id+'. Look for an entry made too early, or one that does not belong on this return. '+hint;
+    else c.textContent=hint;
     box.appendChild(c);
+    if(step.tip) box.appendChild(el('div',null,step.tip));
   });
   return r;
 }
 
 /* ----- answer key notes ----- */
 function noteRow(step,id,got,present,pages){
-  var N=NOTES[id], nochange=step.type==='nochange';
-  var r=makeRow(N.form, N.name, 'Answer key note '+id, id);
-  var w=WORKSHEET.rows[WORKSHEET.circled-1];
+  var N=NOTES[id], nochange=step.type==='nochange', chip=N.chip||id;
+  var r=makeRow(N.form, N.name, 'Answer key note '+chip, chip);
+  var w=WORKSHEET?WORKSHEET.rows[WORKSHEET.circled-1]:null;
 
-  if(id==='N1'){
-    var fs=filingStatus(pages), dep=dependentInfo(pages,'JAMES');
-    var ok=!!(fs && /head of household/i.test(fs) && dep && (dep.months==null || dep.months>=7));
+  if(N.kind==='filing'){
+    var fs=filingStatus(pages), dep=dependentInfo(pages,N.dependent);
+    var ctc=N.ctc?firstDependentCTC(pages):null;
+    var ok=!!(fs && N.status.test(fs) && dep && (dep.months==null || dep.months>=N.minMonths) && (!N.ctc || ctc===true));
     setStatus(r, ok?'pass':'fail', {nochange:nochange});
     var parts=[];
     parts.push('filing status <b>'+(fs||'not found')+'</b>');
     if(dep) parts.push('dependent <b>'+cap(dep.name)+'</b>'+(dep.rel?' ('+cap(dep.rel)+')':'')+(dep.months!=null?', <b>'+dep.months+' months</b> in the home':''));
-    else parts.push('<b>no dependent named James</b>');
+    else parts.push('<b>no dependent named '+esc(N.dependentName)+'</b>');
+    if(N.ctc) parts.push('child tax credit box <b>'+(ctc?'checked':'not checked')+'</b>');
     r.body.appendChild(el('div','yours','Your return shows '+parts.join('; ')+'.'));
     if(!ok) addHint(r,null,function(box){ box.appendChild(answerLine(N.key)); box.appendChild(el('div',null,N.coach)); });
     return r;
   }
 
-  if(id==='N2'){
+  if(N.kind==='ippin'){
+    var pin=ipPin(pages), okp=pin===N.pin;
+    setStatus(r, okp?'pass':'fail', {nochange:nochange});
+    r.body.appendChild(el('div','yours', pin ? 'Your return shows the Identity Protection PIN <b>'+esc(pin)+'</b>.' : 'Your return shows <b>no Identity Protection PIN</b>.'));
+    if(!okp) addHint(r,null,function(box){ box.appendChild(answerLine('IP PIN <b>'+esc(N.pin)+'</b>')); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
+  if(N.kind==='w2text'){
+    var hasT=onW2(pages,N.employer,N.text), okw=hasT===true;
+    setStatus(r, okw?'pass':'fail', {nochange:nochange});
+    r.body.appendChild(el('div','yours', hasT===null ? 'The checker could not find this W-2 in your PDF.' :
+      (okw ? 'Your W-2 shows the address <b>'+esc(N.shown)+'</b>.' : 'Your W-2 does <b>not</b> show the address <b>'+esc(N.shown)+'</b>.')));
+    if(!okw) addHint(r,null,function(box){ box.appendChild(answerLine('address <b>'+esc(N.shown)+'</b> on the W-2')); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
+  if(N.kind==='prepnote'){
+    var pn=preparerNotes(pages), okn=!!pn;
+    setStatus(r, okn?'pass':'fail', {nochange:nochange});
+    r.body.appendChild(el('div','yours', okn ? 'Your return has a Preparer Note: <b>'+esc(pn.length>140?pn.slice(0,140)+'...':pn)+'</b>' : 'Your return has <b>no Preparer Note</b>.'));
+    if(!okn) addHint(r,null,function(box){ box.appendChild(answerLine('a Preparer Note about the election worker pay')); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
+  if(N.kind==='mwpRefunds'){
     var a=got.fed_35a, b=got.ca540_115, fr=w[4], cr=w[6];
     var ok2=present.fed && present.ca540 && a!=null && b!=null && a===fr && b===cr;
     setStatus(r, ok2?'pass':'fail', {nochange:nochange});
@@ -832,7 +1140,7 @@ function noteRow(step,id,got,present,pages){
     return r;
   }
 
-  if(id==='N3'){
+  if(N.kind==='mwpWorksheet'){
     r.body.appendChild(el('div','notecopy','The checker cannot see your paper worksheet. Enter the Total Refund you recorded for each option and the option you circled.'));
     var grid=el('div','ws-grid'), inputs=[];
     for(var i=0;i<5;i++){
@@ -880,16 +1188,16 @@ function noteRow(step,id,got,present,pages){
     return r;
   }
 
-  if(id==='NN'){
+  if(N.kind==='confirm'){
     r.body.appendChild(el('div','notecopy','TaxSlayer does not print TS Notes in the return PDF, so the checker cannot see them. Confirm this one yourself.'));
-    var cl=el('label','confirm'), cb=document.createElement('input'); cb.type='checkbox'; cb.checked=NSTATE.nn;
-    cl.appendChild(cb); cl.appendChild(document.createTextNode(' I added a TS Note for Step E in TaxSlayer'));
+    var cl=el('label','confirm'), cb=document.createElement('input'); cb.type='checkbox'; cb.checked=markGet(N.mark);
+    cl.appendChild(cb); cl.appendChild(document.createTextNode(' '+N.confirm));
     r.body.appendChild(cl);
     addHint(r,'See an example note',function(box){
       box.appendChild(el('div','ans','Example from the answer sheet:'));
       box.appendChild(el('div','example',N.example));
       box.appendChild(el('div',null,N.coach)); });
-    function evalNN(){ NSTATE.nn=cb.checked; STORE.nn=NSTATE.nn; saveStore(); setStatus(r, cb.checked?'pass':'todo', {passLabel:'Confirmed'}); if(CTX) updateSummary(); }
+    function evalNN(){ markSet(N.mark, cb.checked); setStatus(r, cb.checked?'pass':'todo', {passLabel:'Confirmed'}); if(CTX) updateSummary(); }
     cb.addEventListener('change',evalNN);
     r.init=evalNN;
     return r;
@@ -899,7 +1207,7 @@ function noteRow(step,id,got,present,pages){
 /* Wrong-step guard: if the chosen column passes, see whether a column with MORE checks also passes
    completely. That means the PDF holds a later step's work. Only ever warns, never changes the score. */
 function linesPass(s,got,present){
-  return Object.keys(s.expected).every(function(k){ return matches(got[k], s.expected[k], present[LINES[k].form])==='pass'; });
+  return Object.keys(s.expected).every(function(k){ return matches(got[k], s.expected[k], present[LINES[k].form], LINES[k].form)==='pass'; });
 }
 function laterMatches(step,got,present){
   if(!linesPass(step,got,present)) return [];
@@ -909,7 +1217,7 @@ function laterMatches(step,got,present){
   return hits;
 }
 /* Same-file check. A quick fingerprint of the file's bytes (FNV-1a plus length). A reprint from TaxSlayer is a new file. */
-var SEEN=STORE.seen||{};   /* fingerprint -> {stepId, name}; saved with the case's progress */
+/* SEEN (set by useCase): fingerprint -> {stepId, name}; saved with the case's progress */
 function fingerprint(buf){
   var u=new Uint8Array(buf), h1=0x811c9dc5, h2=0x01000193^u.length;
   for(var i=0;i<u.length;i++){ h1^=u[i]; h1=Math.imul(h1,16777619)>>>0; h2=Math.imul(h2^u[i],2654435761)>>>0; }
@@ -1149,7 +1457,7 @@ function renderProgress(){
   Array.prototype.forEach.call(box.querySelectorAll('.pchip'),function(b){ b.addEventListener('click',function(){ stepSel.value=b.getAttribute('data-step'); justDone=null; renderProgress(); }); });
   var rb=document.getElementById('resetbtn'); if(rb) rb.addEventListener('click',function(){ confirmReset=true; renderProgress(); document.getElementById('resetno').focus(); });
   var ry=document.getElementById('resetyes'); if(ry) ry.addEventListener('click',function(){
-    STORE=blankStore(); SEEN=STORE.seen; NSTATE.n3={v:['','','','',''], sel:''}; NSTATE.nn=false; saveStore();
+    STORE=blankStore(); SEEN=STORE.seen; NSTATE.n3={v:['','','','',''], sel:''}; saveStore();
     confirmReset=false; justDone=null; document.getElementById('results').style.display='none'; CTX=null; hideReward(); pickNextStep(); renderProgress(); });
   var rn=document.getElementById('resetno'); if(rn) rn.addEventListener('click',function(){ confirmReset=false; renderProgress(); });
   setStepLabels();
@@ -1190,6 +1498,14 @@ function updateGuide(){
 /* open on the first step that is not done yet */
 function pickNextStep(){ for(var i=0;i<STEPS.length;i++){ var r=STORE.steps[STEPS[i].id]; if(!r || r.status!=='done'){ stepSel.value=STEPS[i].id; return; } } stepSel.value=STEPS[STEPS.length-1].id; }
 stepSel.addEventListener('change',function(){ justDone=null; renderProgress(); });
+/* changing the case: load its steps and saved progress, and clear anything shown for the old case */
+caseSel.addEventListener('change',function(){
+  try{ localStorage.setItem('auditpup.case',caseSel.value); }catch(e){}
+  useCase(caseSel.value); fillSteps();
+  CTX=null; justDone=null; confirmReset=false; hideReward(); clearChosenFile(); freshFile=false; errEl.classList.add('hidden');
+  document.getElementById('results').style.display='none';
+  pickNextStep(); renderProgress();
+});
 pickNextStep(); renderProgress();
 
 document.getElementById('startup').classList.add('hidden');
