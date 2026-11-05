@@ -15,7 +15,7 @@ After you finish a step in TaxSlayer, print the full return.
 
 * If the return opens in a new tab, click the **Download** arrow at the top right.
 * If a print window opens, set **Destination** to **Save as PDF**, then click **Save**.
-* Save it to **Downloads** with a clear name, such as `Quinn-Step-B.pdf`.
+* Save it to **Downloads** with a clear name that includes the case and the step.
 
 Print a **new** PDF after every step. Audit Pup warns you if you reuse the same file for a later step.
 
@@ -29,9 +29,9 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 * The score at the top shows how many lines match the answer key. It stays in view while you scroll.
 * Each line that needs another look has a **hint** with the answer key value.
-* **Step E MWP Worksheet:** type the **Total Refund** for each of the five options on your MWP Worksheet, then pick the option you circled.
-* **TS Note:** TaxSlayer does not print TS Notes in the PDF, so check the box yourself once you have added it.
-* Step D should show **no change from Step B**, and Step F should show **no change from Step E**.
+* **Worksheet entries:** some steps ask you to type values from a worksheet you completed, or to pick the option you chose. Type them in the boxes shown.
+* **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it.
+* **No-change steps:** some steps should show **no change** from an earlier step. The step picker names the step it is compared to.
 * **Did you pick the right step?** A yellow box appears if your PDF looks like it is from a later step than the one you picked. Click the button in the box to check against the right step.
 * When everything matches, a dog appears. Tap it for another dog.
 
