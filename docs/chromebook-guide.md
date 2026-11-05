@@ -29,7 +29,7 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 ## 2. Check the step
 
-1. Open Audit Pup. It opens on the first step you have not finished. Make sure the **case** and the **step** match the step you just finished in TaxSlayer.
+1. Open Audit Pup and pick your **case** in the first box. Audit Pup remembers the case you used last and opens on the first step you have not finished. Make sure the **case** and the **step** match the step you just finished in TaxSlayer.
 2. Click the box that names your step, for example **Drop your Step A PDF here**. The Files app opens. Go to **Downloads**, pick your PDF, and click **Open**. (You can also drag the file from the Files app anywhere onto the page.) The file name appears in bold after **Selected:**.
 3. Click the button that names your step, for example **Check Step A**.
 
@@ -52,6 +52,8 @@ When a step is done, Audit Pup selects the **next step** for you and clears the 
 | **Confirmed** | An item you checked off yourself. |
 
 * On a line that needs another look, click **Show a hint** to see the answer key value and where to look in the problem.
+* **Lines that should be blank:** some checked lines should have nothing on them yet at your step. If one of them has an amount, the hint shows the answer key as **blank or $0**.
+* **Notes Audit Pup checks for you:** some answer key notes, such as an Identity Protection PIN, a Preparer Note, or the address on a W-2, are read from your PDF. They show **Correct** or **Check** like any other line.
 * **Worksheet entries:** some steps ask you to type values from a worksheet you completed, and to pick the option you chose. Type them in the boxes shown.
 * **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it. Click **See an example note** for a sample.
 * **No-change steps:** some steps should show **no change** from an earlier step. The step picker names the step it is compared to.
@@ -64,7 +66,7 @@ To fix something: go back to TaxSlayer, correct it, print a new PDF, and check a
 
 The paw-print trail under the step picker shows each step as **Done**, **Fix**, **To finish**, or **Not checked**. The selected step has a gold ring. Cases with many steps wrap onto two or three rows. Tap a step to select it.
 
-Progress is saved **only in Chrome on this Chromebook**. It does not follow you to another computer, and clearing your browsing history erases it. **Start over** (above the trail, on the right) erases it on purpose. Audit Pup asks first.
+Each case keeps its own progress, so you can switch cases and come back. Progress is saved **only in Chrome on this Chromebook**. It does not follow you to another computer, and clearing your browsing history erases it. **Start over** (above the trail, on the right) erases the progress for the case you have picked, on purpose. Audit Pup asks first.
 
 ## Handy Chromebook keys
 

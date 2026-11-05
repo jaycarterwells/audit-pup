@@ -4,7 +4,7 @@
 cd "$(dirname "$0")"
 [ -f ../source/tax-aide-quinn-checker.html ] || { echo "No build found. Run: cd source && npm install && node build_html.js"; exit 1; }
 bad=0
-for t in verify2 verify3 verify4 verify5 verify7 verify8 verify9 verify10 verify11 repro2 verify6 mutate; do
+for t in verify2 verify3 verify4 verify5 verify7 verify8 verify9 verify10 verify11 repro2 verify6 baylor1 baylor2 mutate; do
   echo "================ $t"
   out=$(timeout 900 node "$t.js" 2>&1); code=$?
   if [ "$t" = mutate ]; then echo "$out" | tail -3; else echo "$out"; fi
