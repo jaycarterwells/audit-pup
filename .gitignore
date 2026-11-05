@@ -1,6 +1,4 @@
-# Build output and dependencies (see CLAUDE.md: index.html is the only built file committed)
 source/node_modules/
 source/dist/
-source/package-lock.json
 source/tax-aide-quinn-checker.html
 tests/output/
