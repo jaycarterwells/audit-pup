@@ -29,8 +29,10 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 * The score at the top shows how many lines match the answer key. It stays in view while you scroll.
 * Each line that needs another look has a **hint** with the answer key value.
-* Some items, like the **TS Note**, cannot be read from the PDF. Check the box yourself once you have done it.
-* Steps D and F should show **no change** from the step before them.
+* **Step E MWP Worksheet:** type the **Total Refund** for each of the five options on your MWP Worksheet, then pick the option you circled.
+* **TS Note:** TaxSlayer does not print TS Notes in the PDF, so check the box yourself once you have added it.
+* Step D should show **no change from Step B**, and Step F should show **no change from Step E**.
+* **Did you pick the right step?** A yellow box appears if your PDF looks like it is from a later step than the one you picked. Click the button in the box to check against the right step.
 * When everything matches, a dog appears. Tap it for another dog.
 
 To fix something: go back to TaxSlayer, correct it, print a new PDF, and check again.
@@ -56,5 +58,5 @@ The **Theme** button switches between light and dark. The **Version** button sho
 
 * **"That file is not a PDF"**: save the return from TaxSlayer as a PDF and try again.
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
-* **"This browser is not saving progress"**: this Chromebook is blocking sites from saving data, often because of a school or work setting. Checking still works, but progress resets when you close the page. Ask your site coordinator, or use a different Chromebook.
+* **"This browser is not saving progress"**: your browser is blocking saved data. Use a normal Chrome window, signed in to your own account.
 * **No dog picture**: the dog needs internet. Checking still works without it.
