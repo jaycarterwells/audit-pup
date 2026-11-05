@@ -6,7 +6,7 @@ Audit Pup checks the TaxSlayer Practice Lab PDF for one step of a training case 
 
 ## Before you start
 
-* Sign in to your Chromebook with your own account. **Guest mode does not save progress.**
+* Sign in to your Chromebook with your own account and use a normal Chrome window. **In Guest mode or an Incognito window, your progress is erased when you close the window**, with no warning.
 * Use the Chrome browser. Do not open Audit Pup from a Google Drive preview.
 
 ## 1. Save the PDF from TaxSlayer
@@ -56,5 +56,5 @@ The **Theme** button switches between light and dark. The **Version** button sho
 
 * **"That file is not a PDF"**: save the return from TaxSlayer as a PDF and try again.
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
-* **"This browser is not saving progress"**: you are in Guest mode or an Incognito window. Use a normal Chrome window while signed in.
+* **"This browser is not saving progress"**: this Chromebook is blocking sites from saving data, often because of a school or work setting. Checking still works, but progress resets when you close the page. Ask your site coordinator, or use a different Chromebook.
 * **No dog picture**: the dog needs internet. Checking still works without it.
