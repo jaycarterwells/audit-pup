@@ -12,9 +12,12 @@ on:
 permissions:
   contents: read
 
+# One run at a time per workflow, kind of run, and branch. Only pull request runs cancel an older run of the same pull
+# request. A push to main is never cancelled: the release workflow follows it, and a cancelled run would skip a release.
+# The weekly run calls this workflow too; its own name ("weekly") keeps it out of the push runs' group.
 concurrency:
-  group: tests-${{ github.ref }}
-  cancel-in-progress: true
+  group: tests-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   tests:
