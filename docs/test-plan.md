@@ -45,6 +45,8 @@ All tests are Playwright scripts in `tests/`. They open the built page (`source/
 
 ### Gaps in today's testing
 
+This audit was written for 0.13.0. In 0.14.0, gaps 1 to 3 were closed: the tests run on GitHub Actions for every pull request, every script fails with an exit code, and `tests/check_index.js` checks `index.html`. Requiring the check before a merge is a GitHub setting Carter turns on.
+
 1. **Nothing runs on GitHub.** A change can reach `main`, and so the live site, without any test running. There is no rule that tests must pass before a merge.
 2. **`index.html` is copied by hand.** Nothing checks that the live `index.html` is the build of the source in the same commit.
 3. **Many tests do not fail cleanly.** 8 of the 14 scripts end with "success" even when a check fails; only `run_all.sh` catches the FAIL text. Four scripts print tables that still need "a quick read by eye".
@@ -113,6 +115,8 @@ The goal is to catch as much as possible while the code is being written, quickl
 The slowest part is checking every PDF against every step through the page, because it grows with the square of the number of steps and drives the whole page each time. The same comparison can be done at the reading-engine level, the way the sweep works, in seconds per case. The page itself then only needs a few sample pairings per case.
 
 ## Part 3: Changes to make, in priority order
+
+**Done in 0.14.0:** changes 1, 2, and the check half of 3 (`tests/check_index.js`). Still to do for 3: deploy the site from GitHub Actions once Pages is set to deploy from Actions.
 
 | # | Change | Why | Size |
 | --- | --- | --- | --- |

@@ -559,7 +559,7 @@ var B_EXP = {
 
 /* ---------- answer key + hints for the Baylor problem ----------
    Expected values come from the Baylor answer sheet (2025). A blank cell in the answer sheet is checked
-   as "must be blank or $0". Hints are drafts until approved. */
+   as "must be blank or $0". Hints approved by Carter for 0.14.0. */
 var B_LINES = {
   fed_1a:  {form:'fed', line:'Line 1a',  name:'Wages (W-2 box 1)', read:['box','fed','1a'],
     hint:"Line 1a adds box 1 of every W-2 entered so far. Compare each W-2 you entered in TaxSlayer with box 1 of the W-2s in the problem for the steps you have finished."},
@@ -1375,6 +1375,13 @@ try{ var saved=localStorage.getItem('taxaide-theme'); if(saved) document.documen
 /* ---------- Version and release notes (semantic versioning: MAJOR.MINOR.PATCH). Newest first. ---------- */
 var APP_VERSION='__APP_VERSION__';
 var CHANGELOG=[
+  {version:'0.14.0', date:'2026-11-08',
+   added:['A second case: Baylor (Michael Baylor, 2025), with 15 steps from basic information to e-filing. Pick it in the first box.',
+          'Each case keeps its own progress. Switch cases and come back without losing your place. Start over erases only the case you picked.',
+          'Audit Pup opens on the case you used last.',
+          'Lines that should still be blank at a step are checked too. If one has an amount, its hint shows the answer key as blank or $0.',
+          'Some answer key notes are now read from your PDF: the Identity Protection PIN, a Preparer Note, the child tax credit box, and the address on a W-2.',
+          'Baylor has a TS Note box at each step that needs one (Steps A, E, I, and N).']},
   {version:'0.13.0', date:'2026-11-05',
    added:['A new look: the Audit Pup seal with a drawing of Zeke, warm sketchbook colors, and Atkinson Hyperlegible, a typeface made for easy reading.',
           'Zeke, the chief inspector, tells you what to do next in a speech bubble at the top of the page.',
