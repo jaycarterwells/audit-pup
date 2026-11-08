@@ -13,7 +13,7 @@ A single self-contained HTML page that checks an AARP Tax-Aide counselor's TaxSl
 
 ## Rules (do not break these)
 
-1. **False positives are the worst outcome.** Never let Audit Pup say a line is correct when it is wrong. Exact-match grading, no tolerance. Run the planted-mistake sweep (`tests/mutate.js`, must print SWEEP OK) before every release that touches grading or cases.
+1. **False positives are the worst outcome.** Never let Audit Pup say a line is correct when it is wrong. Exact-match grading, no tolerance. Run the planted-mistake sweep (`tests/engine_sweep.js`, must print SWEEP OK; it is part of `tests/dev_test.sh`) on every change that touches reading, an answer key, or a case.
 2. **One deliverable file.** `index.html` is a build output of the template plus inlined pdf.js. Never edit `index.html` by hand.
 3. **The counselor guide must match the code.** Every release updates `docs/chromebook-guide.md` for anything counselors can see (steps, buttons, labels, statuses, colors, exact message wording). Carter does not edit the guide separately.
 4. **Semantic versioning.** PATCH for fixes and answer key corrections, MINOR for new cases, checks, or features, MAJOR for breaking changes. 0.x means beta. Each version needs a matching entry in the `CHANGELOG` list in the template; the build refuses otherwise. Do not tag by hand: the release workflow tags `v<version>` and publishes the GitHub Release after the tests pass on main.
@@ -44,10 +44,12 @@ Everything needed to build, test, and release is in this repository. Nothing has
 
 * `index.html`: built page served by GitHub Pages. `README.md`.
 * `docs/chromebook-guide.md`: counselor guide. `docs/release-checklist.md`: the release checklist, version rules, known exposures, and how to add a case. Follow it for every release.
-* `source/`: `audit-pup-template.html` (the page source, including answer keys, hints, and the CHANGELOG), `build_html.js`, `VERSION`, `package.json`, `assets/` (fonts and dog drawings built into the page), and `art/` (original dog drawings, for new crops). The build replaces `__ASSET_<file>__` with base64 of `assets/<file>` and refuses if an asset or the changelog entry is missing.
+* `source/`: `audit-pup-template.html` (the page: layout, styles, the UI script, and the CHANGELOG), `engine.js` (the reading engine: pure functions that read amounts from PDF text and match them to an answer key), `cases/quinn.js` and `cases/baylor.js` (each case's lines, hints, steps, and notes; Quinn's answer key is typed there), `tools/import_answer_sheet.js` (makes `answer_key.json` from an answer sheet), `release_notes.js`, `build_html.js` (puts the engine, the answer keys, and the case files into the page at `/*__ENGINE_AND_CASES__*/`), `VERSION`, `package.json`, `assets/` (fonts and dog drawings built into the page), and `art/` (original dog drawings, for new crops). The build replaces `__ASSET_<file>__` with base64 of `assets/<file>` and refuses if an asset or the changelog entry is missing.
 * `cases/quinn/`, `cases/baylor/`: the correct TaxSlayer PDF for each step (`Quinn_Sec_A.pdf`, `Baylor_Sec_A.pdf`, and so on). New cases go in `cases/<case>/`.
+* `cases/<case>/answer_sheet.doc` and `answer_key.json` (Baylor): the answer sheet and the key made from it by the import tool. Never edit `answer_key.json` by hand: re-run the import. The tests check that the sheet's fingerprint matches.
 * `cases/<case>/case.json`: what the tests need to know about a case (the PDF for each step, items left for the student, steps with identical returns, steps with their own TS Note box, the speed limit). The generic tests run over every case that has one.
-* `tests/`: generic case tests that run over every `case.json` (`cases_steps.js`, `cases_matrix.js`, `cases_switch.js`, `mutate.js`), page-behavior scripts that use Quinn (`verify2.js` to `verify11.js`, `repro2.js`), `check_index.js`, the `cases.js` loader and `expect.js` helper, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg`. Every script ends with a failure exit code when a check fails. Output goes to `tests/output/` (not committed).
+* `tests/dev_test.sh`: the developer test (about 45 seconds; `bash tests/dev_test.sh baylor` for one case). Run it on every change before pushing.
+* `tests/`: engine tests in Node with no browser (`unit_engine.js`, `engine_cases.js` for answer keys and every printout against every step, `engine_sweep.js` for the planted-mistake sweep, the `engine.js` loader), `engine_parity.js` (proves the page and Node read every PDF identically), page tests over every `case.json` (`cases_steps.js`, `cases_matrix.js` with sample pairs, `cases_switch.js`), page-behavior scripts that use Quinn (`verify2.js` to `verify11.js`, `repro2.js`), `check_index.js`, the `cases.js` loader and `expect.js` helper, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg`. Every script ends with a failure exit code when a check fails. Output goes to `tests/output/` (not committed).
 * `.github/workflows/tests.yml`: GitHub Actions runs the build and `run_all.sh` on every pull request and push to main. `main` is protected by a ruleset: changes need a pull request with the "tests" check passing.
 * `.github/workflows/release.yml`: after the tests pass on main, if `source/VERSION` has no tag yet, it checks that `index.html` is that version, tags `v<version>`, and publishes a GitHub Release with notes from `source/release_notes.js` (the page's CHANGELOG entry).
 * `docs/test-plan.md`: how testing works today, the strategy (developer, check-in, release tiers), and the prioritized list of test changes.
@@ -59,7 +61,8 @@ cd source
 npm install
 npx playwright install chromium   # only if Playwright says its browser is missing
 node build_html.js                # writes source/tax-aide-quinn-checker.html and source/dist/
-npm test                          # runs tests/run_all.sh (about 6 minutes)
+npm run dev-test                  # tests/dev_test.sh: the fast developer test (about 45 seconds)
+npm test                          # tests/run_all.sh: the full suite GitHub runs (about 5 minutes)
 cp tax-aide-quinn-checker.html ../index.html
 ```
 

@@ -4,7 +4,8 @@
   "description": "Builds the single-file Audit Pup page (index.html) from audit-pup-template.html",
   "scripts": {
     "build": "node build_html.js",
-    "test": "bash ../tests/run_all.sh"
+    "test": "bash ../tests/run_all.sh",
+    "dev-test": "bash ../tests/dev_test.sh"
   },
   "dependencies": {
     "pdfjs-dist": "3.11.174"

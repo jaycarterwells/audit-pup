@@ -1,5 +1,6 @@
 // Every case: (1) case.json matches the page's steps, (2) each step's correct PDF passes its own step, with only
 // the items the student finishes by hand left To do, (3) the case's longest PDF checks in time on a slowed processor.
+// Usage: node cases_steps.js [--case baylor]
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, pageCases, grade, PAGE } = require('./cases');
@@ -9,7 +10,8 @@ const { loadCases, pageCases, grade, PAGE } = require('./cases');
   const cases=loadCases(), onPage=await pageCases(p);
   expect('every case on the page has a case.json, and every case.json is on the page',
     onPage.map(c=>c.id).sort().join()===cases.map(c=>c.id).sort().join(), `page: ${onPage.map(c=>c.id)}; case.json: ${cases.map(c=>c.id)}`);
-  for(const c of cases){
+  const pick=process.argv.indexOf('--case'), only=pick<0?null:process.argv.slice(pick+1);
+  for(const c of cases.filter(x=>!only||only.includes(x.id))){
     const pc=onPage.find(x=>x.id===c.id);
     if(!expect(`${c.id}: case.json lists the page's steps in order`, pc && pc.steps.join('')===c.steps.join(''), pc?`page ${pc.steps.join('')}, case.json ${c.steps.join('')}`:'not on the page')) continue;
     for(const s of c.steps){
