@@ -13,6 +13,7 @@ Audit Pup (El Dorado Tax-Aide Case Checker) is a single HTML file that grades a 
 | `source/` | `audit-pup-template.html` (the page source), `build_html.js`, `VERSION`, `package.json`, `assets/` (built-in fonts and dog drawings), `art/` (the original dog drawings, for new crops). |
 | `cases/quinn/`, `cases/baylor/` | The correct TaxSlayer PDF for each step of each case. The tests read these. |
 | `.github/workflows/tests.yml` | Runs the build and every test on each pull request and push to main. |
+| `.github/workflows/release.yml` | After the tests pass on main, tags a new version and publishes its GitHub Release. |
 | `docs/test-plan.md` | How testing works and the planned changes to it. |
 | `tests/` | Test scripts, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg` (a stand-in reward photo). Results and screenshots go to `tests/output/`, which is not committed. |
 
@@ -48,7 +49,7 @@ npm test                          # runs tests/run_all.sh
 13. **Guide matches the code.** Update `docs/chromebook-guide.md` for every change counselors can see: steps, buttons, labels, statuses, colors, dog titles, and the exact wording of every message in "If something goes wrong." Read the guide against the built page before releasing. Carter does not edit the guide separately.
 14. **Version and release notes.** Set the new version in `source/VERSION` using the rules below, and add a matching entry at the top of the `CHANGELOG` list in the template, written for counselors. The build refuses to run if the version has no release notes.
 15. **Build.** In `source/`, run `node build_html.js`, then copy `source/tax-aide-quinn-checker.html` (or the file in `source/dist/`) to `index.html` at the repository root.
-16. **Publish.** Commit `index.html`, the guide, and any source, test, or case changes together, tag the commit `v<version>`, and push to `main`. A Claude Code session started from claude.ai/code with this repository selected can push. Without that, Carter uploads the changed files on GitHub (Add file, Upload files) and creates the tag under Releases. GitHub Pages updates the live site within a few minutes; open it and confirm the Version button shows the new number.
+16. **Publish.** Commit `index.html`, the guide, and any source, test, or case changes together on a branch and open a pull request. When the "tests" check is green, merge it. The ruleset on `main` blocks the merge until it is. GitHub Pages updates the live site within a few minutes, and the release workflow then tags `v<version>` and publishes the GitHub Release with the notes from the Version panel. Do not tag by hand. Open the live site and confirm the Version button shows the new number.
 
 ## Adding a new case
 

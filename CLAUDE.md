@@ -16,7 +16,7 @@ A single self-contained HTML page that checks an AARP Tax-Aide counselor's TaxSl
 1. **False positives are the worst outcome.** Never let Audit Pup say a line is correct when it is wrong. Exact-match grading, no tolerance. Run the planted-mistake sweep (`tests/mutate.js`, must print SWEEP OK) before every release that touches grading or cases.
 2. **One deliverable file.** `index.html` is a build output of the template plus inlined pdf.js. Never edit `index.html` by hand.
 3. **The counselor guide must match the code.** Every release updates `docs/chromebook-guide.md` for anything counselors can see (steps, buttons, labels, statuses, colors, exact message wording). Carter does not edit the guide separately.
-4. **Semantic versioning.** PATCH for fixes and answer key corrections, MINOR for new cases, checks, or features, MAJOR for breaking changes. 0.x means beta. Each version needs a matching entry in the `CHANGELOG` list in the template; the build refuses otherwise. Tag each release `v<version>`.
+4. **Semantic versioning.** PATCH for fixes and answer key corrections, MINOR for new cases, checks, or features, MAJOR for breaking changes. 0.x means beta. Each version needs a matching entry in the `CHANGELOG` list in the template; the build refuses otherwise. Do not tag by hand: the release workflow tags `v<version>` and publishes the GitHub Release after the tests pass on main.
 5. **The repository is the single source of truth.** Releases are no longer saved to Google Drive.
 6. **Writing style for Carter's documents:** never use em dashes or double hyphens; use commas, colons, or parentheses. Keep documents readable as standalone stories; put history in an appendix.
 7. **Hints teach, they do not just tell.** Each failed line gets one hint: the answer key value plus where to look in the problem. No hint ladders.
@@ -47,7 +47,8 @@ Everything needed to build, test, and release is in this repository. Nothing has
 * `source/`: `audit-pup-template.html` (the page source, including answer keys, hints, and the CHANGELOG), `build_html.js`, `VERSION`, `package.json`, `assets/` (fonts and dog drawings built into the page), and `art/` (original dog drawings, for new crops). The build replaces `__ASSET_<file>__` with base64 of `assets/<file>` and refuses if an asset or the changelog entry is missing.
 * `cases/quinn/`, `cases/baylor/`: the correct TaxSlayer PDF for each step (`Quinn_Sec_A.pdf`, `Baylor_Sec_A.pdf`, and so on). New cases go in `cases/<case>/`.
 * `tests/`: Playwright scripts (`verify2.js` to `verify11.js`, `repro2.js`, `baylor1.js`, `baylor2.js`, `mutate.js`), `check_index.js`, the `expect.js` helper, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg`. Every script ends with a failure exit code when a check fails. Output goes to `tests/output/` (not committed).
-* `.github/workflows/tests.yml`: GitHub Actions runs the build and `run_all.sh` on every pull request and push to main.
+* `.github/workflows/tests.yml`: GitHub Actions runs the build and `run_all.sh` on every pull request and push to main. `main` is protected by a ruleset: changes need a pull request with the "tests" check passing.
+* `.github/workflows/release.yml`: after the tests pass on main, if `source/VERSION` has no tag yet, it checks that `index.html` is that version, tags `v<version>`, and publishes a GitHub Release with notes from `source/release_notes.js` (the page's CHANGELOG entry).
 * `docs/test-plan.md`: how testing works today, the strategy (developer, check-in, release tiers), and the prioritized list of test changes.
 
 To build and test:
@@ -75,4 +76,4 @@ cp tax-aide-quinn-checker.html ../index.html
 
 * 0.14.0 adds the Baylor case (15 steps) and checks on GitHub Actions. Test plan changes 1 to 3 are done; the next ones are in `docs/test-plan.md`, Part 3.
 * 0.13.0 was the redesign (above). 0.12.0 was never published; 0.13.0 includes it.
-* Cowork sessions cannot push to GitHub; Carter uploads releases through the GitHub web page and creates the tag. A Claude Code session started from claude.ai/code with this repository selected can commit, tag, and push.
+* Cowork sessions cannot push to GitHub. A Claude Code session started from claude.ai/code with this repository selected can commit and push to its working branch and open and merge pull requests, but cannot push tags (the release workflow tags instead). Carter's own uploads go through a pull request because of the ruleset on main.

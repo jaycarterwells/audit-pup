@@ -1,0 +1,55 @@
+# Release: after the tests pass on main, tag the commit and publish a GitHub Release when source/VERSION
+# holds a version that has no tag yet. Ordinary changes (same version) do nothing.
+name: release
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write        # create the tag and the release; nothing else
+
+jobs:
+  release:
+    # only tested pushes to main, never pull requests or failed runs
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Decide whether this commit is a new release
+        id: v
+        run: |
+          version=$(tr -d '[:space:]' < source/VERSION)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already tagged; nothing to release."
+            echo "new=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          live=$(grep -o "var APP_VERSION='[^']*'" index.html | head -1 | cut -d"'" -f2)
+          if [ "$live" != "$version" ]; then
+            echo "::error::source/VERSION is $version but index.html is $live. Rebuild index.html before releasing."
+            exit 1
+          fi
+          echo "new=true" >> "$GITHUB_OUTPUT"
+
+      - name: Write the release notes from the page's What's new list
+        if: steps.v.outputs.new == 'true'
+        run: node source/release_notes.js "${{ steps.v.outputs.version }}" > release-notes.md
+
+      - name: Tag and publish the release
+        if: steps.v.outputs.new == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.v.outputs.version }}" \
+            --target "${{ github.event.workflow_run.head_sha }}" \
+            --title "Audit Pup ${{ steps.v.outputs.version }}" \
+            --notes-file release-notes.md
