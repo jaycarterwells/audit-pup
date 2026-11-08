@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       # the newest live check from main, expecting the latest release's version; it skips cases not released yet
@@ -28,7 +28,7 @@ jobs:
           tag=$(git tag --list 'v*' --sort=-v:refname | head -1)
           echo "latest release: $tag"
           echo "VERSION=${tag#v}" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
