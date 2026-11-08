@@ -5,7 +5,8 @@
 #   bash tests/dev_test.sh              all cases
 #   bash tests/dev_test.sh baylor       case checks for Baylor only (engine, sweep, steps), the rest as usual
 #
-# What it covers: the build, the engine unit tests, each answer key against its sheet (when
+# What it covers: ESLint, the writing style rules, the build, the HTML check of the built page, the guide's quoted
+# messages and labels against the page, the engine unit tests, each answer key against its sheet (when
 # LibreOffice is installed), every case's answer key, steps, and printouts at engine level, the planted-mistake
 # sweep, and each step's own PDF through the page (answer key notes included).
 cd "$(dirname "$0")/.."
@@ -16,7 +17,11 @@ run(){ local name=$1; shift; local start=$SECONDS
   if "$@" > "tests/output/$name.log" 2>&1 && ! grep -qE '^FAIL|SWEEP FAILED' "tests/output/$name.log"; then
     echo "ok   $name ($((SECONDS-start)) s)$(grep -m1 -E '^SWEEP:|engine unit tests run' "tests/output/$name.log" | sed 's/^/ | /')"
   else echo "FAIL $name ($((SECONDS-start)) s)"; sed 's/^/    /' "tests/output/$name.log"; bad=1; fi; }
+run lint node tests/lint.js
+run style_check node tests/style_check.js
 run build bash -c 'cd source && node build_html.js'
+run html_check node tests/html_check.js
+run guide_check node tests/guide_check.js
 run unit_engine node tests/unit_engine.js
 if command -v soffice >/dev/null; then
   for d in cases/*/; do c=$(basename "$d"); [ -n "$CASEARGS" ] && [[ " $* " != *" $c "* ]] && continue

@@ -1,4 +1,4 @@
-const { expect, finish } = require('./expect');
+const { finish } = require('./expect');
 // 0.13.0 look: mood dog matches the bar, the trail wraps for long cases, the drop box and button name the step, Zeke's guide
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});

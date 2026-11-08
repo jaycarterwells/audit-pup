@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -325,8 +325,8 @@
       </div>
     </div>
     <div class="hdr-btns">
-      <button class="theme-btn ver-btn" id="verbtn" title="See what changed in each version" aria-haspopup="dialog">Version __APP_VERSION__<span class="newtag" id="newtag">New</span></button>
-      <button class="theme-btn" id="theme" title="Switch light or dark">Theme</button>
+      <button type="button" class="theme-btn ver-btn" id="verbtn" title="See what changed in each version" aria-haspopup="dialog">Version __APP_VERSION__<span class="newtag" id="newtag">New</span></button>
+      <button type="button" class="theme-btn" id="theme" title="Switch light or dark">Theme</button>
     </div>
   </header>
 
@@ -350,6 +350,7 @@
     </div>
     <div class="progress" id="progress" aria-live="polite"></div>
 
+    <!-- [html-validate-disable-next prefer-native-element: the drop box holds text and takes dropped files; it has role="button", tabindex, and Enter/Space handling] -->
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose or drop your PDF">
       <svg class="pdfic" viewBox="0 0 54 66" aria-hidden="true"><path d="M3 3h34l14 14v46H3z" fill="var(--surface)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
         <path d="M37 3v14h14" fill="var(--text)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
@@ -361,7 +362,7 @@
       </div>
     </div>
     <input type="file" id="file" accept="application/pdf,.pdf" class="hidden">
-    <button class="primary" id="grade" data-state="ready" disabled>Check this step</button>
+    <button type="button" class="primary" id="grade" data-state="ready" disabled>Check this step</button>
     <div class="err hidden" id="error"></div>
   </div>
 
@@ -377,9 +378,10 @@
           <div class="d" id="verdictD"></div>
         </div>
         <div class="score" id="score">0<small>/0</small></div>
-        <button class="reward hidden" id="reward" title="Tap for another dog" aria-label="Approved. Tap for another dog.">
+        <button type="button" class="reward hidden" id="reward" title="Tap for another dog" aria-label="Approved. Tap for another dog.">
           <span class="burst" aria-hidden="true"><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg></span>
           <span class="pic"><span class="ph">
+            <!-- [html-validate-disable-next element-required-attributes: the page script sets src when the reward photo loads] -->
             <img id="dogimg" alt="">
             <svg class="bigcheck" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#1b7a3d" stroke-width="3"></circle><path d="M14 27 l8 8 l16 -18"></path></svg>
           </span><span class="stamp">Approved!</span></span>
@@ -394,13 +396,13 @@
 
   <div class="wn-back hidden" id="wnback">
     <div class="wn" id="wn" role="dialog" aria-modal="true" aria-labelledby="wntitle" tabindex="-1">
-      <div class="wn-head"><h2 id="wntitle">What's new in Audit Pup</h2><button class="theme-btn" id="wnclose">Close</button></div>
+      <div class="wn-head"><h2 id="wntitle">What's new in Audit Pup</h2><button type="button" class="theme-btn" id="wnclose">Close</button></div>
       <div class="wn-body" id="wnbody"></div>
     </div>
   </div>
 
   <footer>
-    <div class="ver">Audit Pup version __APP_VERSION__, built __BUILD_DATE__. <button class="linkbtn" id="verlink">What's new</button></div>
+    <div class="ver">Audit Pup version __APP_VERSION__, built __BUILD_DATE__. <button type="button" class="linkbtn" id="verlink">What's new</button></div>
     Runs entirely in your browser. Nothing is uploaded. Checking works offline; the reward dog photo needs internet.
   </footer>
 </div>
@@ -850,7 +852,7 @@ function updateSummary(){
 /* ----- the "I got it all done" reward: instant check mark, then a random dog from the Dog API ----- */
 var DOG_API='https://dog.ceo/api/breeds/image/random';
 function breedFrom(url){
-  var m=String(url).match(/\/breeds\/([^\/]+)\//); if(!m) return 'a very good dog';
+  var m=String(url).match(/\/breeds\/([^/]+)\//); if(!m) return 'a very good dog';
   return m[1].split('-').reverse().join(' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
 }
 function celebrate(){
@@ -961,14 +963,14 @@ function whenText(ms){ var d=new Date(ms); return d.toLocaleDateString(undefined
 function renderProgress(){
   var box=document.getElementById('progress'), h='<div class="ptop"><span class="plabel">Your progress</span>';
   h+='<span class="pend">'+(confirmReset
-      ? 'Erase saved progress for this case? <button class="linkbtn" id="resetyes">Erase</button><button class="linkbtn" id="resetno">Keep</button>'
-      : '<button class="linkbtn" id="resetbtn">Start over</button>')+'</span></div>';
+      ? 'Erase saved progress for this case? <button type="button" class="linkbtn" id="resetyes">Erase</button><button type="button" class="linkbtn" id="resetno">Keep</button>'
+      : '<button type="button" class="linkbtn" id="resetbtn">Start over</button>')+'</span></div>';
   if(!storageOK) h+='<span class="nosave">This browser is not saving progress, so it resets when you close the page.</span>';
   h+='<div class="trail">';
   STEPS.forEach(function(s){
     var r=STORE.steps[s.id], st=r?r.status:'none', sel=stepSel.value===s.id;
     var tip='Step '+s.id+': '+PLABEL[st]+(sel?', selected':'')+(r?' ('+r.pass+' of '+r.total+', checked '+whenText(r.when)+(r.file?' with '+r.file:'')+')':'');
-    h+='<button class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(tip)+'"'+(sel?' aria-current="step"':'')+'>'+
+    h+='<button type="button" class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(tip)+'"'+(sel?' aria-current="step"':'')+'>'+
        '<span class="paw"><svg aria-hidden="true"><use href="#pawprint"/></svg><span class="pm">'+PMARK[st]+'</span></span>'+
        '<b>Step '+s.id+'</b><span class="pst">'+PLABEL[st]+'</span></button>';
   });
