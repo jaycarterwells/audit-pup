@@ -1,5 +1,7 @@
 // Checks the live site the way a counselor uses it: the page opens with no errors, shows the expected version, and
-// for every case, the first step's correct PDF passes with only the student's own items left to do.
+// for every case on the live page, the first step's correct PDF passes with only the student's own items left to do.
+// A case in the repository that the live page does not have yet (added on main, not released) is skipped, so this
+// script from main can check any release.
 // Usage: node tests/live_check.js <url> [expected version, for example 0.14.0]
 // Runs after each deploy (release workflow) and every week (weekly workflow). It needs the internet.
 const { chromium } = require('playwright');
@@ -16,8 +18,13 @@ if(!url){ console.error('usage: node tests/live_check.js <url> [version]'); proc
   console.log(`live site: ${url} is version ${version}`);
   if(want) expect(`the live site is version ${want}`, version===want, version);
   expect('the "did not start" note is hidden', await p.$eval('#startup',e=>e.classList.contains('hidden')));
+  const live=await p.evaluate(()=>CASES.map(c=>({id:c.id, steps:c.steps.map(s=>s.id)})));
   for(const c of loadCases()){
-    const s=c.steps[0], r=await grade(p,c.id,s,c.pdfPath(s));
+    const lc=live.find(x=>x.id===c.id);
+    if(!lc){ console.log(`${c.id}: not on the live site yet (skipped)`); continue; }
+    const s=lc.steps.find(x=>c.steps.includes(x));
+    if(!expect(`${c.id}: the live page has a step that case.json knows`, !!s, lc.steps.join(''))) continue;
+    const r=await grade(p,c.id,s,c.pdfPath(s));
     const todo=r.rows.filter(x=>x.cls==='todo').length, bad=r.rows.filter(x=>x.cls!=='pass'&&x.cls!=='todo');
     expect(`${c.id} Step ${s}: its PDF passes on the live site`, !bad.length && !r.err && todo===(c.todo[s]||0), bad.map(x=>`${x.st}: ${x.name}`).join('; ')||r.err||`${todo} To do`);
     console.log(`${c.id} Step ${s}: ${r.score}`);

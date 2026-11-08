@@ -129,9 +129,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # the newest live check from main, checking the release's own version; it skips cases the release does not have
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.release.outputs.tag }}
+          fetch-depth: 0
+      - name: Read the released version
+        run: echo "VERSION=$(git show '${{ needs.release.outputs.tag }}':source/VERSION | tr -d '[:space:]')" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -144,7 +147,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Wait for the live site to serve the new version
         run: |
-          want=$(tr -d '[:space:]' < source/VERSION)
+          want=$VERSION
           for i in $(seq 1 30); do
             live=$(curl -fsSL "$SITE_URL" | grep -o "var APP_VERSION='[^']*'" | head -1 | cut -d"'" -f2 || true)
             echo "attempt $i: live site is ${live:-not answering}, want $want"
@@ -155,6 +158,4 @@ jobs:
       - name: Check the live site
         env:
           NODE_PATH: ${{ github.workspace }}/source/node_modules
-        run: |
-          if [ -f tests/live_check.js ]; then node tests/live_check.js "$SITE_URL" "$(tr -d '[:space:]' < source/VERSION)"
-          else echo "This release has no tests/live_check.js; the version check above passed."; fi
+        run: node tests/live_check.js "$SITE_URL" "$VERSION"
