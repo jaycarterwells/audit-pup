@@ -116,7 +116,7 @@ The slowest part is checking every PDF against every step through the page, beca
 
 ## Part 3: Changes to make, in priority order
 
-**Done in 0.14.0:** changes 1, 2, and the check half of 3 (`tests/check_index.js`). Still to do for 3: deploy the site from GitHub Actions once Pages is set to deploy from Actions.
+**Done in 0.14.0:** changes 1, 2, and the check half of 3 (`tests/check_index.js`). Still to do for 3: deploy the site from GitHub Actions once Pages is set to deploy from Actions. Also done: `main` is protected by a ruleset that requires the "tests" check, and releases are tagged and published by `.github/workflows/release.yml` after the tests pass.
 
 | # | Change | Why | Size |
 | --- | --- | --- | --- |
