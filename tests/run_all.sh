@@ -11,6 +11,8 @@ for t in lint style_check html_check guide_check verify2 verify3 verify4 verify5
   timeout 900 node "$t.js" > "output/$t.log" 2>&1; code=$?
   if [ $code -ne 0 ] || grep -qE '^FAIL|SOME CASES FAILED|SWEEP FAILED|ERROR MESSAGE SHOWN' "output/$t.log"; then
     echo "FAIL $t ($((SECONDS-start)) s)"; sed 's/^/    /' "output/$t.log"; bad=1
+  elif grep -q "^SKIPPED" "output/$t.log"; then
+    echo "skip $t: $(grep -m1 "^SKIPPED" "output/$t.log" | cut -c10-80)"
   else
     echo "ok   $t ($((SECONDS-start)) s)$(grep -m1 "^SWEEP:" "output/$t.log" | sed "s/^/ | /")"
   fi
