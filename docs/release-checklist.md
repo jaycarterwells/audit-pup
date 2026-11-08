@@ -26,7 +26,7 @@ node build_html.js
 npm test                          # runs tests/run_all.sh
 ```
 
-`run_all.sh` runs every script below and flags any line starting with FAIL, "SOME CASES FAILED", "SWEEP FAILED", or an on-screen error. Scripts that print tables (verify3, verify4, verify5, verify6) also need a quick read by eye. The full run takes about 10 minutes.
+`run_all.sh` runs every script below and flags any line starting with FAIL, "SOME CASES FAILED", "SWEEP FAILED", or an on-screen error. Scripts that print tables (verify3, verify4, verify5, verify6) also need a quick read by eye. The full run takes about 5 minutes. See `docs/test-plan.md` for how testing works and the planned changes.
 
 ## Release checklist
 

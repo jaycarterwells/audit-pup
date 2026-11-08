@@ -17,22 +17,22 @@ All tests are Playwright scripts in `tests/`. They open the built page (`source/
 
 | Test | What it proves | Case | Time |
 | --- | --- | --- | --- |
-| `mutate.js` (planted-mistake sweep) | Changes every printed amount on every checked form, one at a time, and confirms each checked line is read from exactly one spot. A $1 error fails, a blanked line fails, and $5 put in a line that should be blank fails. | Quinn, Baylor | __T_mutate__ |
-| `baylor1.js` | Every Baylor step's correct PDF passes its own step. | Baylor | __T_baylor1__ |
-| `baylor2.js` | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | __T_baylor2__ |
-| `verify2.js` | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | __T_verify2__ |
-| `verify3.js` | Quinn notes N1, N2, N3 worksheet entries, and the TS Note box. | Quinn | __T_verify3__ |
-| `verify4.js` | Bar colors, reward online and offline, pinned score frame. | Quinn | __T_verify4__ |
-| `verify5.js` | Every Quinn PDF against every Quinn step, and the wrong-step warning. | Quinn | __T_verify5__ |
-| `verify6.js` | Chromebook screen at 100, 125, 150% zoom, and speed on a slowed processor. | Quinn | __T_verify6__ |
-| `verify7.js` | Same-file warning. | Quinn | __T_verify7__ |
-| `verify8.js` | Version button and What's new panel. | Quinn | __T_verify8__ |
-| `verify9.js` | Saved progress survives a reload, Start over, a browser that blocks storage. | Quinn | __T_verify9__ |
-| `verify10.js` | Moving to the next step after a step is done. | Quinn | __T_verify10__ |
-| `verify11.js` | The dogs, fonts, step trail wrapping, reduced motion. | Quinn | __T_verify11__ |
-| `repro2.js` | Startup failures: scripts blocked, a cut-off file, older Safari file reading. | Quinn | __T_repro2__ |
+| `mutate.js` (planted-mistake sweep) | Changes every printed amount on every checked form, one at a time, and confirms each checked line is read from exactly one spot. A $1 error fails, a blanked line fails, and $5 put in a line that should be blank fails. | Quinn, Baylor | 17 s |
+| `baylor1.js` | Every Baylor step's correct PDF passes its own step. | Baylor | 12 s |
+| `baylor2.js` | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | 2 min 19 s |
+| `verify2.js` | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | 10 s |
+| `verify3.js` | Quinn notes N1, N2, N3 worksheet entries, and the TS Note box. | Quinn | 6 s |
+| `verify4.js` | Bar colors, reward online and offline, pinned score frame. | Quinn | 14 s |
+| `verify5.js` | Every Quinn PDF against every Quinn step, and the wrong-step warning. | Quinn | 23 s |
+| `verify6.js` | Chromebook screen at 100, 125, 150% zoom, and speed on a slowed processor. | Quinn | 20 s |
+| `verify7.js` | Same-file warning. | Quinn | 9 s |
+| `verify8.js` | Version button and What's new panel. | Quinn | 3 s |
+| `verify9.js` | Saved progress survives a reload, Start over, a browser that blocks storage. | Quinn | 8 s |
+| `verify10.js` | Moving to the next step after a step is done. | Quinn | 9 s |
+| `verify11.js` | The dogs, fonts, step trail wrapping, reduced motion. | Quinn | 6 s |
+| `repro2.js` | Startup failures: scripts blocked, a cut-off file, older Safari file reading. | Quinn | 6 s |
 
-`tests/run_all.sh` runs them all in a row (about __T_total__) and flags any line that starts with FAIL.
+`tests/run_all.sh` runs them all in a row (about 5 minutes) and flags any line that starts with FAIL.
 
 ### When the tests run
 
@@ -76,8 +76,7 @@ The goal is to catch as much as possible while the code is being written, quickl
 **Check-in test (every pull request, on GitHub Actions: about 10 to 15 minutes, automatic).**
 
 * Everything in the developer test, for every case.
-* The full planted-mistake sweep, split so each case runs in parallel.
-* Every PDF against every step for every case.
+* The full planted-mistake sweep and every PDF against every step, for every case, at the engine level and split by case so cases run in parallel.
 * The page-behavior tests (saved progress, switching cases, warnings, layout at Chromebook zoom levels, startup failures, speed).
 * The same tests in WebKit (Safari's engine) for the most important paths.
 * An accessibility scan.
@@ -107,10 +106,11 @@ The goal is to catch as much as possible while the code is being written, quickl
 | Checks (lines and notes) | 530 (Quinn 100, Baylor 430) | about 2,600 |
 | Steps | 20 | about 90 |
 | Planted mistakes in the sweep | 9,026 | about 42,000 |
-| Sweep time on one machine | __T_mutate__ | about 6 times longer if nothing changes |
+| Sweep time on one machine | 17 s | about 2 minutes |
+| Every PDF against every step, through the page | 2 min 19 s (Baylor) | about 14 minutes |
 | Test PDFs (`cases/` and `tests/fixtures/`) | 23 (about 18 MB) | about 95 (about 85 MB) |
 
-The sweep is the part that grows fastest. Running each case in its own parallel job on GitHub, and only the changed case in the developer test, keeps it practical.
+The slowest part is checking every PDF against every step through the page, because it grows with the square of the number of steps and drives the whole page each time. The same comparison can be done at the reading-engine level, the way the sweep works, in seconds per case. The page itself then only needs a few sample pairings per case.
 
 ## Part 3: Changes to make, in priority order
 
@@ -122,7 +122,7 @@ The sweep is the part that grows fastest. Running each case in its own parallel 
 | 4 | **Describe each case in a data file** and make the tests run over every case listed. Replace `baylor1.js`, `baylor2.js`, and the Quinn-only scripts step by step. | Must be done before the third case, or each case adds new scripts. | Medium |
 | 5 | **Keep the answer key import in the repository**: a script that reads the answer sheet table into the case file, plus a test that compares every key value to the correct PDF. | This is how Baylor's 281 values were checked. It should be repeatable for every case. | Medium |
 | 6 | **Fast developer tier**: move the reading engine into its own file (still built into the one page), add Node unit tests, add `npm run dev-test` that tests only the changed case and prints one line per test. | Fast iteration and low token use. | Medium |
-| 7 | **Split the sweep by case in GitHub Actions** and make each mutation re-read only the changed page. | Keeps check-in under about 15 minutes at 6 cases. | Medium |
+| 7 | **Check every PDF against every step at the engine level**, the way the sweep does, and keep only a few sample pairings through the page. Split check-in jobs by case. | The page-level version takes over 2 minutes for Baylor alone and about 14 minutes at 6 cases. The engine-level version takes seconds. | Medium |
 | 8 | **Replace fixed waits** with waits on the page's own signals (the Check button's ready state is already one). | Faster and less flaky. | Small |
 | 9 | **Static checks**: ESLint, an HTML check, the writing style rules (no em dashes or double hyphens), and a check that every message the guide quotes exists in the page. | Catches mistakes before a browser opens. | Small |
 | 10 | **WebKit and accessibility in check-in**: Playwright's WebKit browser for the main paths and an axe accessibility scan. | Covers Safari users and the large-print, keyboard, and screen reader needs of older volunteers. | Small |
