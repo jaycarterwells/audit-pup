@@ -351,7 +351,7 @@
     <div class="progress" id="progress" aria-live="polite"></div>
 
     <!-- [html-validate-disable-next prefer-native-element: the drop box holds text and takes dropped files; it has role="button", tabindex, and Enter/Space handling] -->
-    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose or drop your PDF">
+    <div class="drop" id="drop" tabindex="0" role="button">
       <svg class="pdfic" viewBox="0 0 54 66" aria-hidden="true"><path d="M3 3h34l14 14v46H3z" fill="var(--surface)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
         <path d="M37 3v14h14" fill="var(--text)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
         <text x="27" y="51" text-anchor="middle" font-family="Bitter,Georgia,serif" font-weight="800" font-size="15" fill="var(--fail)">PDF</text></svg>
@@ -378,7 +378,7 @@
           <div class="d" id="verdictD"></div>
         </div>
         <div class="score" id="score">0<small>/0</small></div>
-        <button type="button" class="reward hidden" id="reward" title="Tap for another dog" aria-label="Approved. Tap for another dog.">
+        <button type="button" class="reward hidden" id="reward" title="Tap for another dog">
           <span class="burst" aria-hidden="true"><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg><svg><use href="#pawprint"/></svg></span>
           <span class="pic"><span class="ph">
             <!-- [html-validate-disable-next element-required-attributes: the page script sets src when the reward photo loads] -->
@@ -397,7 +397,7 @@
   <div class="wn-back hidden" id="wnback">
     <div class="wn" id="wn" role="dialog" aria-modal="true" aria-labelledby="wntitle" tabindex="-1">
       <div class="wn-head"><h2 id="wntitle">What's new in Audit Pup</h2><button type="button" class="theme-btn" id="wnclose">Close</button></div>
-      <div class="wn-body" id="wnbody"></div>
+      <div class="wn-body" id="wnbody" tabindex="0"></div>
     </div>
   </div>
 
@@ -969,10 +969,13 @@ function renderProgress(){
   h+='<div class="trail">';
   STEPS.forEach(function(s){
     var r=STORE.steps[s.id], st=r?r.status:'none', sel=stepSel.value===s.id;
-    var tip='Step '+s.id+': '+PLABEL[st]+(sel?', selected':'')+(r?' ('+r.pass+' of '+r.total+', checked '+whenText(r.when)+(r.file?' with '+r.file:'')+')':'');
-    h+='<button type="button" class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(tip)+'"'+(sel?' aria-current="step"':'')+'>'+
-       '<span class="paw"><svg aria-hidden="true"><use href="#pawprint"/></svg><span class="pm">'+PMARK[st]+'</span></span>'+
-       '<b>Step '+s.id+'</b><span class="pst">'+PLABEL[st]+'</span></button>';
+    var detail=(r?' ('+r.pass+' of '+r.total+', checked '+whenText(r.when)+(r.file?' with '+r.file:'')+')':'');
+    var tip='Step '+s.id+': '+PLABEL[st]+(sel?', selected':'')+detail;
+    /* the spoken name starts with the words on the chip ("Step A Done"), as screen reader and voice users expect */
+    var spoken='Step '+s.id+' '+PLABEL[st]+(sel?', selected':'')+detail;
+    h+='<button type="button" class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(spoken)+'"'+(sel?' aria-current="step"':'')+'>'+
+       '<span class="paw" aria-hidden="true"><svg><use href="#pawprint"/></svg><span class="pm">'+PMARK[st]+'</span></span>'+
+       '<b>Step '+s.id+'</b> <span class="pst">'+PLABEL[st]+'</span></button>';
   });
   box.innerHTML=h+'</div>';
   markRowEnds();
@@ -996,7 +999,6 @@ var freshFile=false; /* a file was chosen and not checked yet */
 function setStepLabels(){
   var id=stepSel.value;
   document.getElementById('dropbig').textContent='Drop your Step '+id+' PDF here';
-  drop.setAttribute('aria-label','Choose or drop your Step '+id+' PDF');
   if(gradeBtn.dataset.state!=='busy') gradeBtn.textContent='Check Step '+id;
   updateGuide();
 }
