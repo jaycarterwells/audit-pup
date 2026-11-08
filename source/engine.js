@@ -5,7 +5,7 @@ function parseNum(str){
   var s=String(str).replace(/\s+/g,'');
   if(s==='.'||s==='') return null;
   var neg=/^\(.*\)$/.test(s)||/^-/.test(s);
-  s=s.replace(/[()$,\-]/g,'');
+  s=s.replace(/[()$,-]/g,'');
   var m=s.match(/^(\d+)(?:\.(\d{2}))?$/);
   if(!m) return null;
   var v=parseInt(m[1],10);
