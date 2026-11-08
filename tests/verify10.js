@@ -1,3 +1,4 @@
+const { expect, finish } = require('./expect');
 // Auto-advance to the next step
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
@@ -35,4 +36,4 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quin
  check('150% zoom: the pinned frame with the reward stays a modest share of the screen', vis, st+'px of 438');
  await p.screenshot({path:path.join(OUT,'advance.png')});
  const shownErr=await p.$eval('#error',e=>e.classList.contains('hidden')?'':e.textContent); if(shownErr){ok=false; console.log('ERROR MESSAGE SHOWN:',shownErr);}
- console.log(ok?'\nALL AUTO-ADVANCE CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); await b.close(); })();
+ finish(ok); expect('no page errors',!errs.length,errs.join(';')); console.log(ok?'\nALL AUTO-ADVANCE CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); await b.close(); })();

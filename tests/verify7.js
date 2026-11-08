@@ -1,3 +1,4 @@
+const { expect, finish } = require('./expect');
 // Same-file reuse warning
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
@@ -29,4 +30,4 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quin
  all&=show('same D file then checked for earlier Step B', await run('B','D'), false);
  await fresh();
  all&=show('B file for Step B, with an error (fails, not claimed)', await run('E','B'), false);
- console.log(all?'\nALL REUSE CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); await b.close(); })();
+ finish(!!all); console.log(all?'\nALL REUSE CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); expect('no page errors',!errs.length,errs.join(';')); await b.close(); })();

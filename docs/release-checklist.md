@@ -11,7 +11,9 @@ Audit Pup (El Dorado Tax-Aide Case Checker) is a single HTML file that grades a 
 | `docs/release-checklist.md` | This page. |
 | `CLAUDE.md` | Working rules and design decisions for Claude sessions. |
 | `source/` | `audit-pup-template.html` (the page source), `build_html.js`, `VERSION`, `package.json`, `assets/` (built-in fonts and dog drawings), `art/` (the original dog drawings, for new crops). |
-| `cases/quinn/` | The correct TaxSlayer PDF for each Quinn step (A, B, D, E, F). The tests read these. |
+| `cases/quinn/`, `cases/baylor/` | The correct TaxSlayer PDF for each step of each case. The tests read these. |
+| `.github/workflows/tests.yml` | Runs the build and every test on each pull request and push to main. |
+| `docs/test-plan.md` | How testing works and the planned changes to it. |
 | `tests/` | Test scripts, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg` (a stand-in reward photo). Results and screenshots go to `tests/output/`, which is not committed. |
 
 The live site is https://jaycarterwells.github.io/audit-pup/ (GitHub Pages from `main`). Each release is tagged `v<version>`.
@@ -26,11 +28,12 @@ node build_html.js
 npm test                          # runs tests/run_all.sh
 ```
 
-`run_all.sh` runs every script below and flags any line starting with FAIL, "SOME CASES FAILED", "SWEEP FAILED", or an on-screen error. Scripts that print tables (verify3, verify4, verify5, verify6) also need a quick read by eye. The full run takes about 10 minutes.
+`run_all.sh` runs every script below, prints one line per test, and shows a script's full output only when it fails. Every script ends with a failure exit code when any check fails, so nothing needs a read by eye. The full run takes about 6 minutes. GitHub Actions runs the same suite on every pull request (see `docs/test-plan.md`).
 
 ## Release checklist
 
-1. **Planted-mistake sweep.** `mutate.js` changes one printed number at a time in every Quinn step PDF and confirms each checked line is read from exactly its own spot on the form. Required result: "SWEEP OK" (every checked line has exactly 1 reader, a $1 error fails, a blanked line fails). Quinn: 2,017 planted mistakes, 0 missed.
+0. **GitHub checks.** The "tests" check on the release pull request is green. It runs everything below except the real-device checks.
+1. **Planted-mistake sweep.** `mutate.js` changes one printed number at a time in every Quinn step PDF and confirms each checked line is read from exactly its own spot on the form. Required result: "SWEEP OK" (every checked line has exactly 1 reader, a $1 error fails, a blanked line fails). Quinn and Baylor (0.14.0): 9,026 planted mistakes, 0 missed, including $5 planted in every line whose answer is blank.
 2. **Step and file matrix.** `verify5.js`: every step's PDF checked against every step. Correct pairings pass with no warning; an earlier step picked for a later PDF shows the wrong-step warning; no on-screen error in any cell.
 3. **Added and removed forms.** `verify2.js` with the fixture PDFs. Extra forms are ignored; a missing checked form shows "Form missing."
 4. **Notes and manual items.** `verify3.js` (N1, N2, N3 entries, NN checkbox) and `verify4.js` (bar colors, reward online and offline, pinned frame).
@@ -99,3 +102,4 @@ In Chrome Guest mode or an Incognito window, saving works while the window is op
 * **Hosting, November 4, 2026.** Version 0.11.0 published to GitHub Pages with a counselor guide at `docs/chromebook-guide.md`.
 * **Auto-advance, November 5, 2026.** While building 0.12.0, clearing the old file after a passed step broke the same-file memory. Caught by `verify10.js`, fixed before release. Test scripts now fail on any on-screen error message.
 * **New look, November 5, 2026 (0.13.0).** Seal of Approval logo chosen by the beta group, with the green check removed (green checks are kept for good results) and dog bones added. Three dogs for results with titles: Zion, corrections officer (red); Bailey, follow-up clerk (yellow); Zeke, chief inspector (green and the guide). Drawings made with Google Gemini. The paw-print burst first pushed the page sideways on narrow screens; caught by `verify11.js` and fixed. 0.12.0 was never published; 0.13.0 includes it. Source, tests, and the Quinn step PDFs moved into this repository, so a Claude Code session has everything it needs.
+* **Second case, November 8, 2026 (0.14.0).** Added Baylor (15 steps, 430 checks, Schedules 1, 2, 3, A, Form 8880). The answer key was generated from the answer sheet tables and every value compared with the step PDFs before any code changed. Blank answer sheet cells are checked as blank or $0. The sweep now also plants $5 in every blank-answer line. Tests now fail with an exit code and run on GitHub Actions.

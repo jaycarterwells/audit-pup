@@ -1,3 +1,4 @@
+const { expect, finish } = require('./expect');
 // 0.13.0 look: mood dog matches the bar, the trail wraps for long cases, the drop box and button name the step, Zeke's guide
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
@@ -40,4 +41,4 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
  }
  check(`no page errors (${motion})`, !errs.length, errs.join(';'));
  await ctx.close(); }
- console.log(ok?'\nALL 0.13.0 LOOK CASES OK':'\nSOME CASES FAILED'); await b.close(); })();
+ finish(ok); console.log(ok?'\nALL 0.13.0 LOOK CASES OK':'\nSOME CASES FAILED'); await b.close(); })();

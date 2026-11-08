@@ -1,3 +1,4 @@
+const { expect, finish } = require('./expect');
 const { chromium } = require('playwright');
 const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
@@ -23,6 +24,7 @@ const CASES=[
     window.Worker=function(){ throw new Error('Workers blocked in this viewer'); };
     URL.createObjectURL=function(){ return 'blob-request://blocked'; };
   });
+  await ctx.route('https://dog.ceo/**',r=>r.abort());   // never contact the real dog photo service from a test
   const p=await ctx.newPage(); const errs=[];
   p.on('pageerror',e=>errs.push(e.message)); p.on('console',m=>{if(m.type()==='error')errs.push(m.text());});
   await p.goto('file://'+PAGE); await p.waitForTimeout(300);
@@ -43,6 +45,7 @@ const CASES=[
   const hints=await p.$$eval('.hint',els=>els.map(e=>e.innerText.replace(/\n+/g,' | ')));
   console.log('\nSample hint:', hints[0]);
   console.log('Page errors:', errs.length?errs.slice(0,3):'none');
+  finish(ok); const real=errs.filter(e=>!/Failed to load resource/.test(e)); expect('no page errors (other than the blocked dog photo)',!real.length,real.join(';'));
   console.log(ok?'\nALL CASES OK (with workers and blob links blocked)':'\nSOME CASES FAILED');
   await b.close();
 })().catch(e=>{console.error(e);process.exit(1);});

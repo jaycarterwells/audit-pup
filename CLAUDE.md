@@ -26,11 +26,15 @@ A single self-contained HTML page that checks an AARP Tax-Aide counselor's TaxSl
 
 * Pages are identified by their printed TaxSlayer form header (Form 1040 title, 7-digit code plus "Form 540" or "FTB 3514"). Any other form is ignored; a missing checked form shows "Form missing."
 * Values are read by geometry: federal lines by label row, California lines by the line-number token nearest the amount column. California refund (540 line 115) is read from the form, not the summary page.
-* A step with no answer key column (Quinn D and F) must equal the previous checkpoint; a moved value shows "Changed."
+* Cases live in the `CASES` list in the template (Quinn, Baylor). `useCase()` loads the chosen case into `LINES`, `STEPS`, `ORDER`, `NOTES`, `WORKSHEET`. Baylor lines name their reader (`read:['box',form,token]` or `['ca',token,valueMin]`); Quinn keeps its original readers.
+* Baylor forms: 1040, Schedules 1, 2, 3, A, Form 8880, CA 540. A blank answer sheet cell is checked as "blank or $0"; a blank answer on an optional schedule (Sch 1, 2, 3, A, 8880) passes when that schedule is not printed.
+* A step with no answer key column (Quinn D and F, Baylor P and R) must equal the previous checkpoint; a moved value shows "Changed."
 * Wrong-step warning: only when the picked step passes and a column with more checks also fully passes.
 * Same-file warning: a file that first passed a step cleanly and is checked again for a later step.
 * Answer key notes (Quinn): N1 checked from the 1040 HOH box and TaxSlayer's dependent summary; N2 from the two refunds versus the circled MWP Worksheet option; N3 by the student typing the five worksheet totals and the circled option; NN (TS Note) by student checkbox, because TaxSlayer does not print TS Notes.
-* Saved progress: browser localStorage key `auditpup.progress.v1.<case>`, not cookies.
+* Saved progress: browser localStorage key `auditpup.progress.v1.<case>`, not cookies. Quinn's TS Note box stays in the `nn` field; Baylor's per-step boxes are in `marks`. The last case used is in `auditpup.case`.
+* Baylor notes read from the PDF: N1 (QSS, WILLIAM, child tax credit box), N2 (IP PIN 543456), N4 ("PO BOX 540" on the Betts W-2), NP (a Preparer Notes page). TS Notes at A, E, I, N are checkboxes.
+* Baylor's answer key was generated from the answer sheet tables, not typed. Baylor Step P has no PDF; tests use Step O's PDF for it.
 * pdf.js 3.11.174 legacy build runs on the main thread (no worker, no blob URLs), because some viewers block workers.
 * After a confirmed step, Audit Pup selects the next unfinished step and clears the old file.
 
@@ -41,8 +45,10 @@ Everything needed to build, test, and release is in this repository. Nothing has
 * `index.html`: built page served by GitHub Pages. `README.md`.
 * `docs/chromebook-guide.md`: counselor guide. `docs/release-checklist.md`: the release checklist, version rules, known exposures, and how to add a case. Follow it for every release.
 * `source/`: `audit-pup-template.html` (the page source, including answer keys, hints, and the CHANGELOG), `build_html.js`, `VERSION`, `package.json`, `assets/` (fonts and dog drawings built into the page), and `art/` (original dog drawings, for new crops). The build replaces `__ASSET_<file>__` with base64 of `assets/<file>` and refuses if an asset or the changelog entry is missing.
-* `cases/quinn/`: the correct TaxSlayer PDF for each Quinn step (`Quinn_Sec_A.pdf` and so on). New cases go in `cases/<case>/`.
-* `tests/`: Playwright scripts (`verify2.js` to `verify11.js`, `repro2.js`, `mutate.js`), `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg`. Scripts find the build and PDFs by their own location; output goes to `tests/output/` (not committed).
+* `cases/quinn/`, `cases/baylor/`: the correct TaxSlayer PDF for each step (`Quinn_Sec_A.pdf`, `Baylor_Sec_A.pdf`, and so on). New cases go in `cases/<case>/`.
+* `tests/`: Playwright scripts (`verify2.js` to `verify11.js`, `repro2.js`, `baylor1.js`, `baylor2.js`, `mutate.js`), `check_index.js`, the `expect.js` helper, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg`. Every script ends with a failure exit code when a check fails. Output goes to `tests/output/` (not committed).
+* `.github/workflows/tests.yml`: GitHub Actions runs the build and `run_all.sh` on every pull request and push to main.
+* `docs/test-plan.md`: how testing works today, the strategy (developer, check-in, release tiers), and the prioritized list of test changes.
 
 To build and test:
 
@@ -51,7 +57,7 @@ cd source
 npm install
 npx playwright install chromium   # only if Playwright says its browser is missing
 node build_html.js                # writes source/tax-aide-quinn-checker.html and source/dist/
-npm test                          # runs tests/run_all.sh (about 10 minutes)
+npm test                          # runs tests/run_all.sh (about 6 minutes)
 cp tax-aide-quinn-checker.html ../index.html
 ```
 
@@ -67,5 +73,6 @@ cp tax-aide-quinn-checker.html ../index.html
 
 ## Current state
 
-* 0.13.0 is built and tested (redesign above, plus source, tests, and Quinn PDFs moved into the repository). 0.12.0 was never published; 0.13.0 includes it.
+* 0.14.0 adds the Baylor case (15 steps) and checks on GitHub Actions. Test plan changes 1 to 3 are done; the next ones are in `docs/test-plan.md`, Part 3.
+* 0.13.0 was the redesign (above). 0.12.0 was never published; 0.13.0 includes it.
 * Cowork sessions cannot push to GitHub; Carter uploads releases through the GitHub web page and creates the tag. A Claude Code session started from claude.ai/code with this repository selected can commit, tag, and push.
