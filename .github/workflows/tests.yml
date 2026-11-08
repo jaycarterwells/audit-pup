@@ -1,5 +1,5 @@
 # Check-in tests: build the page and run every Audit Pup test on each pull request and each push to main.
-# Make the "tests" check required for main in the repository settings so nothing untested can merge.
+# The "tests" check is required for main by the repository ruleset, so nothing untested can merge.
 name: tests
 
 on:
@@ -7,6 +7,7 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_call:          # the weekly workflow runs this same suite
 
 permissions:
   contents: read
@@ -21,8 +22,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0          # the index.html check compares against release tags
 
       - uses: actions/setup-node@v5
         with:

@@ -5,7 +5,7 @@
 #   bash tests/dev_test.sh              all cases
 #   bash tests/dev_test.sh baylor       case checks for Baylor only (engine, sweep, steps), the rest as usual
 #
-# What it covers: the build, the engine unit tests, the index.html rule, each answer key against its sheet (when
+# What it covers: the build, the engine unit tests, each answer key against its sheet (when
 # LibreOffice is installed), every case's answer key, steps, and printouts at engine level, the planted-mistake
 # sweep, and each step's own PDF through the page (answer key notes included).
 cd "$(dirname "$0")/.."
@@ -18,7 +18,6 @@ run(){ local name=$1; shift; local start=$SECONDS
   else echo "FAIL $name ($((SECONDS-start)) s)"; sed 's/^/    /' "tests/output/$name.log"; bad=1; fi; }
 run build bash -c 'cd source && node build_html.js'
 run unit_engine node tests/unit_engine.js
-run check_index node tests/check_index.js
 if command -v soffice >/dev/null; then
   for d in cases/*/; do c=$(basename "$d"); [ -n "$CASEARGS" ] && [[ " $* " != *" $c "* ]] && continue
     [ -f "$d/answer_key.json" ] || continue

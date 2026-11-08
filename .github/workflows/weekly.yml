@@ -1,0 +1,46 @@
+# Every week: run the full suite on main and check the live site, to catch changes in Chrome, the tools, or the site
+# before a counselor does. Also runs by hand (Actions, weekly, Run workflow). GitHub pauses scheduled runs after
+# 60 days with no activity in the repository; any push or a manual run starts them again.
+name: weekly
+
+on:
+  schedule:
+    - cron: '23 10 * * 0'      # Sundays 10:23 UTC (2:23 or 3:23 a.m. in California)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  live-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Use the tests from the latest release
+        run: |
+          tag=$(git describe --tags --abbrev=0 --match 'v*')
+          echo "latest release: $tag"
+          git checkout -q "$tag"
+          echo "VERSION=${tag#v}" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install the locked tools and the browser
+        working-directory: source
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Check the live site
+        env:
+          NODE_PATH: ${{ github.workspace }}/source/node_modules
+        run: |
+          if [ -f tests/live_check.js ]; then node tests/live_check.js https://jaycarterwells.github.io/audit-pup/ "$VERSION"
+          else live=$(curl -fsSL https://jaycarterwells.github.io/audit-pup/ | grep -o "var APP_VERSION='[^']*'" | cut -d"'" -f2); echo "live site is $live"; [ "$live" = "$VERSION" ]; fi

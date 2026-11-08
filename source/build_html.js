@@ -7,7 +7,9 @@ const version=fs.readFileSync('VERSION','utf8').trim();
 if(!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error('VERSION is not a semantic version: '+version);
 // The release notes inside the page must have an entry for this version
 if(!tpl.includes(`version:'${version}'`)) throw new Error('No changelog entry for version '+version+' in the template CHANGELOG');
-const d=new Date(), stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+// The build date shown on the page: BUILD_DATE (YYYY-MM-DD) when set, as the release workflow does with the release
+// commit's date, otherwise today.
+const d=new Date(), stamp=process.env.BUILD_DATE&&/^\d{4}-\d{2}-\d{2}$/.test(process.env.BUILD_DATE)?process.env.BUILD_DATE:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 // Fonts and dog drawings live in assets/ and are built into the page as base64, so the one file works offline
 const path=require('path');
 const tplA=tpl.replace(/__ASSET_([\w.-]+)__/g,(m,name)=>{ const f=path.join('assets',name);
