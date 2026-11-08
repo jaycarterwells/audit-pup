@@ -10,7 +10,7 @@ Audit Pup (El Dorado Tax-Aide Case Checker) is a single HTML file that grades a 
 | `docs/chromebook-guide.md` | The counselor guide. Must match the page exactly. |
 | `docs/release-checklist.md` | This page. |
 | `CLAUDE.md` | Working rules and design decisions for Claude sessions. |
-| `source/` | `audit-pup-template.html` (the page source), `build_html.js`, `VERSION`, `package.json`, `assets/` (built-in fonts and dog drawings), `art/` (the original dog drawings, for new crops). |
+| `source/` | `audit-pup-template.html` (the page), `engine.js` (the reading engine), `cases/*.js` (each case's lines, hints, steps, notes), `tools/import_answer_sheet.js`, `build_html.js`, `VERSION`, `package.json`, `assets/` (built-in fonts and dog drawings), `art/` (the original dog drawings, for new crops). |
 | `cases/quinn/`, `cases/baylor/` | The correct TaxSlayer PDF for each step of each case. The tests read these. |
 | `.github/workflows/tests.yml` | Runs the build and every test on each pull request and push to main. |
 | `.github/workflows/release.yml` | After the tests pass on main, tags a new version and publishes its GitHub Release. |
@@ -26,16 +26,17 @@ cd source
 npm install
 npx playwright install chromium   # only if Playwright says its browser is missing
 node build_html.js
-npm test                          # runs tests/run_all.sh
+npm run dev-test                  # the fast developer test, about 45 seconds
+npm test                          # the full suite, tests/run_all.sh, about 5 minutes
 ```
 
-`run_all.sh` runs every script below, prints one line per test, and shows a script's full output only when it fails. Every script ends with a failure exit code when any check fails, so nothing needs a read by eye. The full run takes about 6 minutes. GitHub Actions runs the same suite on every pull request (see `docs/test-plan.md`).
+`run_all.sh` runs every script below, prints one line per test, and shows a script's full output only when it fails. Every script ends with a failure exit code when any check fails, so nothing needs a read by eye. The full run takes about 5 minutes. GitHub Actions runs the same suite on every pull request (see `docs/test-plan.md`).
 
 ## Release checklist
 
 0. **GitHub checks.** The "tests" check on the release pull request is green. It runs everything below except the real-device checks.
-1. **Planted-mistake sweep.** `mutate.js` changes one printed number at a time in every Quinn step PDF and confirms each checked line is read from exactly its own spot on the form. Required result: "SWEEP OK" (every checked line has exactly 1 reader, a $1 error fails, a blanked line fails). Quinn and Baylor (0.14.0): 9,026 planted mistakes, 0 missed, including $5 planted in every line whose answer is blank.
-2. **Step and file matrix.** `cases_matrix.js`, for every case: every printout checked against every step. A step's own printout (or one with the same return) passes; any other printout fails or shows the wrong-step warning; no on-screen error in any cell. `verify5.js` also checks Quinn's exact scores and the warning's button.
+1. **Planted-mistake sweep.** `engine_sweep.js` changes one printed number at a time in every step PDF of every case and confirms each checked line is read from exactly its own spot on the form, a $1 error fails, a blanked line fails, and $5 planted in a line whose answer is blank fails. Required result: "SWEEP OK". Quinn and Baylor: 9,026 planted mistakes, 0 missed.
+2. **Step and file matrix.** `engine_cases.js`, for every case: every printout checked against every step at engine level. A step's own printout (or one with the same return) passes; any other printout fails or shows the wrong-step warning. `cases_matrix.js` checks a sample of pairs through the page with no on-screen error, and `engine_parity.js` proves the page reads every PDF exactly as the engine tests do. `verify5.js` also checks Quinn's exact scores and the warning's button.
 2a. **Each step and case switching.** `cases_steps.js`: every step of every case passes with its own PDF, with only the student's own items left, and the longest PDF checks in time on a slowed processor. `cases_switch.js`: progress is kept per case, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked.
 3. **Added and removed forms.** `verify2.js` with the fixture PDFs. Extra forms are ignored; a missing checked form shows "Form missing."
 4. **Notes and manual items.** `verify3.js` (N1, N2, N3 entries, NN checkbox) and `verify4.js` (bar colors, reward online and offline, pinned frame).
@@ -54,10 +55,11 @@ npm test                          # runs tests/run_all.sh
 
 ## Adding a new case
 
-1. Add the correct TaxSlayer PDF for each step under `cases/<case>/` (`<Case>_Sec_<step>.pdf`).
+1. Add the correct TaxSlayer PDF for each step under `cases/<case>/` (`<Case>_Sec_<step>.pdf`), and the answer sheet as `cases/<case>/answer_sheet.doc`.
+1a. Make the answer key from the sheet, never by typing: convert it with `soffice --headless --convert-to html`, then run `node source/tools/import_answer_sheet.js <case> <sheet.html>`. It writes `cases/<case>/answer_key.json` and stops on any row it cannot place.
 2. Add `cases/<case>/case.json` (copy Baylor's as the pattern): the PDF for each step, the items left for the student at each step, steps with identical returns, steps with their own TS Note box, and the speed limit. No new test script is needed: every generic test and the planted-mistake sweep pick up the new case.
-3. Add the case's lines, answer key columns, notes, and one teaching hint per line to the template (see the Baylor data as the pattern). Have Carter approve the hints.
-4. Run `bash tests/run_all.sh`. `cases_steps.js` also fails if `case.json` and the page list different steps.
+3. Add `source/cases/<case>.js` with the case's lines, steps (expected values from `expectedFromKey(ANSWER_KEYS.<case>)`), notes, and one teaching hint per line (see `source/cases/baylor.js` as the pattern). Have Carter approve the hints.
+4. Run `bash tests/dev_test.sh <case>` while working, then `bash tests/run_all.sh`. `cases_steps.js` also fails if `case.json` and the page list different steps.
 5. This is a MINOR version.
 
 ## Version rules (semantic versioning, MAJOR.MINOR.PATCH)

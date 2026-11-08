@@ -12,7 +12,17 @@ const d=new Date(), stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,
 const path=require('path');
 const tplA=tpl.replace(/__ASSET_([\w.-]+)__/g,(m,name)=>{ const f=path.join('assets',name);
   if(!fs.existsSync(f)) throw new Error('Missing asset '+f); return fs.readFileSync(f).toString('base64'); });
-const out=tplA.split('__PDFJS_LIB__').join(lib).split('__PDFJS_WORKER__').join(wrk).split('__APP_VERSION__').join(version).split('__BUILD_DATE__').join(stamp);
+// The reading engine, each case's answer key (cases/<case>/answer_key.json), and each case's data (cases/*.js)
+// go into the page in this order. Quinn first: it is the first case in the case picker.
+const keys={};
+fs.readdirSync(path.join('..','cases')).forEach(c=>{ const f=path.join('..','cases',c,'answer_key.json'); if(fs.existsSync(f)) keys[c]=JSON.parse(fs.readFileSync(f,'utf8')); });
+const caseFiles=fs.readdirSync('cases').filter(f=>f.endsWith('.js')).sort((a,b)=>(a==='quinn.js'?-1:b==='quinn.js'?1:a.localeCompare(b)));
+const engineAndCases=[fs.readFileSync('engine.js','utf8'),
+  '/* answer keys made from each case\'s answer sheet by tools/import_answer_sheet.js */\nvar ANSWER_KEYS = '+JSON.stringify(keys)+';',
+  ...caseFiles.map(f=>fs.readFileSync(path.join('cases',f),'utf8'))].join('\n');
+if(!tplA.includes('/*__ENGINE_AND_CASES__*/')) throw new Error('The template has no /*__ENGINE_AND_CASES__*/ marker');
+const tplB=tplA.replace(/\/\*__ENGINE_AND_CASES__\*\/[^\n]*/,()=>engineAndCases);
+const out=tplB.split('__PDFJS_LIB__').join(lib).split('__PDFJS_WORKER__').join(wrk).split('__APP_VERSION__').join(version).split('__BUILD_DATE__').join(stamp);
 const name=`Audit Pup ${version} ${stamp}.html`;
 fs.mkdirSync('dist',{recursive:true});
 fs.writeFileSync('dist/'+name, out);
