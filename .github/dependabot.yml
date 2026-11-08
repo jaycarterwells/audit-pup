@@ -1,0 +1,22 @@
+# Dependabot opens a pull request when a tool has an update; the full tests run on it like any other change.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /source
+    schedule:
+      interval: monthly
+    ignore:
+      # A new major version of pdf.js changes how PDFs are read and where its files live. Move to one on purpose,
+      # with the sweep and the parity test, not as a routine update.
+      - dependency-name: pdfjs-dist
+        update-types: ["version-update:semver-major"]
+    groups:
+      tools:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

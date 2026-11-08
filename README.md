@@ -20,7 +20,7 @@ The current version and what changed in each one are shown by the Version button
 
 ## For maintainers
 
-The page is built from `source/` (template, fonts, dog drawings, build script) into the single file `index.html`. Tests are in `tests/` and use the correct step PDFs in `cases/`. `docs/release-checklist.md` lists the release steps, and `CLAUDE.md` holds the working rules and design decisions.
+The page is built from `source/` (template, reading engine, case files, fonts, dog drawings, build script) into one self-contained file, which the release workflow deploys to GitHub Pages. Tests are in `tests/` and use the correct step PDFs in `cases/`. `docs/release-checklist.md` lists the release steps, and `CLAUDE.md` holds the working rules and design decisions.
 
 ## Notes
 

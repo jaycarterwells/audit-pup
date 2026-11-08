@@ -1,5 +1,9 @@
-# Release: after the tests pass on main, tag the commit and publish a GitHub Release when source/VERSION
-# holds a version that has no tag yet. Ordinary changes (same version) do nothing.
+# Release and deploy.
+#  * After the tests pass on main: when source/VERSION holds a version that has no tag yet, tag that tested commit,
+#    publish a GitHub Release with the notes from the page's What's new list, build the page from that commit, and
+#    deploy it to GitHub Pages. Ordinary changes (same version) do nothing, so the live site stays at the last release.
+#  * By hand (Actions, release, Run workflow): deploy an existing release tag again, for example v0.14.0.
+# After every deploy, the live site is checked: right version, and one step of every case passes.
 name: release
 
 on:
@@ -7,38 +11,57 @@ on:
     workflows: [tests]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to deploy again (for example v0.14.0)
+        required: true
 
 permissions:
-  contents: write        # create the tag and the release; nothing else
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://jaycarterwells.github.io/audit-pup/
 
 jobs:
   release:
-    # only tested pushes to main, never pull requests or failed runs
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    # tested pushes to main, or a person asking to deploy a tag; never pull requests or failed runs
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write        # create the tag and the release
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+      deploy: ${{ steps.v.outputs.deploy }}
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
 
-      - name: Decide whether this commit is a new release
+      - name: Decide what to release and deploy
         id: v
+        env:
+          REQUESTED: ${{ github.event.inputs.tag }}
         run: |
-          version=$(tr -d '[:space:]' < source/VERSION)
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
-            echo "v$version is already tagged; nothing to release."
-            echo "new=false" >> "$GITHUB_OUTPUT"
+          if [ -n "$REQUESTED" ]; then
+            if ! git rev-parse -q --verify "refs/tags/$REQUESTED" >/dev/null; then echo "::error::No tag $REQUESTED"; exit 1; fi
+            echo "Deploying the existing release $REQUESTED again."
+            { echo "tag=$REQUESTED"; echo "deploy=true"; echo "new=false"; } >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          live=$(grep -o "var APP_VERSION='[^']*'" index.html | head -1 | cut -d"'" -f2)
-          if [ "$live" != "$version" ]; then
-            echo "::error::source/VERSION is $version but index.html is $live. Rebuild index.html before releasing."
-            exit 1
+          version=$(tr -d '[:space:]' < source/VERSION)
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already released; nothing to release or deploy."
+            { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          echo "new=true" >> "$GITHUB_OUTPUT"
+          { echo "tag=v$version"; echo "version=$version"; echo "deploy=true"; echo "new=true"; } >> "$GITHUB_OUTPUT"
 
       - name: Write the release notes from the page's What's new list
         if: steps.v.outputs.new == 'true'
@@ -49,7 +72,89 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v${{ steps.v.outputs.version }}" \
+          gh release create "${{ steps.v.outputs.tag }}" \
             --target "${{ github.event.workflow_run.head_sha }}" \
             --title "Audit Pup ${{ steps.v.outputs.version }}" \
             --notes-file release-notes.md
+
+  deploy:
+    needs: release
+    if: needs.release.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write           # publish to GitHub Pages
+      id-token: write        # required by the Pages deployment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the release
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+          path: site
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/source/package-lock.json
+
+      - name: Build the page as index.html, dated with the release commit's date
+        working-directory: site/source
+        run: |
+          npm ci
+          BUILD_DATE=$(git log -1 --format=%cs) node build_html.js
+          cp tax-aide-quinn-checker.html ../index.html
+          rm -rf node_modules dist tax-aide-quinn-checker.html
+
+      - uses: actions/configure-pages@v5
+
+      - name: Build the site the same way branch-based Pages did (Jekyll), so docs links keep working
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./site
+          destination: ./_site
+
+      - uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  live-check:
+    needs: [release, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install the locked tools and the browser
+        working-directory: source
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Wait for the live site to serve the new version
+        run: |
+          want=$(tr -d '[:space:]' < source/VERSION)
+          for i in $(seq 1 30); do
+            live=$(curl -fsSL "$SITE_URL" | grep -o "var APP_VERSION='[^']*'" | head -1 | cut -d"'" -f2 || true)
+            echo "attempt $i: live site is ${live:-not answering}, want $want"
+            [ "$live" = "$want" ] && exit 0
+            sleep 20
+          done
+          echo "::error::The live site did not show version $want within 10 minutes"; exit 1
+      - name: Check the live site
+        env:
+          NODE_PATH: ${{ github.workspace }}/source/node_modules
+        run: |
+          if [ -f tests/live_check.js ]; then node tests/live_check.js "$SITE_URL" "$(tr -d '[:space:]' < source/VERSION)"
+          else echo "This release has no tests/live_check.js; the version check above passed."; fi

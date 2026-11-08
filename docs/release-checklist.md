@@ -6,7 +6,6 @@ Audit Pup (El Dorado Tax-Aide Case Checker) is a single HTML file that grades a 
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The built Audit Pup page that GitHub Pages serves. Never edit it by hand. |
 | `docs/chromebook-guide.md` | The counselor guide. Must match the page exactly. |
 | `docs/release-checklist.md` | This page. |
 | `CLAUDE.md` | Working rules and design decisions for Claude sessions. |
@@ -17,7 +16,7 @@ Audit Pup (El Dorado Tax-Aide Case Checker) is a single HTML file that grades a 
 | `docs/test-plan.md` | How testing works and the planned changes to it. |
 | `tests/` | Test scripts, `run_all.sh`, `fixtures/` (Quinn PDFs with forms added or removed), and `mockdog.jpg` (a stand-in reward photo). Results and screenshots go to `tests/output/`, which is not committed. |
 
-The live site is https://jaycarterwells.github.io/audit-pup/ (GitHub Pages from `main`). Each release is tagged `v<version>`.
+The live site is https://jaycarterwells.github.io/audit-pup/. The release workflow builds the page from each release tag and deploys it to GitHub Pages, so the site always shows the latest release, not unreleased changes on `main`. Each release is tagged `v<version>`.
 
 ## Running the tests
 
@@ -50,8 +49,9 @@ npm test                          # the full suite, tests/run_all.sh, about 5 mi
 12. **Real devices.** Open the build on a managed Tax-Aide Chromebook and on a Mac (Chrome and Safari) and check one step end to end. On the Chromebook, also sign out and back in to confirm saved progress survives.
 13. **Guide matches the code.** Update `docs/chromebook-guide.md` for every change counselors can see: steps, buttons, labels, statuses, colors, dog titles, and the exact wording of every message in "If something goes wrong." Read the guide against the built page before releasing. Carter does not edit the guide separately.
 14. **Version and release notes.** Set the new version in `source/VERSION` using the rules below, and add a matching entry at the top of the `CHANGELOG` list in the template, written for counselors. The build refuses to run if the version has no release notes.
-15. **Build.** In `source/`, run `node build_html.js`, then copy `source/tax-aide-quinn-checker.html` (or the file in `source/dist/`) to `index.html` at the repository root.
-16. **Publish.** Commit `index.html`, the guide, and any source, test, or case changes together on a branch and open a pull request. When the "tests" check is green, merge it. The ruleset on `main` blocks the merge until it is. GitHub Pages updates the live site within a few minutes, and the release workflow then tags `v<version>` and publishes the GitHub Release with the notes from the Version panel. Do not tag by hand. Open the live site and confirm the Version button shows the new number.
+15. **Build locally (optional).** In `source/`, `node build_html.js` writes `tax-aide-quinn-checker.html` to look at. Nothing is copied into the repository: GitHub builds the page at release time.
+16. **Publish.** Commit the version, release notes, guide, and any source, test, or case changes together on a branch and open a pull request. When the "tests" check is green, merge it (the ruleset on `main` blocks the merge until it is). The release workflow then tags `v<version>`, publishes the GitHub Release with the notes from the Version panel, builds the page from the tag, deploys it, and checks the live site: the new version number and one step of every case. Do not tag by hand. If the live check fails, read its log under Actions, release.
+17. **Deploy an older release again (only if needed).** Actions, release, Run workflow, and enter the tag (for example `v0.14.0`).
 
 ## Adding a new case
 

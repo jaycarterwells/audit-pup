@@ -116,6 +116,12 @@ The slowest part is checking every PDF against every step through the page, beca
 
 ## Part 3: Changes to make, in priority order
 
+**Done after 0.14.0: bucket A (the rest of change 3, and changes 11 and 12).**
+
+* The release workflow builds the page from each release tag and deploys it to GitHub Pages with the same Jekyll site build branch-based Pages used, so `index.html` is no longer kept in the repository or copied by hand (`tests/check_index.js` is gone with it). It can deploy an existing tag again by hand.
+* After every deploy, `tests/live_check.js` opens the live site, confirms the version, and checks the first step of every case. The weekly workflow runs the full suite on `main` and the live check every Sunday.
+* Dependabot opens monthly pull requests for the npm tools and the workflow actions; major pdf.js versions are held back.
+
 **Done after 0.14.0: changes 5, 6, and 7.**
 
 * **Change 5:** the answer sheet is kept in the repository (`cases/baylor/answer_sheet.doc`), and `source/tools/import_answer_sheet.js` makes `cases/baylor/answer_key.json` from it. The page's Baylor key is built from that file, never typed. `engine_cases.js` checks that the sheet's fingerprint still matches, that every row names a real line, and that every step's expected values are the key's. `dev_test.sh` re-imports the sheet and compares when LibreOffice is installed. The import reproduced the 0.14.0 key exactly (364 cells, 0 differences). Quinn's answer sheet is not in the repository, so Quinn's key is still typed in `source/cases/quinn.js`.
@@ -159,7 +165,7 @@ Each bucket is one piece of work: one session and one pull request. They are in 
 
 | Bucket | What it includes | Why now | Needs from Carter | Size |
 | --- | --- | --- | --- | --- |
-| **A. Release and site safety** | Deploy the site from GitHub Actions (the rest of change 3), so `index.html` no longer needs to be copied by hand. A check of the live site after each deploy, and a weekly scheduled run of the full suite (change 11). Dependabot for pdf.js and Playwright (change 12). | Protects what counselors actually see, and keeps the tools current without surprises. | Set Pages to deploy from GitHub Actions (Settings, Pages, Source). Allow this session to reach jaycarterwells.github.io if the live check should also run here. | Small |
+| **A. Release and site safety** (done) | Deploy the site from GitHub Actions (the rest of change 3), so `index.html` no longer needs to be copied by hand. A check of the live site after each deploy, and a weekly scheduled run of the full suite (change 11). Dependabot for pdf.js and Playwright (change 12). | Protects what counselors actually see, and keeps the tools current without surprises. | Set Pages to deploy from GitHub Actions (Settings, Pages, Source). Allow this session to reach jaycarterwells.github.io if the live check should also run here. | Small |
 | **B. Code checks before a browser opens** | Static checks (change 9): ESLint for the engine, cases, and tests; an HTML check of the built page; the writing style rules (no em dashes or double hyphens) for docs and page text; and a check that every message the guide quotes exists in the page. All go into the developer test. | Cheap, fast, and catches mistakes earliest. The guide check enforces rule 3 automatically. | Nothing. | Small |
 | **C. More browsers and accessibility** | Playwright's WebKit browser (Safari's engine) for the main paths, and an axe accessibility scan of the start page and results (change 10). Any real problems it finds become fixes in a patch release. | Covers Mac and Safari users and the large-print and keyboard needs of older volunteers. | Approve any visible fixes it leads to. | Small to medium |
 | **D. Steadier, faster page tests** | Replace the 69 fixed waits in the page tests with waits on the page's own signals (change 8). Fold `verify2.js` and `verify5.js` into the case tests where they now overlap. | Faster runs, and no flaky failures on a slow GitHub machine. | Nothing. | Small |
