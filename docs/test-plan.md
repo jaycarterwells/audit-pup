@@ -18,8 +18,8 @@ All tests are Playwright scripts in `tests/`. They open the built page (`source/
 | Test | What it proves | Case | Time |
 | --- | --- | --- | --- |
 | `mutate.js` (planted-mistake sweep) | Changes every printed amount on every checked form, one at a time, and confirms each checked line is read from exactly one spot. A $1 error fails, a blanked line fails, and $5 put in a line that should be blank fails. | Quinn, Baylor | 17 s |
-| `baylor1.js` | Every Baylor step's correct PDF passes its own step. | Baylor | 12 s |
-| `baylor2.js` | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | 2 min 19 s |
+| `baylor1.js` (replaced in change 4 by `cases_steps.js`) | Every Baylor step's correct PDF passes its own step. | Baylor | 12 s |
+| `baylor2.js` (replaced in change 4 by `cases_matrix.js` and `cases_switch.js`) | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | 2 min 19 s |
 | `verify2.js` | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | 10 s |
 | `verify3.js` | Quinn notes N1, N2, N3 worksheet entries, and the TS Note box. | Quinn | 6 s |
 | `verify4.js` | Bar colors, reward online and offline, pinned score frame. | Quinn | 14 s |
@@ -115,6 +115,8 @@ The goal is to catch as much as possible while the code is being written, quickl
 The slowest part is checking every PDF against every step through the page, because it grows with the square of the number of steps and drives the whole page each time. The same comparison can be done at the reading-engine level, the way the sweep works, in seconds per case. The page itself then only needs a few sample pairings per case.
 
 ## Part 3: Changes to make, in priority order
+
+**Done after 0.14.0:** change 4. Each case has `cases/<case>/case.json`, and `cases_steps.js`, `cases_matrix.js`, `cases_switch.js`, and `mutate.js` run over every case listed. `baylor1.js` and `baylor2.js` are gone. The Quinn-only scripts that test page behavior (saved progress, What's new, startup, layout) stay as they are: they test the page, not a case. The expectations for case tests come from `case.json`, never from the page under test.
 
 **Done in 0.14.0:** changes 1, 2, and the check half of 3 (`tests/check_index.js`). Still to do for 3: deploy the site from GitHub Actions once Pages is set to deploy from Actions. Also done: `main` is protected by a ruleset that requires the "tests" check, and releases are tagged and published by `.github/workflows/release.yml` after the tests pass.
 

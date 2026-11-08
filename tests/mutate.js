@@ -1,15 +1,13 @@
 // Plants single-line mistakes into the real PDFs (one printed number at a time) and checks the engine catches them.
 const { chromium } = require('playwright'); const path=require('path'); const fs=require('fs');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
-const C=path.join(__dirname,'..','cases');
-// [case, step, PDF]. Baylor Step P has no printout of its own; its return is the same as Step O.
-const CASES=[['quinn','A','quinn/Quinn_Sec_A'],['quinn','B','quinn/Quinn_Sec_B'],['quinn','D','quinn/Quinn_Sec_D'],['quinn','E','quinn/Quinn_Sec_E'],['quinn','F','quinn/Quinn_Sec_F']]
-  .concat(['A','B','C','E','F','G','H','I','J','L','M','N','O','P','R'].map(s=>['baylor',s,'baylor/Baylor_Sec_'+(s==='P'?'O':s)]));
+// [case, step, PDF] for every step of every case with a case.json (Baylor Step P uses Step O's printout)
+const CASES=require('./cases').loadCases().flatMap(c=>c.steps.map(s=>[c.id,s,c.pdfPath(s)]));
 (async()=>{ const b=await chromium.launch(); const p=await b.newPage();
  await p.goto('file://'+PAGE); await p.waitForTimeout(300);
  const all={};
  for(const [caseId,stepId,f] of CASES){
-  const b64=fs.readFileSync(`${C}/${f}.pdf`).toString('base64');
+  const b64=fs.readFileSync(f).toString('base64');
   const r=await p.evaluate(async ({b64,stepId,caseId})=>{
     useCase(caseId);
     const bin=atob(b64), bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
