@@ -4,9 +4,10 @@
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
+const { started } = require('./page');
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  const ready=()=>p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0);
+  const ready=()=>started(p);
   await p.goto('file://'+PAGE); await ready();
   const cases=loadCases();
   const chips=()=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.className.replace('pchip','').replace('sel','').trim()).join(' '));

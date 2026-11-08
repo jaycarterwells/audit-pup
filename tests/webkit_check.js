@@ -6,6 +6,7 @@
 const { webkit } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
+const { open, reload } = require('./page');
 (async()=>{
   let b;
   try{ b=await webkit.launch(); }
@@ -15,7 +16,7 @@ const { loadCases, grade, PAGE } = require('./cases');
   }
   const ctx=await b.newContext({viewport:{width:1280,height:800}}); await ctx.route('https://dog.ceo/**',r=>r.abort());
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+PAGE); await p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0,null,{timeout:30000});
+  await open(p,'file://'+PAGE);
   expect('WebKit: the page starts (no "did not start" note)', await p.$eval('#startup',e=>e.classList.contains('hidden')));
   const chips=()=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.className.replace('pchip','').replace('sel','').trim()).join(' '));
   for(const c of loadCases()){
@@ -29,7 +30,7 @@ const { loadCases, grade, PAGE } = require('./cases');
     await p.click('#groups li.check.fail .hintbtn');
     expect(`WebKit ${c.id}: a failing line's hint opens with the answer key value`, await p.$eval('#groups li.check.fail .hint',e=>e.classList.contains('show')&&/Answer key:/.test(e.textContent)));
     const before=await chips();
-    await p.reload(); await p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0);
+    await reload(p);
     if(await p.$eval('#assignment',e=>e.value)!==c.id){ await p.selectOption('#assignment',c.id); }
     expect(`WebKit ${c.id}: progress is kept after a reload`, (await chips())===before && before.includes(`${s}:`), `${before} | ${await chips()}`);
   }

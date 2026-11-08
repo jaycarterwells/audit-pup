@@ -3,14 +3,15 @@ const { finish } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
+const { open, ready, settled } = require('./page');
 const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
 (async()=>{ const b=await chromium.launch(); let ok=true; const check=(l,c,d)=>{ ok=ok&&c; console.log(`${c?'OK  ':'FAIL'} ${l}${d?'  ['+d+']':''}`); };
  for(const motion of ['no-preference','reduce']){
  const ctx=await b.newContext({viewport:{width:1366,height:657},reducedMotion:motion}); await ctx.route('https://dog.ceo/**',r=>r.abort());
  const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+PAGE); await p.waitForTimeout(300);
+ await open(p,'file://'+PAGE);
  const grade=async(step,pdf)=>{ await p.selectOption('#step',step); await p.setInputFiles('#file',`${U}/${F[pdf]}.pdf`); await p.click('#grade');
-   await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready',{timeout:20000}); await p.waitForTimeout(600); };
+   await ready(p); };
  const mood=()=>p.evaluate(()=>({mood:document.getElementById('mood').className, dog:document.getElementById('moodname').textContent, label:document.getElementById('moodimg').getAttribute('aria-label'),
    bar:getComputedStyle(document.getElementById('barfill')).backgroundColor}));
  if(motion==='no-preference'){
@@ -31,7 +32,7 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
     const card=document.querySelector('.card').getBoundingClientRect();
     return {n:cs.length, rows:tops.length, ends:cs.filter(c=>c.hasAttribute('data-end')).length, inside:cs.every(c=>{const r=c.getBoundingClientRect(); return r.right<=card.right && r.left>=card.left;})}; });
   check('19 steps wrap onto 3 rows inside the card, line stops at each row end', rows.n===19 && rows.rows===3 && rows.ends===2 && rows.inside, JSON.stringify(rows));
-  await p.setViewportSize({width:911,height:438}); await p.waitForTimeout(200);
+  await p.setViewportSize({width:911,height:438}); await settled(p);
   const rows2=await p.evaluate(()=>{ const cs=[...document.querySelectorAll('#progress .pchip')]; return {rows:new Set(cs.map(c=>c.offsetTop)).size, ends:cs.filter(c=>c.hasAttribute('data-end')).length,
     sideways:document.documentElement.scrollWidth>window.innerWidth}; });
   check('150% zoom: 19 steps still wrap, no sideways scroll', rows2.rows>=3 && rows2.ends===rows2.rows-1 && !rows2.sideways, JSON.stringify(rows2));

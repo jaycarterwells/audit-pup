@@ -1,17 +1,22 @@
 const { expect } = require('./expect');
+// Quinn through the page in a viewer that blocks background workers and blob links: exact scores for every step,
+// notes N1, N2, N3 worksheet entries, the TS Note box, and printouts with forms added or removed (tests/fixtures).
 const { chromium } = require('playwright'); const path=require('path');
+const { open, ready } = require('./page');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
 const T=path.join(__dirname,'fixtures');
 async function grade(p,step,file){ await p.selectOption('#step',step); await p.setInputFiles('#file',file); await p.click('#grade');
-  await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready',{timeout:20000}); await p.waitForTimeout(120);
+  await ready(p,{settle:false});
   return { score:(await p.textContent('#score')).replace(/\s/g,''), verdict:await p.textContent('#verdictV'),
     rows:await p.$$eval('li.check',els=>els.map(e=>{const n=e.querySelector('.name');const chip=n.querySelector('.chip');const ln=n.querySelector('.line').textContent;
       return (chip?chip.textContent+' ':'')+ln.replace(/^.*, /,'')+'='+e.querySelector('.state').textContent;})) }; }
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext();
   await ctx.addInitScript(()=>{ window.Worker=function(){throw new Error('blocked');}; URL.createObjectURL=()=> 'blob-request://blocked'; });
+  await ctx.route('https://dog.ceo/**',r=>r.abort());   // never contact the real dog photo service from a test
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+PAGE); await p.waitForTimeout(300);
+  p.on('console',m=>{ if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errs.push(m.text()); });
+  await open(p,'file://'+PAGE);
   let r;
   r=await grade(p,'A',`${U}/Quinn_Sec_A.pdf`); console.log('A', r.score, '|', r.rows.join(', ')); expect('A scores 4/4',r.score==='4/4',r.score);
   console.log('   N1 detail:', await p.$eval('li.check:nth-child(2) .yours',e=>e.textContent).catch(()=>'?'));
@@ -27,7 +32,9 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
   { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E all notes done:', s, '|', await p.textContent('#verdictV')); expect('E with all notes done scores 27/27',s==='27/27',s); }
   r=await grade(p,'F',`${U}/Quinn_Sec_F.pdf`); console.log('F (entries kept)', r.score, '|', r.verdict); expect('F keeps the worksheet entries and scores 27/27',r.score==='27/27',r.score);
   r=await grade(p,'B',`${T}/B_plus_extra_forms.pdf`); console.log('B+extra forms', r.score); expect('extra forms are ignored',r.score==='21/21',r.score);
-  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows 3 lines failing',r.score==='18/21',r.score);
+  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows 3 lines failing',r.score==='18/21'&&r.rows.filter(x=>/=Form missing/.test(x)).length===3,r.score);
+  r=await grade(p,'B',`${T}/B_without_scheduleA.pdf`); console.log('B-Schedule A', r.score); expect('removing a form that is not checked changes nothing',r.score==='21/21',r.score);
+  r=await grade(p,'E',`${T}/E_plus_extra_forms.pdf`); console.log('E+consent pages+Schedule A', r.score); expect('extra pages in a Step E printout are ignored',r.score==='27/27',r.score);
   r=await grade(p,'E',`${U}/Quinn_Sec_B.pdf`); console.log('B graded as E', r.score, '|', r.rows.filter(x=>!/Correct|Confirmed/.test(x)).join(', ')); expect('the B file graded as E fails exactly the 5 MWP lines',r.score==='22/27'&&r.rows.filter(x=>/=Check/.test(x)).length===5,r.score);
   // N1 negative unit test using the page's own functions
   const neg=await p.evaluate(()=>{ const fake=[{form:'fed',items:[{x:100,y:500,s:'X'},{x:110,y:500,s:'Single'},{x:349,y:480,s:'Head of household (HOH)'}]}];

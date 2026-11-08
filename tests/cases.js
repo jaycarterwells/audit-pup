@@ -1,6 +1,7 @@
 // Loads every case that has a cases/<case>/case.json, in "order". The generic tests (cases_steps, cases_matrix,
 // cases_switch, mutate) run over this list, so a new case needs a case.json and its PDFs, not new test scripts.
 const fs=require('fs'), path=require('path');
+const { ready } = require('./page');
 const ROOT=path.join(__dirname,'..','cases');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html');
 function loadCases(){
@@ -23,7 +24,7 @@ async function pageCases(p){ return p.evaluate(()=>CASES.map(c=>({id:c.id, steps
 async function grade(p,caseId,step,file){
   if(await p.$eval('#assignment',e=>e.value)!==caseId){ await p.selectOption('#assignment',caseId); await p.waitForFunction(id=>document.getElementById('assignment').value===id,caseId); }
   await p.selectOption('#step',step); await p.setInputFiles('#file',file); await p.click('#grade');
-  await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready',null,{timeout:60000});
+  await ready(p,{settle:false});   // the results are drawn before the button says ready; motion does not matter here
   return p.evaluate(()=>({
     score:document.getElementById('score').textContent.replace(/\s/g,''),
     rows:[...document.querySelectorAll('#groups li.check')].map(l=>({cls:l.className.replace('check','').trim(), name:l.querySelector('.name').textContent, st:l.querySelector('.state').textContent, yours:(l.querySelector('.yours')||{}).textContent||''})),

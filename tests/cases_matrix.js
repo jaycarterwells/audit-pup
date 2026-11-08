@@ -7,9 +7,10 @@
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
+const { open } = require('./page');
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+PAGE); await p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0);
+  await open(p,'file://'+PAGE);
   for(const c of loadCases()){ let n=0;
     for(const f of c.files){
       const own=c.stepsOf(f)[0], i=c.steps.indexOf(own);

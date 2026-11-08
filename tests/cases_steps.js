@@ -4,9 +4,10 @@
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, pageCases, grade, PAGE } = require('./cases');
+const { open } = require('./page');
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+PAGE); await p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0);
+  await open(p,'file://'+PAGE);
   const cases=loadCases(), onPage=await pageCases(p);
   expect('every case on the page has a case.json, and every case.json is on the page',
     onPage.map(c=>c.id).sort().join()===cases.map(c=>c.id).sort().join(), `page: ${onPage.map(c=>c.id)}; case.json: ${cases.map(c=>c.id)}`);
