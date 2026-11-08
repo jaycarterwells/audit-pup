@@ -1,3 +1,4 @@
+const { expect, finish } = require('./expect');
 // Saved progress (localStorage)
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
@@ -36,4 +37,4 @@ const url='file://'+PAGE;
  const p2=await c2.newPage(); const e2=[]; p2.on('pageerror',e=>e2.push(e.message)); await p2.goto(url); await p2.waitForTimeout(250);
  await p2.selectOption('#step','B'); await p2.setInputFiles('#file',`${U}/${F.B}.pdf`); await p2.click('#grade'); await p2.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready',{timeout:20000});
  check('storage blocked: still checks, says progress is not saved', (await p2.textContent('#score')).replace(/\s/g,'')==='21/21' && !!(await p2.$('.nosave')) && !e2.length, e2.join(';'));
- console.log(ok?'\nALL SAVED-PROGRESS CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); await b.close(); })();
+ finish(ok); expect('no page errors',!errs.length,errs.join(';')); console.log(ok?'\nALL SAVED-PROGRESS CASES OK':'\nSOME CASES FAILED','| errors:',errs.length?errs:'none'); await b.close(); })();

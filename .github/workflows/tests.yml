@@ -1,0 +1,56 @@
+# Check-in tests: build the page and run every Audit Pup test on each pull request and each push to main.
+# Make the "tests" check required for main in the repository settings so nothing untested can merge.
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # the index.html check compares against release tags
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+
+      - name: Install the locked tools (pdf.js, Playwright)
+        working-directory: source
+        run: npm ci
+
+      - name: Install the browser for the locked Playwright version
+        working-directory: source
+        run: npx playwright install --with-deps chromium
+
+      - name: Build the page
+        working-directory: source
+        run: node build_html.js
+
+      - name: Run every test
+        env:
+          NODE_PATH: ${{ github.workspace }}/source/node_modules   # the test scripts load Playwright from here
+        run: bash tests/run_all.sh
+
+      - name: Keep the test logs and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: tests/output/
+          retention-days: 14
