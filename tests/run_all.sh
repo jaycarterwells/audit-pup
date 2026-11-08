@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 [ -f ../source/tax-aide-quinn-checker.html ] || { echo "No build found. Run: cd source && npm install && node build_html.js"; exit 1; }
 mkdir -p output
 bad=0
-for t in check_index verify2 verify3 verify4 verify5 verify7 verify8 verify9 verify10 verify11 repro2 verify6 baylor1 baylor2 mutate; do
+for t in check_index verify2 verify3 verify4 verify5 verify7 verify8 verify9 verify10 verify11 repro2 verify6 cases_steps cases_switch cases_matrix mutate; do
   start=$SECONDS
   timeout 900 node "$t.js" > "output/$t.log" 2>&1; code=$?
   if [ $code -ne 0 ] || grep -qE '^FAIL|SOME CASES FAILED|SWEEP FAILED|ERROR MESSAGE SHOWN' "output/$t.log"; then

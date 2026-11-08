@@ -35,7 +35,8 @@ npm test                          # runs tests/run_all.sh
 
 0. **GitHub checks.** The "tests" check on the release pull request is green. It runs everything below except the real-device checks.
 1. **Planted-mistake sweep.** `mutate.js` changes one printed number at a time in every Quinn step PDF and confirms each checked line is read from exactly its own spot on the form. Required result: "SWEEP OK" (every checked line has exactly 1 reader, a $1 error fails, a blanked line fails). Quinn and Baylor (0.14.0): 9,026 planted mistakes, 0 missed, including $5 planted in every line whose answer is blank.
-2. **Step and file matrix.** `verify5.js`: every step's PDF checked against every step. Correct pairings pass with no warning; an earlier step picked for a later PDF shows the wrong-step warning; no on-screen error in any cell.
+2. **Step and file matrix.** `cases_matrix.js`, for every case: every printout checked against every step. A step's own printout (or one with the same return) passes; any other printout fails or shows the wrong-step warning; no on-screen error in any cell. `verify5.js` also checks Quinn's exact scores and the warning's button.
+2a. **Each step and case switching.** `cases_steps.js`: every step of every case passes with its own PDF, with only the student's own items left, and the longest PDF checks in time on a slowed processor. `cases_switch.js`: progress is kept per case, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked.
 3. **Added and removed forms.** `verify2.js` with the fixture PDFs. Extra forms are ignored; a missing checked form shows "Form missing."
 4. **Notes and manual items.** `verify3.js` (N1, N2, N3 entries, NN checkbox) and `verify4.js` (bar colors, reward online and offline, pinned frame).
 5. **Look and dogs.** `verify11.js`: drop box and button name the step, Zeke's guide messages, Zion, Bailey, and Zeke (with titles) match red, yellow, and green, the Approved! reward, built-in fonts load, a 19-step trail wraps onto 3 rows with no sideways scroll, and no paw burst when reduced motion is on.
@@ -53,10 +54,11 @@ npm test                          # runs tests/run_all.sh
 
 ## Adding a new case
 
-1. Add the correct TaxSlayer PDF for each step under `cases/<case>/`.
-2. Add the case's lines, answer key columns, notes, and one teaching hint per line to the template (see the Quinn data as the pattern).
-3. Run the planted-mistake sweep against every step of the new case before release (extend `mutate.js` with the new case's PDFs).
-4. This is a MINOR version.
+1. Add the correct TaxSlayer PDF for each step under `cases/<case>/` (`<Case>_Sec_<step>.pdf`).
+2. Add `cases/<case>/case.json` (copy Baylor's as the pattern): the PDF for each step, the items left for the student at each step, steps with identical returns, steps with their own TS Note box, and the speed limit. No new test script is needed: every generic test and the planted-mistake sweep pick up the new case.
+3. Add the case's lines, answer key columns, notes, and one teaching hint per line to the template (see the Baylor data as the pattern). Have Carter approve the hints.
+4. Run `bash tests/run_all.sh`. `cases_steps.js` also fails if `case.json` and the page list different steps.
+5. This is a MINOR version.
 
 ## Version rules (semantic versioning, MAJOR.MINOR.PATCH)
 

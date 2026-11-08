@@ -1,0 +1,10 @@
+{
+  "id": "quinn",
+  "order": 1,
+  "about": "Test description of the Quinn case. The answer key, steps, and notes live in the page (source/audit-pup-template.html); this file tells the tests which PDF goes with each step.",
+  "pdf": { "A": "Quinn_Sec_A.pdf", "B": "Quinn_Sec_B.pdf", "D": "Quinn_Sec_D.pdf", "E": "Quinn_Sec_E.pdf", "F": "Quinn_Sec_F.pdf" },
+  "todo": { "E": 2, "F": 2 },
+  "todoWhy": "Steps E and F leave the MWP Worksheet entries (N3) and the TS Note box (NN) for the student to finish.",
+  "sameReturn": [["B", "D"], ["E", "F"]],
+  "speed": { "step": "F", "maxSeconds": 15 }
+}
