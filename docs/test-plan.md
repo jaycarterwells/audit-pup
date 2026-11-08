@@ -20,10 +20,10 @@ All tests are Playwright scripts in `tests/`. They open the built page (`source/
 | `mutate.js` (planted-mistake sweep) | Changes every printed amount on every checked form, one at a time, and confirms each checked line is read from exactly one spot. A $1 error fails, a blanked line fails, and $5 put in a line that should be blank fails. | Quinn, Baylor | 17 s |
 | `baylor1.js` (replaced in change 4 by `cases_steps.js`) | Every Baylor step's correct PDF passes its own step. | Baylor | 12 s |
 | `baylor2.js` (replaced in change 4 by `cases_matrix.js` and `cases_switch.js`) | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | 2 min 19 s |
-| `verify2.js` | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | 10 s |
+| `verify2.js` (folded into `verify3.js` in bucket D) | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | 10 s |
 | `verify3.js` | Quinn notes N1, N2, N3 worksheet entries, and the TS Note box. | Quinn | 6 s |
 | `verify4.js` | Bar colors, reward online and offline, pinned score frame. | Quinn | 14 s |
-| `verify5.js` | Every Quinn PDF against every Quinn step, and the wrong-step warning. | Quinn | 23 s |
+| `verify5.js` (folded into `engine_cases.js`, `cases_matrix.js`, and `verify7.js` in bucket D) | Every Quinn PDF against every Quinn step, and the wrong-step warning. | Quinn | 23 s |
 | `verify6.js` | Chromebook screen at 100, 125, 150% zoom, and speed on a slowed processor. | Quinn | 20 s |
 | `verify7.js` | Same-file warning. | Quinn | 9 s |
 | `verify8.js` | Version button and What's new panel. | Quinn | 3 s |
@@ -56,7 +56,7 @@ This audit was written for 0.13.0. In 0.14.0, gaps 1 to 3 were closed: the tests
 7. **Only Chromium is tested.** Safari 15 or newer is supported but never tested automatically.
 8. **No checks on the code itself:** no lint, no HTML check, no accessibility check, and no check of the writing style rules (for example, no em dashes).
 9. **The guide is checked by reading it.** Nothing confirms that the messages quoted in the guide still exist in the page.
-10. **Fixed waits.** The scripts wait fixed times (69 waits in all), which slows them and can make them flaky on a slower machine.
+10. **Fixed waits.** The scripts wait fixed times (69 waits in all), which slows them and can make them flaky on a slower machine. (Closed in bucket D.)
 
 ## Part 2: Testing strategy
 
@@ -116,6 +116,13 @@ The slowest part is checking every PDF against every step through the page, beca
 
 ## Part 3: Changes to make, in priority order
 
+**Done after 0.14.0: bucket D (change 8).**
+
+* No page test waits a fixed time any more (there were 57 fixed waits when the work started). `tests/page.js` waits on the page's own signals: the page has started (steps listed, "did not start" note hidden), the Check button is ready again, every CSS transition and animation has ended and the page has stopped scrolling, and the mocked reward photo is in. Everything else the page does after a click, a tick, or a typed value is done before the event returns, so no wait is needed there. A planted check proved the new wait matters: without it, the bar color is read halfway through its change and the color check fails.
+* It also fixed a hidden mistake: many waits passed their time limit in the wrong place, so Playwright used its own 30 second limit instead.
+* `verify2.js` is folded into `verify3.js`, which already ran Quinn in a viewer that blocks background workers and blob links; the two fixtures it did not have (a Schedule A removed, extra pages in a Step E printout) and the console error check moved with it. `verify5.js` is gone: every printout against every step is in `engine_cases.js` and `cases_matrix.js`, and the wrong-step warning's suggested steps, its button, and the reward on a clean pass moved to `verify7.js`.
+* The full suite went from 4 minutes 36 seconds to under 4 minutes on the same machine, with two scripts fewer. The converted tests passed 3 runs in a row.
+
 **Done after 0.14.0: bucket C (change 10).**
 
 * `a11y_check.js`: axe-core (WCAG 2.1 A and AA) on 14 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, and the What's new panel. It found 5 real problems. Four were fixed with no visible change: the step chips, the drop box, and the reward now have spoken names that start with the words shown on them, and the What's new panel's scrolling area can be reached with the keyboard. The fifth was the New tag on the Version button (contrast 3.1 light and 2.08 dark, below the 4.5 required); Carter chose a deeper gold, now 5.5 light and 7.8 dark.
@@ -173,14 +180,14 @@ The slowest part is checking every PDF against every step through the page, beca
 
 ## Part 4: Remaining work, in buckets
 
-Each bucket is one piece of work: one session and one pull request. They are in the order I recommend. Changes 1 to 7 are done.
+Each bucket is one piece of work: one session and one pull request. They are in the order I recommend. Changes 1 to 12 are done.
 
 | Bucket | What it includes | Why now | Needs from Carter | Size |
 | --- | --- | --- | --- | --- |
 | **A. Release and site safety** (done) | Deploy the site from GitHub Actions (the rest of change 3), so `index.html` no longer needs to be copied by hand. A check of the live site after each deploy, and a weekly scheduled run of the full suite (change 11). Dependabot for pdf.js and Playwright (change 12). | Protects what counselors actually see, and keeps the tools current without surprises. | Set Pages to deploy from GitHub Actions (Settings, Pages, Source). Allow this session to reach jaycarterwells.github.io if the live check should also run here. | Small |
 | **B. Code checks before a browser opens** (done) | Static checks (change 9): ESLint for the engine, cases, and tests; an HTML check of the built page; the writing style rules (no em dashes or double hyphens) for docs and page text; and a check that every message the guide quotes exists in the page. All go into the developer test. | Cheap, fast, and catches mistakes earliest. The guide check enforces rule 3 automatically. | Nothing. | Small |
 | **C. More browsers and accessibility** (done) | Playwright's WebKit browser (Safari's engine) for the main paths, and an axe accessibility scan of the start page and results (change 10). Any real problems it finds become fixes in a patch release. | Covers Mac and Safari users and the large-print and keyboard needs of older volunteers. | Approve any visible fixes it leads to. | Small to medium |
-| **D. Steadier, faster page tests** | Replace the 69 fixed waits in the page tests with waits on the page's own signals (change 8). Fold `verify2.js` and `verify5.js` into the case tests where they now overlap. | Faster runs, and no flaky failures on a slow GitHub machine. | Nothing. | Small |
+| **D. Steadier, faster page tests** (done) | Replace the 69 fixed waits in the page tests with waits on the page's own signals (change 8). Fold `verify2.js` and `verify5.js` into the case tests where they now overlap. | Faster runs, and no flaky failures on a slow GitHub machine. | Nothing. | Small |
 | **E. Counselor data and Quinn's key** | Saved progress from older versions: keep a stored record from each released version and prove the new page loads it (change 13). Import Quinn's answer sheet the same way as Baylor's, so no answer key is typed. | Protects counselors' saved progress across releases, and gives every case the same answer key safety. | Quinn's answer sheet file (the .doc or .docx used to make the answer key). | Small |
 | **F. New tax year (once a year)** | When TaxSlayer moves to a new tax year: run the answer key check and the sweep on one new printout of each form before updating cases, and write the steps into the release checklist (change 14). | Form layouts can move between years and would break reading. | New-year printouts of each form, when TaxSlayer releases them. | Small, once a year |
 

@@ -6,9 +6,10 @@ const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadEngine, readPdf } = require('./engine');
 const { loadCases, PAGE } = require('./cases');
+const { open } = require('./page');
 (async()=>{
   const E=loadEngine(), b=await chromium.launch(), p=await b.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+PAGE); await p.waitForFunction(()=>window.CASES&&document.getElementById('step').options.length>0);
+  await open(p,'file://'+PAGE);
   let files=0, items=0;
   for(const c of loadCases()) for(const f of c.files){
     const node=await readPdf(path.join(c.dir,f),E);

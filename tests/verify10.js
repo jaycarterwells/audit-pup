@@ -3,12 +3,13 @@ const { expect, finish } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
+const { open, ready, settled } = require('./page');
 const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quinn_Sec_F'};
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:1366,height:657}}); await ctx.route('https://dog.ceo/**',r=>r.abort());
  const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+PAGE); await p.waitForTimeout(250);
+ await open(p,'file://'+PAGE);
  const grade=async(step,pdf)=>{ await p.selectOption('#step',step); await p.setInputFiles('#file',`${U}/${F[pdf]}.pdf`); await p.click('#grade');
-   await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready',{timeout:20000}); await p.waitForTimeout(150); };
+   await ready(p,{settle:false}); };
  const state=async()=>({step:await p.$eval('#step',e=>e.value), file:await p.$eval('#filename',e=>e.textContent), btnDisabled:await p.$eval('#grade',e=>e.disabled),
    next:await p.$eval('#guidesay',e=>e.textContent.trim()), btn:await p.$eval('#grade',e=>e.textContent.trim()), drop:await p.$eval('#dropbig',e=>e.textContent.trim())});
  let ok=true; const check=(l,c,d)=>{ ok=ok&&c; console.log(`${c?'OK  ':'FAIL'} ${l}${d?'  ['+d+']':''}`); };
@@ -20,17 +21,17 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quin
  await grade('D','D'); s=await state(); check('Step D done with its own file: moves to Step E', s.step==='E', s.step);
  await grade('E','E'); s=await state(); check('Step E lines pass but manual items open: stays on E', s.step==='E' && !s.next.startsWith('Nice work'), JSON.stringify(s));
  const ins=await p.$$('.ws-grid input'); for(const [i,v] of ['3027','2883','2715','2571','2363'].entries()) await ins[i].fill(v);
- await p.selectOption('.ws-grid select','1'); await p.check('.confirm input'); await p.waitForTimeout(150);
+ await p.selectOption('.ws-grid select','1'); await p.check('.confirm input');
  s=await state(); check('Step E manual items finished: moves to Step F', s.step==='F' && s.next.includes('Step F is up next'), s.next);
  await grade('F','B'); s=await state(); check('Step F fails: stays on F', s.step==='F' && !s.next.startsWith('Nice work'), s.step);
  await grade('F','F'); s=await state(); check('Step F done, all steps done: case-finished message', s.next==='Nice work on Step F! Every step of this case is done.', s.next);
  await p.click('#resetbtn'); await p.click('#resetyes'); await grade('B','B'); s=await state();
  check('after Start over, finishing B first moves to the next unfinished step after B (D)', s.step==='D', s.step);
  await grade('F','F'); { const ins2=await p.$$('.ws-grid input'); for(const [i,v] of ['3027','2883','2715','2571','2363'].entries()) await ins2[i].fill(v);
-   await p.selectOption('.ws-grid select','1'); await p.check('.confirm input'); await p.waitForTimeout(150); }
+   await p.selectOption('.ws-grid select','1'); await p.check('.confirm input'); }
  s=await state(); check('finishing F (with its manual items) while A is unfinished wraps back to Step A', s.step==='A', s.step);
  await grade('A','F'); s=await state(); check('wrong-step warning: no advance', s.step==='A' && !s.next.startsWith('Nice work'), s.step);
- await p.setViewportSize({width:911,height:438}); await grade('A','A'); await p.waitForTimeout(200);
+ await p.setViewportSize({width:911,height:438}); await grade('A','A'); await settled(p);
  const vis=await p.$eval('#sticky',e=>{const r=e.getBoundingClientRect(); return r.height>0 && r.height<=window.innerHeight*0.62;});
  const st=await p.$eval('#sticky',e=>Math.round(e.getBoundingClientRect().height));
  check('150% zoom: the pinned frame with the reward stays a modest share of the screen', vis, st+'px of 438');
