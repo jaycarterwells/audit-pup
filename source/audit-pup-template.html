@@ -893,6 +893,11 @@ try{ var saved=localStorage.getItem('taxaide-theme'); if(saved) document.documen
 /* ---------- Version and release notes (semantic versioning: MAJOR.MINOR.PATCH). Newest first. ---------- */
 var APP_VERSION='__APP_VERSION__';
 var CHANGELOG=[
+  {version:'0.15.0', date:'2026-11-09',
+   changed:['Quinn now checks every line on its answer sheet, including the lines that should be blank or $0 (federal lines 15, 16, 24, and 37, and California lines 14, 16, 35, 64, and 111), the same way Baylor does. Quinn steps now have more checks, so a score such as 4 of 4 is now 34 of 34.',
+          'Checking a later step\'s PDF for an earlier step now shows the lines that do not match, instead of a "Did you pick the right step?" box.',
+          'The New tag on the Version button is a deeper gold, so it is easier to read.'],
+   fixed:['Screen readers now read the step trail, the drop box, and the reward the same way they appear on screen, and the What\'s new panel can be scrolled with the keyboard.']},
   {version:'0.14.0', date:'2026-11-08',
    added:['A second case: Baylor (Michael Baylor, 2025), with 15 steps from basic information to e-filing. Pick it in the first box.',
           'Each case keeps its own progress. Switch cases and come back without losing your place. Start over erases only the case you picked.',

@@ -22,6 +22,7 @@ run style_check node tests/style_check.js
 run build bash -c 'cd source && node build_html.js'
 run html_check node tests/html_check.js
 run guide_check node tests/guide_check.js
+run hints_doc node tests/hints_doc.js
 run unit_engine node tests/unit_engine.js
 if command -v soffice >/dev/null; then
   for d in cases/*/; do c=$(basename "$d"); [ -n "$CASEARGS" ] && [[ " $* " != *" $c "* ]] && continue

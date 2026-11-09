@@ -25,7 +25,7 @@ const NOT_PAGE_TEXT={
   'keyboard keys': ['Ctrl + R','Ctrl + D','Ctrl + Tab','Ctrl +','Ctrl -','Ctrl 0','Alt + Shift + M'],
   'colors the guide names': ['red','yellow','green'],
   "the guide's headings and labels": ['Open it here:','Worksheet entries:','Items you confirm yourself:','Notes Audit Pup checks for you:',
-    'Lines that should be blank:','No-change steps:','Your reward:','No dog photo'],
+    'Lines that should be blank:','No-change steps:','Wrong step picked:','Your reward:','No dog photo'],
   "the guide's emphasis": ['case','step','new','next step','no change','only in Chrome on this Chromebook',
     'In Guest mode or an Incognito window, your progress is erased when you close the window'],
 };

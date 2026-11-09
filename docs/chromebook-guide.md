@@ -57,7 +57,7 @@ When a step is done, Audit Pup selects the **next step** for you and clears the 
 * **Worksheet entries:** some steps ask you to type values from a worksheet you completed, and to pick the option you chose. Type them in the boxes shown.
 * **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it. Click **See an example note** for a sample.
 * **No-change steps:** some steps should show **no change** from an earlier step. The step picker names the step it is compared to.
-* **Did you pick the right step?** A yellow box appears if your PDF looks like it is from a later step than the one you picked. Click the button in the box to check against the right step.
+* **Wrong step picked:** if you check a PDF from a later step against an earlier step, the lines that do not match the earlier step need another look. Make sure the step you picked matches the PDF you chose.
 * **Your reward:** when every check passes, every item is finished, and no warning is showing, a random dog photo appears in an **Approved!** snapshot. Tap it for another dog. Without internet you see a green check mark instead.
 
 To fix something: go back to TaxSlayer, correct it, print a new PDF, and check again.
