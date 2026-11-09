@@ -84,6 +84,8 @@ The **Theme** button switches between light and dark. The **Version** button sho
 * **"That file is not a PDF"**: save the return from TaxSlayer as a PDF and try again.
 * **"Could not read that PDF"**: make sure you picked the PDF printed from TaxSlayer for this step, then try again.
 * **"This is the same file you checked for Step B"** (or another step): you are reusing an older PDF. Print a new PDF from TaxSlayer after finishing the current step, then check that one.
+* **"Audit Pup has been updated"**: a newer version is out. Click **Update**. The page reloads with the newest version and keeps your progress; then choose your PDF again. Check stays off until you update, so no one checks against an old answer key.
+* **"This copy of Audit Pup is out of date"**: you opened a downloaded copy. Click **Open the Audit Pup website** and use the website, which always has the newest version.
 * **"Audit Pup did not finish loading"**: reload the page with **Ctrl + R**.
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
 * **"This browser is not saving progress"**: your browser is blocking saved data. Use a normal Chrome window, signed in to your own account.

@@ -2,7 +2,7 @@ const { expect } = require('./expect');
 // Quinn through the page in a viewer that blocks background workers and blob links: exact scores for every step,
 // notes N1, N2, N3 worksheet entries, the TS Note box, and printouts with forms added or removed (tests/fixtures).
 const { chromium } = require('playwright'); const path=require('path');
-const { open, ready } = require('./page');
+const { open, ready, offline } = require('./page');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
 const T=path.join(__dirname,'fixtures');
@@ -13,7 +13,7 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
       return (chip?chip.textContent+' ':'')+ln.replace(/^.*, /,'')+'='+e.querySelector('.state').textContent;})) }; }
 (async()=>{ const b=await chromium.launch(); const ctx=await b.newContext();
   await ctx.addInitScript(()=>{ window.Worker=function(){throw new Error('blocked');}; URL.createObjectURL=()=> 'blob-request://blocked'; });
-  await ctx.route('https://dog.ceo/**',r=>r.abort());   // never contact the real dog photo service from a test
+  await offline(ctx);   // never contact the real dog photo service from a test
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{ if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errs.push(m.text()); });
   await open(p,'file://'+PAGE);

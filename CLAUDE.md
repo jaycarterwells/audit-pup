@@ -38,6 +38,7 @@ A single self-contained HTML page that checks an AARP Tax-Aide counselor's TaxSl
 * Both answer keys are made from the answer sheets by the import tool, never typed. Baylor Step P has no PDF; tests use Step O's PDF for it.
 * pdf.js 3.11.174 legacy build runs on the main thread (no worker, no blob URLs), because some viewers block workers.
 * After a confirmed step, Audit Pup selects the next unfinished step and clears the old file.
+* Newer-version check (0.17.0, Carter's choice): the release workflow publishes `version.json` next to the live page. The page asks for it (`LIVE_URL`, no-store, a few seconds at most) on opening, when the tab comes back into view, and before every Check. On the website a newer version shows the yellow update box and turns Check off until the counselor clicks Update (a reload to `?v=<version>`; progress is kept). A downloaded copy is told it is out of date and sent to the website, but can still check. Offline or no answer: nothing changes. Tests block the real website (`offline()` / `noUpdateCheck()` in `tests/page.js`); `update_check.js` uses a stand-in, and `live_check.js` proves the live page and a downloaded copy can read `version.json`.
 
 ## Where things are
 
@@ -80,6 +81,7 @@ open tax-aide-quinn-checker.html          # to look at the built page locally
 
 ## Current state
 
+* 0.17.0 (November 9, 2026): the newer-version check (above). Pages from 0.16.0 and earlier have no check: anyone still on one sees the new version only after a reload.
 * 0.16.0 (November 9, 2026): blank lines shown as one row, and the "Did you pick the right step?" box for a failing check whose PDF matches another step (both Carter's requests).
 * 0.15.0 (November 9, 2026): Quinn's answer key is imported from its sheet and its blank cells are checked as blank or $0, like Baylor (Carter's choice), adding 9 lines (1040 lines 15, 16, 24, 37; CA 540 lines 14, 16, 35, 64, 111), so Quinn's scores grew (Step A 34 checks, B and D 33, E and F 36). Also the New tag color and the screen reader and keyboard fixes. The hints for every case are listed in `docs/hints.md` (made by `source/tools/hints_report.js`; the tests fail if it is stale) for expert review; Quinn's 9 new hints were written by Claude and are awaiting that review. The test work through bucket E is done; what is left is in `docs/test-plan.md`, Part 6 "Moving forward".
 * 0.14.0 added the Baylor case (15 steps) and checks on GitHub Actions.

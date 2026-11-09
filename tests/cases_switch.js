@@ -4,8 +4,8 @@
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
-const { started } = require('./page');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+const { started, offline } = require('./page');
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   const ready=()=>started(p);
   await p.goto('file://'+PAGE); await ready();

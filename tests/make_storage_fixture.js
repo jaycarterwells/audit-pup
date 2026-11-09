@@ -8,10 +8,11 @@
 // Baylor, Baylor Step A with its TS Note box ticked and Step B checked with the Step A file (Fix).
 const fs=require('fs'), path=require('path');
 const { chromium } = require('playwright');
+const { offline } = require('./page');
 const [page, version]=process.argv.slice(2);
 if(!page||!version){ console.error('usage: node make_storage_fixture.js <released page.html> <version>'); process.exit(2); }
 const Q=path.join(__dirname,'..','cases','quinn'), B=path.join(__dirname,'..','cases','baylor');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+path.resolve(page));
   await p.waitForFunction(()=>document.getElementById('step').options.length>0,null,{timeout:30000});

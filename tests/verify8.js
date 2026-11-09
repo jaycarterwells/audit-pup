@@ -2,8 +2,8 @@ const { expect } = require('./expect');
 // What's new panel
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
-const { open, reload } = require('./page');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:1366,height:657}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+const { open, reload, offline } = require('./page');
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:1366,height:657}}); await offline(ctx); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  const url='file://'+PAGE;
  await open(p,url);
  const btn=await p.textContent('#verbtn'); const isNew=await p.$eval('#verbtn',e=>e.classList.contains('isnew'));

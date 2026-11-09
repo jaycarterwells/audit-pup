@@ -2,13 +2,13 @@ const { expect } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path'); const fs=require('fs');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
-const { open, ready, settled, dogShown } = require('./page');
+const { open, ready, settled, dogShown, noUpdateCheck, offline } = require('./page');
 const VIEWS=[['100%',1366,657],['125%',1093,526],['150%',911,438]];
 async function grade(p,step,file){ await p.selectOption('#step',step); await p.setInputFiles('#file',file); await p.click('#grade');
   await ready(p); }
 (async()=>{ const b=await chromium.launch();
  for(const [zoom,w,h] of VIEWS){
-  const ctx=await b.newContext({viewport:{width:w,height:h},deviceScaleFactor:1});
+  const ctx=await b.newContext({viewport:{width:w,height:h},deviceScaleFactor:1}); await noUpdateCheck(ctx);
   await ctx.route('https://dog.ceo/**',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({message:'https://images.dog.ceo/breeds/retriever-golden/n02099601_1.jpg',status:'success'})}));
   await ctx.route('https://images.dog.ceo/**',r=>r.fulfill({contentType:'image/jpeg',body:fs.readFileSync(path.join(__dirname,'mockdog.jpg'))}));
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -28,7 +28,7 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
   expect(`${zoom}: no visible text smaller than 12px`,parseFloat(smallest)>=12,smallest); expect(`${zoom}: no page errors`,!errs.length,errs.join(';'));
   await ctx.close(); }
  // entry-level Chromebook speed: throttle CPU 6x via DevTools protocol, time the biggest PDF (30 pages)
- const ctx=await b.newContext({viewport:{width:1366,height:657}}); const p=await ctx.newPage();
+ const ctx=await b.newContext({viewport:{width:1366,height:657}}); await offline(ctx); const p=await ctx.newPage();
  const cdp=await ctx.newCDPSession(p); await cdp.send('Emulation.setCPUThrottlingRate',{rate:6});
  await open(p,'file://'+PAGE);
  for(const [s,f] of [['F','Quinn_Sec_F'],['A','Quinn_Sec_A']]){ const t0=Date.now(); await grade(p,s,`${U}/${f}.pdf`); const sec=(Date.now()-t0)/1000, sc=(await p.textContent('#score')).replace(/\s/g,''); console.log(`CPU throttled 6x: Step ${s} PDF graded in ${sec.toFixed(1)} s, score ${sc}`);

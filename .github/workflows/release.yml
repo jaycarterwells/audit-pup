@@ -102,12 +102,14 @@ jobs:
           cache: npm
           cache-dependency-path: site/source/package-lock.json
 
-      - name: Build the page as index.html, dated with the release commit's date
+      - name: Build the page as index.html, dated with the release commit's date, and version.json
         working-directory: site/source
         run: |
           npm ci
           BUILD_DATE=$(git log -1 --format=%cs) node build_html.js
           cp tax-aide-quinn-checker.html ../index.html
+          # the version the page asks for to know whether it is out of date (see LIVE_URL in the template)
+          printf '{"version":"%s"}\n' "$(tr -d '[:space:]' < VERSION)" > ../version.json
           rm -rf node_modules dist tax-aide-quinn-checker.html
 
       - uses: actions/configure-pages@v6

@@ -342,6 +342,7 @@
       (from email, Google Drive, or the Mac's Quick Look) instead of opened in a web browser. Save the file to your computer first, then open it
       in Chrome or Safari. On a Mac: right-click the file, choose <b>Open With</b>, then <b>Google Chrome</b> or <b>Safari</b>.
       If this message stays, download a fresh copy.</div>
+    <div class="stepwarn updatebox hidden" id="updatebox" role="alert"></div>
     <div class="guide" id="guide">
       <span class="avatar dog-zeke" role="img" aria-label="Zeke"></span>
       <div class="bubble"><div class="say" id="guidesay" aria-live="polite">Hi, I'm Zeke. Pick your step below.</div><div class="who">Zeke, Audit Pup's chief inspector</div></div>
@@ -520,7 +521,7 @@ var fileInput=document.getElementById('file'), drop=document.getElementById('dro
     errEl=document.getElementById('error'), chosen=null;
 function setFile(f){
   if(f && f.type!=='application/pdf' && !/\.pdf$/i.test(f.name)){ showErr('That file is not a PDF. Save the step from TaxSlayer as a PDF and try again.'); return; }
-  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; gradeBtn.disabled=!f; errEl.classList.add('hidden');
+  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; gradeBtn.disabled=!f || updateBlocks(); errEl.classList.add('hidden');
   if(f) justDone=null;
   freshFile=!!f;
   updateGuide();
@@ -537,8 +538,11 @@ window.addEventListener('drop',function(e){ e.preventDefault(); drop.classList.r
   if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
 
 gradeBtn.addEventListener('click',async function(){
-  if(!chosen) return;
+  if(!chosen || updateBlocks()) return;
   errEl.classList.add('hidden'); gradeBtn.disabled=true; gradeBtn.dataset.state='busy'; gradeBtn.textContent='Reading the PDF...';
+  /* never check against an old answer key: ask the website for its version first (a few seconds at most; offline goes on) */
+  await checkForUpdate(3000);
+  if(updateBlocks()){ gradeBtn.dataset.state='ready'; setStepLabels(); gradeBtn.disabled=true; return; }
   try{
     var buf=await readFile(chosen);
     var fp=fingerprint(buf);
@@ -559,7 +563,7 @@ gradeBtn.addEventListener('click',async function(){
     else if(err && err.message==='OLDBROWSER') showErr(MSG_OLDBROWSER);
     else showErr('Could not read that PDF. Make sure it is the TaxSlayer PDF for this step. ('+(err&&err.message?err.message:err)+')');
   }
-  freshFile=false; gradeBtn.disabled=!chosen; gradeBtn.dataset.state='ready'; setStepLabels();   /* stays off after auto-advance until a new file is chosen */
+  freshFile=false; gradeBtn.disabled=!chosen || updateBlocks(); gradeBtn.dataset.state='ready'; setStepLabels();   /* stays off after auto-advance until a new file is chosen */
 });
 
 var CTX=null, gradedName='';
@@ -948,7 +952,49 @@ try{ var saved=localStorage.getItem('taxaide-theme'); if(saved) document.documen
 
 /* ---------- Version and release notes (semantic versioning: MAJOR.MINOR.PATCH). Newest first. ---------- */
 var APP_VERSION='__APP_VERSION__';
+
+/* ---------- is there a newer version? ----------
+   The release workflow publishes version.json next to the live page. Audit Pup asks for it when the page opens, when
+   the tab comes back into view, and before every Check. On the website a newer version turns Check off until the
+   counselor clicks Update (a reload; saved progress lives in the browser, so it is kept). A downloaded copy is sent
+   to the website. Offline, or if the website does not answer, nothing changes. */
+var LIVE_URL='https://jaycarterwells.github.io/audit-pup/';
+var ON_LIVE=location.href.indexOf(LIVE_URL)===0;
+var NEWER=null, UPDATE_CHECK={asked:0, answered:0, version:null};
+function newerThan(a,b){ var x=a.split('.').map(Number), y=b.split('.').map(Number);
+  for(var i=0;i<3;i++){ if((x[i]||0)!==(y[i]||0)) return (x[i]||0)>(y[i]||0); } return false; }
+function checkForUpdate(waitMs){
+  if(!window.fetch || !/^\d+\.\d+\.\d+$/.test(APP_VERSION)) return Promise.resolve(null);
+  var ctl=('AbortController' in window)?new AbortController():null, timer=setTimeout(function(){ if(ctl) ctl.abort(); }, waitMs||5000);
+  UPDATE_CHECK.asked++;
+  return fetch(LIVE_URL+'version.json?t='+Date.now(),{cache:'no-store', signal:ctl?ctl.signal:undefined})
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ clearTimeout(timer);
+      if(j && typeof j.version==='string' && /^\d+\.\d+\.\d+$/.test(j.version)){ UPDATE_CHECK.answered++; UPDATE_CHECK.version=j.version;
+        if(newerThan(j.version,APP_VERSION)){ NEWER=j.version; showUpdate(); } }
+      return NEWER; })
+    .catch(function(){ clearTimeout(timer); return NEWER; });
+}
+function updateBlocks(){ return !!(NEWER && ON_LIVE); }
+function showUpdate(){
+  var box=document.getElementById('updatebox');
+  if(ON_LIVE){
+    box.innerHTML='<span class="ic">!</span><div><b>Audit Pup has been updated to version '+esc(NEWER)+'.</b> Click Update to get it. Your progress is kept.'+
+      ' Then choose your PDF again.<div class="btns"><button type="button" id="updatebtn">Update</button></div></div>';
+    document.getElementById('updatebtn').addEventListener('click',function(){ location.replace(LIVE_URL+'?v='+encodeURIComponent(NEWER)); });
+    gradeBtn.disabled=true;
+  } else {
+    box.innerHTML='<span class="ic">!</span><div><b>This copy of Audit Pup is out of date.</b> It is version '+esc(APP_VERSION)+'; version '+esc(NEWER)+
+      ' is on the Audit Pup website, with the newest answer keys.<div class="btns"><button type="button" id="updatebtn">Open the Audit Pup website</button></div></div>';
+    document.getElementById('updatebtn').addEventListener('click',function(){ location.href=LIVE_URL; });
+  }
+  box.classList.remove('hidden');
+  updateGuide();
+}
 var CHANGELOG=[
+  {version:'0.17.0', date:'2026-11-09',
+   added:['Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
+          'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.']},
   {version:'0.16.0', date:'2026-11-09',
    changed:['The lines that should still be blank at your step are now checked together in one row, Lines that should be blank, at the end of the list. If any of them has an amount, that row lists each one. The list of checks is much shorter.'],
    added:['If your PDF does not pass the step you picked but matches a different step, for example the PDF you printed for the previous step, a yellow box names that step, with a button to check against it. Your progress for the step you picked does not change.']},
@@ -1073,6 +1119,7 @@ function updateGuide(){
   var id=stepSel.value, r=STORE.steps[id], st=r?r.status:'none', msg;
   var allDone=STEPS.every(function(s){ var x=STORE.steps[s.id]; return x && x.status==='done'; });
   var anyChecked=STEPS.some(function(s){ return !!STORE.steps[s.id]; });
+  if(updateBlocks()){ document.getElementById('guidesay').textContent='Audit Pup has a new version. Click Update in the yellow box above before you check a PDF.'; return; }
   var shown=!!(CTX && CTX.step.id===id);   /* results for this step are on the page */
   if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
   else if(justDone && allDone) msg='Nice work on Step '+justDone+'! Every step of this case is done.';
@@ -1104,7 +1151,9 @@ document.addEventListener('DOMContentLoaded',function(){
   if(!fileComplete()){ showErr(MSG_INCOMPLETE); gradeBtn.title=MSG_INCOMPLETE; return; }
   /* unpack the PDF engine in the background while the student picks a file; any problem is reported on Check */
   setTimeout(function(){ try{ ensurePdfjs(); }catch(e){} }, 250);
+  checkForUpdate();
 });
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') checkForUpdate(); });
 </script>
 <script id="pdfjslib-b64" type="text/plain">__PDFJS_LIB__</script>
 <script id="pdfjsworker-b64" type="text/plain">__PDFJS_WORKER__</script>

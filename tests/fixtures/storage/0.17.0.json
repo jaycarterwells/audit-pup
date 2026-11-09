@@ -1,0 +1,13 @@
+{
+ "about": "Saved progress left by Audit Pup 0.17.0, made by tests/make_storage_fixture.js. Do not edit by hand.",
+ "version": "0.17.0",
+ "chips": {
+  "quinn": "A:done B:done D:todo E:done F:none",
+  "baylor": "A:done B:none C:none E:none F:none G:none H:none I:none J:none L:none M:none N:none O:none P:none R:none"
+ },
+ "storage": {
+  "auditpup.progress.v1.baylor": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":10,\"total\":10,\"when\":1794208169096,\"file\":\"Baylor_Sec_A.pdf\"}},\"n3\":null,\"nn\":false,\"seen\":{\"261501-51d83271-6f404ab4\":{\"stepId\":\"A\",\"name\":\"Baylor_Sec_A.pdf\"}},\"marks\":{\"nn_A\":true}}",
+  "auditpup.case": "quinn",
+  "auditpup.progress.v1.quinn": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":5,\"total\":5,\"when\":1794208164790,\"file\":\"Quinn_Sec_A.pdf\"},\"B\":{\"status\":\"done\",\"pass\":22,\"total\":22,\"when\":1794208166079,\"file\":\"Quinn_Sec_B.pdf\"},\"E\":{\"status\":\"done\",\"pass\":28,\"total\":28,\"when\":1794208167496,\"file\":\"Quinn_Sec_E.pdf\"},\"D\":{\"status\":\"todo\",\"pass\":22,\"total\":22,\"when\":1794208167874,\"file\":\"Quinn_Sec_B.pdf\"}},\"n3\":{\"v\":[\"3027\",\"2883\",\"2715\",\"2571\",\"2363\"],\"sel\":\"1\"},\"nn\":true,\"seen\":{\"259638-cc77532b-78974cbf\":{\"stepId\":\"A\",\"name\":\"Quinn_Sec_A.pdf\"},\"499747-1fd7356-bf012595\":{\"stepId\":\"B\",\"name\":\"Quinn_Sec_B.pdf\"},\"597175-31b2456c-40693855\":{\"stepId\":\"E\",\"name\":\"Quinn_Sec_E.pdf\"}}}"
+ }
+}

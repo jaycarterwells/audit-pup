@@ -13,7 +13,7 @@ Every test traces back to one of these promises to counselors and to Carter:
 5. **Progress is kept.** Saved progress survives closing the page, and progress saved by an older release loads in a newer one.
 6. **Readable and usable by older volunteers.** Large print, color contrast, keyboard use, and screen reader names (WCAG 2.1 A and AA).
 7. **The guide matches the page.** Every message the counselor guide quotes exists in the page.
-8. **What is live is what was tested.** The site is built from the release tag and checked after every deploy.
+8. **What is live is what was tested, and counselors use it.** The site is built from the release tag and checked after every deploy, and an open page or a downloaded copy that is out of date tells the counselor to update.
 
 ## Part 2: When the tests run
 
@@ -71,8 +71,9 @@ These test the page itself, so they use one case.
 | `verify6.js` | Chromebook screen at 100, 125, and 150% zoom: no sideways scrolling, the pinned frame stays a modest share of the screen, no text under 12px; the largest PDF checks in time with the processor slowed 6 times, and the page opens in under 5 seconds. |
 | `verify7.js` | The same-file warning (a file that passed one step, checked again for a later step), and that retries, corrections, and earlier steps do not warn. The "Did you pick the right step?" box: a later printout checked too early and the previous step's printout checked again both fail and name their own step, Zeke says earlier or later, the button re-checks, and only one yellow box shows when the same-file note applies. The passing-check warning with a partial Step A key (see Part 5). |
 | `verify8.js` | The Version button and New tag, the What's new panel opens and closes (Esc, a click outside, the footer link), fits a 150% zoom screen, and the footer shows the version with scripts blocked. |
+| `update_check.js` | The newer-version check, with a stand-in website: a newer version shows the update box and turns Check off (also when it appears only at Check time, or when the tab comes back), Zeke says to update, Update loads the newest page; the same version or no answer changes nothing; a downloaded copy is told it is out of date, can still check, and is sent to the website. |
 | `verify9.js` | Saved progress: statuses, worksheet entries, TS Note box, and same-file memory survive a reload; tapping a chip picks that step; Start over clears everything; only Audit Pup keys are stored; a browser that refuses storage still checks and says progress is not saved. |
-| `storage_upgrade.js` | The saved progress left by every released version (`tests/fixtures/storage/`, made by `make_storage_fixture.js` from the released page) loads in the current page: the same step statuses, the first unfinished step, worksheet entries, TS Note boxes, same-file memory, the last case used, and nothing lost. Records for 0.13.0, 0.14.0, 0.15.0, and 0.16.0 are kept. |
+| `storage_upgrade.js` | The saved progress left by every released version (`tests/fixtures/storage/`, made by `make_storage_fixture.js` from the released page) loads in the current page: the same step statuses, the first unfinished step, worksheet entries, TS Note boxes, same-file memory, the last case used, and nothing lost. Records for 0.13.0, 0.14.0, 0.15.0, 0.16.0, and 0.17.0 are kept. |
 | `verify10.js` | Moving to the next step after a confirmed step, clearing the old file, Zeke's next-step message; failures, warnings, and unfinished items do not advance; a finished case says so. |
 | `verify11.js` | Zeke, Zion, and Bailey with their titles match green, red, and yellow; the drop box and button name the step; the built-in fonts load; a 19-step trail wraps onto 3 rows; no paw-print burst with reduced motion. |
 | `repro2.js` | Startup failures: scripts blocked (the "did not start" note), copies cut off in three places (made fresh from the current build), a PDF dropped outside the box, and older Safari file reading. |
@@ -88,7 +89,7 @@ These test the page itself, so they use one case.
 
 | Test | What it proves |
 | --- | --- |
-| `live_check.js` | After every deploy and every Sunday: the live site shows the released version and the first step of every case on it passes. |
+| `live_check.js` | After every deploy and every Sunday: the live site shows the released version, the first step of every case on it passes, `version.json` names the same version, and both the live page and a downloaded copy of it can read `version.json` (from 0.17.0). |
 
 ## Part 4: How a case is tested
 
@@ -104,7 +105,7 @@ Adding a case is in `docs/release-checklist.md`, "Adding a new case."
 * **Expectations come from outside the page:** the answer key, `case.json`, and fixed values in the test. A test never asks the page what the right answer is.
 * **Every new check is proven to fail.** When a check is added, a planted bug shows it fails (for example: a changed storage key fails `storage_upgrade.js`, removing the motion wait fails the bar color check).
 * **No fixed waits.** `tests/page.js` waits on the page's own signals: the page has started, the Check button is ready, CSS motion and scrolling have ended, and the mocked reward photo is in. Everything else the page does happens before the click or keypress returns.
-* **No network.** The Dog API is blocked or mocked in every test.
+* **No network.** The Dog API and the real website's `version.json` are blocked or mocked in every test (`offline()` and `noUpdateCheck()` in `tests/page.js`); only `live_check.js` reaches the real site.
 * **Short output.** One line per test unless it fails, so a run costs few tokens to read.
 * **The "Did you pick the right step?" box.** When a check fails and the PDF matches every line of another step, the box names that step. `engine_cases.js` proves, for every wrong printout and step pair of every case (204 today), that the box names the printout's own step and no other. A passing check also warns when a step with more checks passes too; only partial keys can do that, so `verify7.js` tests it with a partial Step A key.
 * **Blank lines are one row.** Lines whose answer is blank or $0 are shown together in one row that lists any line with an amount. The engine and the sweep still check each of those lines on its own.
@@ -117,8 +118,8 @@ In the order I recommend.
 
 | # | What | Why | Needs from Carter | Size |
 | --- | --- | --- | --- | --- |
-| 1 | **Expert review of the hints.** `docs/hints.md` lists every hint of every case as the page shows it (Quinn's 9 lines added in 0.15.0 have not been reviewed yet). Fold the experts' changes into the case files, re-run `source/tools/hints_report.js`, and release them as a PATCH. Also do the real Chromebook and Mac checks for 0.16.0. | Hints teach (rule 7); new hints need an expert's eye. | The experts' comments. | Small |
-| 2 | **Keep a saved-progress record for each release.** Done for 0.15.0 and 0.16.0 (release checklist step 18). Next: make `storage_upgrade.js` fail when a published version in the page's release notes has no record, so the step cannot be forgotten. | Protects counselors' progress across every future release, not only the two kept today. | Nothing. | Small |
+| 1 | **Expert review of the hints.** `docs/hints.md` lists every hint of every case as the page shows it (Quinn's 9 lines added in 0.15.0 have not been reviewed yet). Fold the experts' changes into the case files, re-run `source/tools/hints_report.js`, and release them as a PATCH. Also do the real Chromebook and Mac checks for 0.17.0, including the update box: open the site, leave the tab open across the next release, and confirm the box appears. | Hints teach (rule 7); new hints need an expert's eye. | The experts' comments. | Small |
+| 2 | **Keep a saved-progress record for each release.** Done for 0.15.0, 0.16.0, and 0.17.0 (release checklist step 18). Next: make `storage_upgrade.js` fail when a published version in the page's release notes has no record, so the step cannot be forgotten. | Protects counselors' progress across every future release, not only the two kept today. | Nothing. | Small |
 | 3 | **New tax year (once a year).** When TaxSlayer moves to a new year: print one return of each form, run the answer key import, `engine_cases.js`, and the sweep on them before updating any case, and write the steps into the release checklist. | Form layouts can move between years, which would break reading. The sweep is the safety net, but only on new-year PDFs. | New-year printouts of each form, when TaxSlayer releases them. | Small, once a year |
 | 4 | **Check every case's own notes in the page tests.** The page behavior tests use Quinn; Baylor's notes read from the PDF (N1, N2, N4, NP) are checked through `cases_steps.js` on correct PDFs only. Add one wrong-PDF check per note kind (for example a missing IP PIN fails N2), driven by `case.json`. | A note that always passes would be a false positive the sweep cannot see, since notes are not amounts. | Nothing. | Small |
 | 5 | **A pdf.js upgrade plan.** pdf.js major versions are held back. When one is taken: `engine_parity.js`, the sweep, and `webkit_check.js` must pass, and the page's size and opening time compared before and after. | pdf.js reads every amount; a change in how it reports text positions would move every reader. | Approve the upgrade when it comes. | Small, when needed |

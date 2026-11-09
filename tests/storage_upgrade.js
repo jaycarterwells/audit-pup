@@ -6,13 +6,13 @@ const fs=require('fs'), path=require('path');
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { grade, PAGE } = require('./cases');
-const { open, reload } = require('./page');
+const { open, reload, offline } = require('./page');
 const DIR=path.join(__dirname,'fixtures','storage'), Q=path.join(__dirname,'..','cases','quinn'), B=path.join(__dirname,'..','cases','baylor');
 const chips=p=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.className.replace('pchip','').replace('sel','').trim()).join(' '));
 (async()=>{ const b=await chromium.launch(); const fixtures=fs.readdirSync(DIR).filter(f=>f.endsWith('.json')).sort();
   expect('there is a saved-progress record for at least two released versions', fixtures.length>=2, fixtures.join(', '));
   for(const f of fixtures){ const fx=JSON.parse(fs.readFileSync(path.join(DIR,f),'utf8')), v=fx.version;
-    const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+    const ctx=await b.newContext(); await offline(ctx);
     // the old record is in the browser before the page first opens, as it is for a counselor after an update
     await ctx.addInitScript(s=>{ if(!sessionStorage.getItem('seeded')){ localStorage.clear(); Object.entries(s).forEach(([k,x])=>localStorage.setItem(k,x)); sessionStorage.setItem('seeded','1'); } }, fx.storage);
     const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
