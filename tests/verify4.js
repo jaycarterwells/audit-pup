@@ -28,7 +28,7 @@ const rewardState=p=>p.$eval('#reward',e=>e.classList.contains('hidden')?'hidden
     await settled(p); { const c=await barColor(p), r=await rewardState(p); console.log('E, wrong worksheet   :', c, '|', r); expect(mode+': wrong worksheet is red, no reward',c==='rgb(180, 35, 24)'&&r==='hidden',c+' '+r); }
     await ins[2].fill('2715'); await p.check('.confirm input'); if(mode==='online') await dogShown(p); else await settled(p);
     { const c=await barColor(p), r=await rewardState(p), s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E, all done          :', c, '|', r, '|', s);
-      expect(mode+': all done is green with the reward, 36/36',c==='rgb(27, 122, 61)'&&s==='36/36'&&(mode==='online'?/^dog:/.test(r):r==='check mark only'),c+' '+r+' '+s); }
+      expect(mode+': all done is green with the reward, 28/28',c==='rgb(27, 122, 61)'&&s==='28/28'&&(mode==='online'?/^dog:/.test(r):r==='check mark only'),c+' '+r+' '+s); }
     await p.uncheck('.confirm input'); await settled(p); { const c=await barColor(p), r=await rewardState(p); console.log('E, note unticked     :', c, '|', r); expect(mode+': unticking a note goes back to yellow, reward hidden',c==='rgb(222, 164, 20)'&&r==='hidden',c+' '+r); }
     await p.check('.confirm input'); if(mode==='online') await dogShown(p); else await settled(p);
     // frozen frame: scroll to the very bottom, is the score frame still at the top of the viewport?

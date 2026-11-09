@@ -6,6 +6,7 @@
 //  3. each step's correct PDF passes every line of its own step;
 //  4. every printout against every step: a step's own printout (or one with the same return) passes; any other
 //     printout fails, or passes only with the wrong-step warning. A wrong PDF must never pass silently.
+//     A wrong printout's "Did you pick the right step?" box names the printout's own step, and only steps it may pass.
 // Answer key notes (filing status, IP PIN, ...) are checked through the page by cases_steps.js.
 // Usage: node engine_cases.js [--case baylor]
 const fs=require('fs'), path=require('path'), crypto=require('crypto');
@@ -46,12 +47,14 @@ const { loadCases } = require('./cases');
     const results={}; let cells=0;
     for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]=check(E,pages); }
     for(const f of c.files) for(const s of K.steps){
-      const {got,present}=results[f], pass=E.linesPass(s,got,present), warn=pass && E.laterMatches(s,got,present).length>0;
+      const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;
       if(c.mayPass(f,s.id)){
         const bad=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
         expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
       } else expect(`${c.id}: ${f} does not pass Step ${s.id} silently`, !pass || warn, 'passes with no warning');
+      if(!c.mayPass(f,s.id)) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
+        alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
     console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s`);
   }

@@ -55,6 +55,11 @@ t('matches: a missing FTB 3514 passes only for a $0 answer (it is printed only w
   t('laterMatches: a passing step with fewer checks warns when a step with more checks also passes', warnB.length===1 && warnB[0].id==='B');
   t('laterMatches: no warning when the picked step fails', E.laterMatches(sA,{fed_1a:15000,fed_9:15000},present).length===0);
   t('laterMatches: no warning when no step with more checks passes', E.laterMatches(sA,{fed_1a:0,fed_9:0},present).length===0);
+  const full=[{id:'A',expected:{fed_1a:0,fed_9:0}},{id:'B',expected:{fed_1a:15000,fed_9:15000}},{id:'D',type:'nochange',expected:{fed_1a:15000,fed_9:15000}},{id:'E',expected:{fed_1a:15000,fed_9:30000}}];
+  E.STEPS=full;
+  t('otherMatches: a failing check names the step the PDF fully matches (the old file case)', E.otherMatches(full[3],{fed_1a:15000,fed_9:15000},present).map(s=>s.id).join()==='B');
+  t('otherMatches: a later PDF checked too early names its own step', E.otherMatches(full[0],{fed_1a:15000,fed_9:30000},present).map(s=>s.id).join()==='E');
+  t('otherMatches: names nothing when the PDF matches no step', E.otherMatches(full[1],{fed_1a:15000,fed_9:1},present).length===0);
   [E.LINES,E.STEPS]=saved; }
 
 console.log(`${n} engine unit tests run`);

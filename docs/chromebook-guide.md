@@ -52,12 +52,12 @@ When a step is done, Audit Pup selects the **next step** for you and clears the 
 | **Confirmed** | An item you checked off yourself. |
 
 * On a line that needs another look, click **Show a hint** to see the answer key value and where to look in the problem.
-* **Lines that should be blank:** some checked lines should have nothing on them yet at your step. If one of them has an amount, the hint shows the answer key as **blank or $0**.
+* **Lines that should be blank:** the lines that should have nothing on them yet at your step are checked together, in one row at the end of the list. If any of them has an amount, that row lists each one, and its hint shows the answer key as **blank or $0**.
 * **Notes Audit Pup checks for you:** some answer key notes, such as an Identity Protection PIN, a Preparer Note, or the address on a W-2, are read from your PDF. They show **Correct** or **Check** like any other line.
 * **Worksheet entries:** some steps ask you to type values from a worksheet you completed, and to pick the option you chose. Type them in the boxes shown.
 * **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it. Click **See an example note** for a sample.
 * **No-change steps:** some steps should show **no change** from an earlier step. The step picker names the step it is compared to.
-* **Wrong step picked:** if you check a PDF from a later step against an earlier step, the lines that do not match the earlier step need another look. Make sure the step you picked matches the PDF you chose.
+* **Did you pick the right step?** If your PDF does not pass the step you picked but matches a different step (for example, the PDF you printed for the previous step), a yellow box names that step. Print a new PDF after finishing your step, or click the button in the box to check against the step it matches. Your progress for the step you picked does not change.
 * **Your reward:** when every check passes, every item is finished, and no warning is showing, a random dog photo appears in an **Approved!** snapshot. Tap it for another dog. Without internet you see a green check mark instead.
 
 To fix something: go back to TaxSlayer, correct it, print a new PDF, and check again.
