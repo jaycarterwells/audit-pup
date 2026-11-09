@@ -1,194 +1,125 @@
 # Audit Pup Test Plan
 
-This page describes how Audit Pup is tested today, from a code change through check-in and release. The last two parts describe the testing strategy we are moving toward and the changes to make, in priority order, so the testing still works when Audit Pup has 5 or 6 cases as large as Baylor.
+How Audit Pup is tested today, and what is left to do. Part 1 to Part 5 describe the tests as they are on `main`. Part 6, "Moving forward," is the only list of future work.
 
-## Part 1: Testing today
+## Part 1: What the tests protect
 
-### What we protect
+Every test traces back to one of these promises to counselors and to Carter:
 
-1. **No false passes.** Audit Pup must never mark a line correct when it is wrong. This matters more than anything else.
-2. **The page works on a counselor's Chromebook**, in Chrome, at 100 to 150% zoom, offline once loaded.
-3. **Progress is not lost** when a counselor closes the page, switches cases, or gets a new version.
-4. **The counselor guide matches the page.**
+1. **Never pass a wrong line.** A false positive is the worst outcome. Grading is exact, with no tolerance, and every checked line is proven to be read from exactly one spot on the form.
+2. **Never fail a right return.** Each step's correct TaxSlayer PDF passes its own step, with only the student's own items (worksheet entries, TS Note boxes) left to do.
+3. **The answer key is the answer sheet.** No answer key value is typed. Each case's key is made from its answer sheet by a tool, and the tests prove the sheet has not changed since.
+4. **One file that works everywhere counselors are.** Chromebooks in Chrome at 100 to 150% zoom, Macs with Safari 15 or newer, viewers that block background workers, offline use, and damaged or preview copies that must explain themselves.
+5. **Progress is kept.** Saved progress survives closing the page, and progress saved by an older release loads in a newer one.
+6. **Readable and usable by older volunteers.** Large print, color contrast, keyboard use, and screen reader names (WCAG 2.1 A and AA).
+7. **The guide matches the page.** Every message the counselor guide quotes exists in the page.
+8. **What is live is what was tested.** The site is built from the release tag and checked after every deploy.
 
-### The tests we have
+## Part 2: When the tests run
 
-All tests are Playwright scripts in `tests/`. They open the built page (`source/tax-aide-quinn-checker.html`) in Chromium and drop real TaxSlayer PDFs from `cases/` onto it. The reward dog photo is blocked so no test needs the internet.
-
-| Test | What it proves | Case | Time |
+| Tier | When | What runs | Time |
 | --- | --- | --- | --- |
-| `mutate.js` (planted-mistake sweep) | Changes every printed amount on every checked form, one at a time, and confirms each checked line is read from exactly one spot. A $1 error fails, a blanked line fails, and $5 put in a line that should be blank fails. | Quinn, Baylor | 17 s |
-| `baylor1.js` (replaced in change 4 by `cases_steps.js`) | Every Baylor step's correct PDF passes its own step. | Baylor | 12 s |
-| `baylor2.js` (replaced in change 4 by `cases_matrix.js` and `cases_switch.js`) | Every Baylor PDF against every step (no wrong PDF passes), switching cases, TS Note boxes per step, Start over per case, speed of the longest PDF on a slowed processor. | Baylor, Quinn | 2 min 19 s |
-| `verify2.js` (folded into `verify3.js` in bucket D) | Each Quinn step passes; added and removed forms; viewers that block background workers. | Quinn | 10 s |
-| `verify3.js` | Quinn notes N1, N2, N3 worksheet entries, and the TS Note box. | Quinn | 6 s |
-| `verify4.js` | Bar colors, reward online and offline, pinned score frame. | Quinn | 14 s |
-| `verify5.js` (folded into `engine_cases.js`, `cases_matrix.js`, and `verify7.js` in bucket D) | Every Quinn PDF against every Quinn step, and the wrong-step warning. | Quinn | 23 s |
-| `verify6.js` | Chromebook screen at 100, 125, 150% zoom, and speed on a slowed processor. | Quinn | 20 s |
-| `verify7.js` | Same-file warning. | Quinn | 9 s |
-| `verify8.js` | Version button and What's new panel. | Quinn | 3 s |
-| `verify9.js` | Saved progress survives a reload, Start over, a browser that blocks storage. | Quinn | 8 s |
-| `verify10.js` | Moving to the next step after a step is done. | Quinn | 9 s |
-| `verify11.js` | The dogs, fonts, step trail wrapping, reduced motion. | Quinn | 6 s |
-| `repro2.js` | Startup failures: scripts blocked, a cut-off file, older Safari file reading. | Quinn | 6 s |
+| **Developer** | Every change, before pushing (`npm run dev-test`, or `bash tests/dev_test.sh baylor` for one case) | Code checks, the build, the HTML and guide checks, the engine tests, the answer sheet re-import check (when LibreOffice is installed), the planted-mistake sweep, and each step of every case through the page. One line per check. | About 55 seconds |
+| **Check-in** | Every pull request and every push to `main` (`.github/workflows/tests.yml`) | The full suite, `tests/run_all.sh`, in Chromium and WebKit. Required: the ruleset on `main` blocks a merge until the "tests" check passes. Logs and screenshots are kept for 14 days when a run fails. | About 4 minutes of tests, about 5 minutes on GitHub with setup |
+| **Release** | After the tests pass on a push to `main` with a new `source/VERSION` (`.github/workflows/release.yml`) | Tags `v<version>`, publishes the GitHub Release from the page's own release notes, builds the page from the tag, deploys it to GitHub Pages, then `live_check.js` opens the live site and checks the version and the first step of every case. Carter adds the real-device checks in `docs/release-checklist.md`. | A few minutes |
+| **Weekly** | Every Sunday (`.github/workflows/weekly.yml`) | The full suite on `main` and the live site check, to catch drift in Chrome, Playwright, or the site. | About 6 minutes |
+| **Tool updates** | Monthly (`.github/dependabot.yml`) | Dependabot opens pull requests for the npm tools and the workflow actions; each one runs the full check-in suite. Major pdf.js versions are held back. | |
 
-`tests/run_all.sh` runs them all in a row (about 5 minutes) and flags any line that starts with FAIL.
+## Part 3: The tests
 
-### When the tests run
+All tests are in `tests/`. Page tests open the built page (`source/tax-aide-quinn-checker.html`) in Playwright and give it the real TaxSlayer PDFs from `cases/`. No test contacts the Dog API: the reward photo is blocked or replaced by `mockdog.jpg`. Every script ends with a failure exit code when any check fails, and `run_all.sh` prints one line per script, showing a script's full output only when it fails.
 
-| Moment | What happens today | Who |
-| --- | --- | --- |
-| **Code change** (developer test) | Claude builds the page and runs the scripts it judges relevant, usually the whole suite. | Claude, by hand |
-| **Check-in** (pull request) | Nothing runs automatically. The pull request is merged on trust in the developer test. | Nobody |
-| **Release** | `docs/release-checklist.md`: full suite, the planted-mistake sweep, real Chromebook and Mac checks, guide read against the page, version and release notes, build, copy the build to `index.html`, tag. | Claude and Carter, by hand |
-| **After release** | Carter opens the live site and checks the version number. | Carter |
+### Code checks (before a browser opens)
 
-### Gaps in today's testing
+| Test | What it proves |
+| --- | --- |
+| `lint.js` | ESLint (recommended rules) over all JavaScript: the engine, the case files, the page's own script taken out of the template, the tools, and the tests. Names shared between the page files are collected from the files, so a misspelled name is an error. |
+| `style_check.js` | No em dashes and no double hyphens used as dashes in any text file (rule 6). |
+| `html_check.js` | html-validate (recommended rules) on the built page. Two intended exceptions are marked in the page with their reasons. |
+| `guide_check.js` | Every bold phrase in `docs/chromebook-guide.md` is in the page's displayable text (comments and release notes are left out), or is listed as not Audit Pup text with a reason. |
 
-This audit was written for 0.13.0. In 0.14.0, gaps 1 to 3 were closed: the tests run on GitHub Actions for every pull request, every script fails with an exit code, and `tests/check_index.js` checks `index.html`. Requiring the check before a merge is a GitHub setting Carter turns on.
+### Engine tests (Node, no browser)
 
-1. **Nothing runs on GitHub.** A change can reach `main`, and so the live site, without any test running. There is no rule that tests must pass before a merge.
-2. **`index.html` is copied by hand.** Nothing checks that the live `index.html` is the build of the source in the same commit.
-3. **Many tests do not fail cleanly.** 8 of the 14 scripts end with "success" even when a check fails; only `run_all.sh` catches the FAIL text. Four scripts print tables that still need "a quick read by eye".
-4. **Most tests know only Quinn.** 11 scripts have Quinn's steps and files written into them. Baylor needed two new scripts, and each new case would need more.
-5. **Developer testing is all or nothing.** The quickest way to test a change is the whole suite. There is no fast tier for a small change, and the long output costs tokens to read.
-6. **The answer key is copied into the page by hand or by a one-off script** that is not in the repository. Nothing re-checks the key against the answer sheet.
-7. **Only Chromium is tested.** Safari 15 or newer is supported but never tested automatically.
-8. **No checks on the code itself:** no lint, no HTML check, no accessibility check, and no check of the writing style rules (for example, no em dashes).
-9. **The guide is checked by reading it.** Nothing confirms that the messages quoted in the guide still exist in the page.
-10. **Fixed waits.** The scripts wait fixed times (69 waits in all), which slows them and can make them flaky on a slower machine. (Closed in bucket D.)
+The reading engine (`source/engine.js`) and the case files load in Node exactly as the build puts them into the page. PDF text is read with the page's pdf.js version and kept in `tests/output/pdf-text/`, so later runs take seconds.
 
-## Part 2: Testing strategy
+| Test | What it proves |
+| --- | --- |
+| `unit_engine.js` | 26 unit tests: amount parsing, exact matching, blank versus $0, Unread and Form missing, optional forms (including the FTB 3514), page recognition from the printed form header, the line readers, the IP PIN reader, answer keys from `answer_key.json`, and the wrong-step warning's rule. |
+| `engine_cases.js` | For every case: the answer sheet is the one the key was made from (fingerprint), every key row names a line the case reads, every step's expected values are the key's, every line has a reader, a name, and a teaching hint (rule 7), and every printout checked against every step: a step's own printout (or one with the same return) passes, and any other printout fails or shows the wrong-step warning. |
+| `engine_sweep.js` | The planted-mistake sweep (9,026 changes). In every step PDF of every case it changes each printed amount on the checked forms, one at a time, and proves each checked line is read from exactly one spot, a $1 error fails, a blanked amount fails, and $5 planted in the empty box of a line whose answer is blank fails. Must print SWEEP OK. |
+| `engine_parity.js` | The page in Chromium and the Node engine read all 19 case PDFs identically (every text item and position), so the engine tests hold for the real page. |
 
-The goal is to catch as much as possible while the code is being written, quickly and cheaply, and to leave only what truly needs more time, more browsers, or a person to check-in and release.
+### Case tests (every case with a `case.json`)
 
-### Three tiers
+Each case has `cases/<case>/case.json`: the PDF for each step, the items left for the student, the steps with identical returns, the steps with their own TS Note box, and a speed limit. Expectations come from `case.json` and the answer key, never from the page under test. A new case needs a `case.json` and its PDFs, not new test scripts.
 
-**Developer test (while writing code: under 2 minutes, run by Claude on every change).**
+| Test | What it proves |
+| --- | --- |
+| `cases_steps.js` | `case.json` lists the page's steps in order; each step's correct PDF passes every check on the page with only the student's items left; the case's longest PDF checks in time with the processor slowed 6 times. |
+| `cases_matrix.js` | A sample of printout and step pairs through the page (each printout against the steps it may pass and the next one it may not): no wrong pass, no on-screen error. The full every-pair check runs at engine level. |
+| `cases_switch.js` | Switching cases keeps each case's progress, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked. |
 
-* Build the page.
-* Unit tests of the reading engine in plain Node, with no browser: how amounts are parsed, matched, and read from a page. These run in under a second.
-* Answer key check for the case being changed: every answer key value equals what the correct PDF prints.
-* Each step of the case being changed, checked with its own correct PDF.
-* The planted-mistake sweep for the case being changed only.
-* Quick static checks: lint, the writing style rules, and that `index.html` matches the build.
-* Output stays to one line per test unless something fails, so reading it costs few tokens.
-* A change touching only docs runs only the docs checks.
+### Page behavior tests (using Quinn)
 
-**Check-in test (every pull request, on GitHub Actions: about 10 to 15 minutes, automatic).**
+These test the page itself, so they use one case.
 
-* Everything in the developer test, for every case.
-* The full planted-mistake sweep and every PDF against every step, for every case, at the engine level and split by case so cases run in parallel.
-* The page-behavior tests (saved progress, switching cases, warnings, layout at Chromebook zoom levels, startup failures, speed).
-* The same tests in WebKit (Safari's engine) for the most important paths.
-* An accessibility scan.
-* Screenshots and reports saved with the run, to look at when something fails.
-* The pull request cannot be merged until these pass.
+| Test | What it proves |
+| --- | --- |
+| `verify3.js` | In a viewer that blocks background workers and blob links: Quinn's exact scores at every step (A 34/34, B and D 33/33, E and F 36/36), notes N1, N2, N3 (worksheet entries, a wrong total marks one field, a wrong circled option fails), the TS Note box, printouts with extra forms (ignored), a removed form that is not checked (no change), a removed 3514 (its filled lines show Form missing), and no console errors. |
+| `verify4.js` | Bar colors for every state, the reward online (mocked photo) and offline (check mark only), unticking a note takes the reward back, and the score frame stays pinned at the top. |
+| `verify6.js` | Chromebook screen at 100, 125, and 150% zoom: no sideways scrolling, the pinned frame stays a modest share of the screen, no text under 12px; the largest PDF checks in time with the processor slowed 6 times, and the page opens in under 5 seconds. |
+| `verify7.js` | The same-file warning (a file that passed one step, checked again for a later step), and that retries, corrections, and earlier steps do not warn. A later printout checked for an earlier step fails with no warning. The wrong-step warning, its suggested steps, and its button, using a partial Step A key (see Part 5). |
+| `verify8.js` | The Version button and New tag, the What's new panel opens and closes (Esc, a click outside, the footer link), fits a 150% zoom screen, and the footer shows the version with scripts blocked. |
+| `verify9.js` | Saved progress: statuses, worksheet entries, TS Note box, and same-file memory survive a reload; tapping a chip picks that step; Start over clears everything; only Audit Pup keys are stored; a browser that refuses storage still checks and says progress is not saved. |
+| `storage_upgrade.js` | The saved progress left by every released version (`tests/fixtures/storage/`, made by `make_storage_fixture.js` from the released page) loads in the current page: the same step statuses, the first unfinished step, worksheet entries, TS Note boxes, same-file memory, the last case used, and nothing lost. Records for 0.13.0 and 0.14.0 are kept. |
+| `verify10.js` | Moving to the next step after a confirmed step, clearing the old file, Zeke's next-step message; failures, warnings, and unfinished items do not advance; a finished case says so. |
+| `verify11.js` | Zeke, Zion, and Bailey with their titles match green, red, and yellow; the drop box and button name the step; the built-in fonts load; a 19-step trail wraps onto 3 rows; no paw-print burst with reduced motion. |
+| `repro2.js` | Startup failures: scripts blocked (the "did not start" note), copies cut off in three places (made fresh from the current build), a PDF dropped outside the box, and older Safari file reading. |
 
-**Release test (before a version goes live, partly automatic and partly by people).**
+### Browsers and accessibility
 
-* The check-in test on the exact commit being released.
-* Carter checks one step end to end on a managed Tax-Aide Chromebook and on a Mac with Safari.
-* Carter approves any new hints and the guide changes.
-* After the site updates, an automatic check opens the live site, confirms the new version number, and checks one PDF from each case.
-* A weekly scheduled run of the full check-in test, to catch changes in Chrome or in the tools before a counselor does.
+| Test | What it proves |
+| --- | --- |
+| `a11y_check.js` | axe-core (WCAG 2.1 A and AA) on 14 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, and the What's new panel. Every finding fails. |
+| `webkit_check.js` | The main counselor paths in WebKit, Safari's engine: the page starts, each case's first step passes, a wrong PDF fails and its hint opens, progress survives a reload, and the What's new panel opens and closes. GitHub installs WebKit; elsewhere the test reports skip, and on GitHub a missing WebKit fails. |
 
-### Principles
+### Release
 
-* **Data, not code, describes a case.** Each case keeps a small description file (steps, the PDF for each step, the answer key, notes). The same tests run on every case without being rewritten.
-* **Fail loudly.** Every test ends with a failure exit code when any check fails, so GitHub can block the merge. Nothing needs a read by eye.
-* **The sweep is the safety net.** Any change to reading or to an answer key runs the sweep for that case in the developer test and for all cases at check-in.
-* **Use what GitHub gives for free.** GitHub Actions (free for public repositories), required checks on `main`, deploying the site from Actions, Dependabot, and scheduled runs.
-* **Keep people for what only people can judge:** real devices, hint wording, and the guide.
+| Test | What it proves |
+| --- | --- |
+| `live_check.js` | After every deploy and every Sunday: the live site shows the released version and the first step of every case on it passes. |
 
-### Size at the peak (6 cases as large as Baylor)
+## Part 4: How a case is tested
 
-| Item | Today | At 6 Baylor-size cases |
-| --- | --- | --- |
-| Checks (lines and notes) | 530 (Quinn 100, Baylor 430) | about 2,600 |
-| Steps | 20 | about 90 |
-| Planted mistakes in the sweep | 9,026 | about 42,000 |
-| Sweep time on one machine | 17 s | about 2 minutes |
-| Every PDF against every step, through the page | 2 min 19 s (Baylor) | about 14 minutes |
-| Test PDFs (`cases/` and `tests/fixtures/`) | 23 (about 18 MB) | about 95 (about 85 MB) |
+1. **Answer sheet to answer key.** `source/tools/import_answer_sheet.js` reads the answer sheet (converted to HTML by LibreOffice) into `cases/<case>/answer_key.json`. It reads Form 1040 lines, Schedules 1, 2, 3, and A, Form 8880, a CA 540 section, and a CA 3514 section, treats an amount in parentheses as negative, and stops on any row it cannot place. A blank cell means "blank or $0." The key records the sheet's fingerprint; `engine_cases.js` fails if the sheet changes without a new import, and the developer test re-imports and compares when LibreOffice is installed. Both Quinn and Baylor are imported this way.
+2. **Lines and readers.** Each line in `source/cases/<case>.js` names its reader and has one teaching hint. The sweep proves every reader reads its own spot and nothing else.
+3. **Steps and printouts.** `case.json` ties each step to its correct PDF. The engine checks every printout against every step; the page checks each step and a sample of pairs.
+4. **Optional forms.** A blank answer on a form TaxSlayer leaves out when nothing goes on it (Schedules 1, 2, 3, A, Form 8880, FTB 3514) passes when the form is not printed. A filled answer on a missing form shows Form missing.
 
-The slowest part is checking every PDF against every step through the page, because it grows with the square of the number of steps and drives the whole page each time. The same comparison can be done at the reading-engine level, the way the sweep works, in seconds per case. The page itself then only needs a few sample pairings per case.
+Adding a case is in `docs/release-checklist.md`, "Adding a new case."
 
-## Part 3: Changes to make, in priority order
+## Part 5: How the tests are written
 
-**Done after 0.14.0: bucket D (change 8).**
+* **Expectations come from outside the page:** the answer key, `case.json`, and fixed values in the test. A test never asks the page what the right answer is.
+* **Every new check is proven to fail.** When a check is added, a planted bug shows it fails (for example: a changed storage key fails `storage_upgrade.js`, removing the motion wait fails the bar color check).
+* **No fixed waits.** `tests/page.js` waits on the page's own signals: the page has started, the Check button is ready, CSS motion and scrolling have ended, and the mocked reward photo is in. Everything else the page does happens before the click or keypress returns.
+* **No network.** The Dog API is blocked or mocked in every test.
+* **Short output.** One line per test unless it fails, so a run costs few tokens to read.
+* **The wrong-step warning needs a partial key to fire.** It appears only when the picked step passes and a step with more checks also passes. With full answer keys a later printout always fails an earlier step's blanks, so no real printout of Quinn or Baylor triggers it. The page keeps it for future cases, and `verify7.js` tests it with a partial Step A key.
 
-* No page test waits a fixed time any more (there were 57 fixed waits when the work started). `tests/page.js` waits on the page's own signals: the page has started (steps listed, "did not start" note hidden), the Check button is ready again, every CSS transition and animation has ended and the page has stopped scrolling, and the mocked reward photo is in. Everything else the page does after a click, a tick, or a typed value is done before the event returns, so no wait is needed there. A planted check proved the new wait matters: without it, the bar color is read halfway through its change and the color check fails.
-* It also fixed a hidden mistake: many waits passed their time limit in the wrong place, so Playwright used its own 30 second limit instead.
-* `verify2.js` is folded into `verify3.js`, which already ran Quinn in a viewer that blocks background workers and blob links; the two fixtures it did not have (a Schedule A removed, extra pages in a Step E printout) and the console error check moved with it. `verify5.js` is gone: every printout against every step is in `engine_cases.js` and `cases_matrix.js`, and the wrong-step warning's suggested steps, its button, and the reward on a clean pass moved to `verify7.js`.
-* The full suite went from 4 minutes 36 seconds to under 4 minutes on the same machine, with two scripts fewer. The converted tests passed 3 runs in a row.
+**Not covered by automatic tests** (covered by the release checklist or accepted): real Safari 15 (WebKit in Playwright is current WebKit), a real managed Chromebook (sign-out wiping, real zoom), TaxSlayer layout changes in a new tax year, and mistakes on lines the answer key does not check (see "Known exposures" in the release checklist).
 
-**Done after 0.14.0: bucket C (change 10).**
+## Part 6: Moving forward
 
-* `a11y_check.js`: axe-core (WCAG 2.1 A and AA) on 14 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, and the What's new panel. It found 5 real problems. Four were fixed with no visible change: the step chips, the drop box, and the reward now have spoken names that start with the words shown on them, and the What's new panel's scrolling area can be reached with the keyboard. The fifth was the New tag on the Version button (contrast 3.1 light and 2.08 dark, below the 4.5 required); Carter chose a deeper gold, now 5.5 light and 7.8 dark.
-* `webkit_check.js`: the main counselor paths in WebKit, Safari's engine: the page starts, each case's first step passes, a wrong PDF fails and its hint opens, progress survives a reload, and the What's new panel opens and closes. WebKit is installed on GitHub; where it is not installed the test reports SKIPPED, and on GitHub a missing WebKit is a failure. Playwright's WebKit is current WebKit, not Safari 15, so Carter's Mac check at release stays.
+In the order I recommend.
 
-**Done after 0.14.0: bucket B (change 9).** Four checks run before any browser opens, first in both the developer test and the full suite:
-
-* `lint.js`: ESLint (recommended rules) over all JavaScript: the engine, the case files, the page's own script taken out of the template, the tools, and the tests. Names shared between the page files are collected from the files, so a misspelled name is still an error (a planted `parseNumber` was caught). It found 7 unused imports in the tests and 2 unneeded escapes in regular expressions; the escape in the amount parser was changed only after proving the old and new parser agree on all 4,014 distinct texts in the case PDFs.
-* `html_check.js`: html-validate (recommended rules) on the built page. It found 6 buttons without `type="button"` and a lowercase doctype, now fixed (the 4 buttons the page script creates got `type="button"` too); the drop box (a `div` with button role, on purpose) and the reward photo (its source is set by the script) are marked exceptions with their reasons in the page.
-* `style_check.js`: no em dashes and no double hyphens used as dashes in any text file.
-* `guide_check.js`: every bold phrase in the counselor guide is either found in the page's displayable text (comments and the release notes are left out, so old wording there does not count) or listed as not Audit Pup text with a reason. Planted drifts were all caught: a changed message, a renamed button, a new unclassified label, a changed dog title, and a changed status.
-
-**Done after 0.14.0: bucket A (the rest of change 3, and changes 11 and 12).**
-
-* The release workflow builds the page from each release tag and deploys it to GitHub Pages with the same Jekyll site build branch-based Pages used, so `index.html` is no longer kept in the repository or copied by hand (`tests/check_index.js` is gone with it). It can deploy an existing tag again by hand.
-* After every deploy, `tests/live_check.js` opens the live site, confirms the version, and checks the first step of every case. The weekly workflow runs the full suite on `main` and the live check every Sunday.
-* Dependabot opens monthly pull requests for the npm tools and the workflow actions; major pdf.js versions are held back.
-
-**Done after 0.14.0: changes 5, 6, and 7.**
-
-* **Change 5:** the answer sheet is kept in the repository (`cases/baylor/answer_sheet.doc`), and `source/tools/import_answer_sheet.js` makes `cases/baylor/answer_key.json` from it. The page's Baylor key is built from that file, never typed. `engine_cases.js` checks that the sheet's fingerprint still matches, that every row names a real line, and that every step's expected values are the key's. `dev_test.sh` re-imports the sheet and compares when LibreOffice is installed. The import reproduced the 0.14.0 key exactly (364 cells, 0 differences). Quinn's answer sheet is not in the repository, so Quinn's key is still typed in `source/cases/quinn.js`.
-* **Change 6:** the reading engine is in `source/engine.js` and each case in `source/cases/<case>.js`; the build puts them back into the one page. `unit_engine.js` (22 unit tests, under a second) and the other engine tests run in Node with no browser. `tests/dev_test.sh` (`npm run dev-test`) is the developer test: about 45 seconds for both cases, one line per check, or `bash tests/dev_test.sh baylor` for one case.
-* **Change 7:** `engine_cases.js` checks every printout against every step of every case at engine level in under a second (with the PDF text saved; 16 seconds the first time), instead of 4.5 minutes through the page. `engine_sweep.js` replaces `mutate.js` (same 9,026 planted mistakes, 14 seconds). `engine_parity.js` proves the page and Node read all 19 PDFs identically (139,231 text items), so the engine tests hold for the real page. `cases_matrix.js` now checks sample pairs through the page (50 pairs, about a minute). Splitting check-in jobs by case was not needed: the full suite went from about 8 minutes to under 5. The idea of re-reading only the changed page in the sweep was also not needed.
-
-**Done after 0.14.0:** change 4. Each case has `cases/<case>/case.json`, and `cases_steps.js`, `cases_matrix.js`, `cases_switch.js`, and the sweep run over every case listed. `baylor1.js` and `baylor2.js` are gone. The Quinn-only scripts that test page behavior (saved progress, What's new, startup, layout) stay as they are: they test the page, not a case. The expectations for case tests come from `case.json`, never from the page under test.
-
-**Done in 0.14.0:** changes 1, 2, and the check half of 3 (`tests/check_index.js`). Still to do for 3: deploy the site from GitHub Actions once Pages is set to deploy from Actions. Also done: `main` is protected by a ruleset that requires the "tests" check, and releases are tagged and published by `.github/workflows/release.yml` after the tests pass.
-
-| # | Change | Why | Size |
-| --- | --- | --- | --- |
-| 1 | **Make every test fail cleanly** (failure exit code), and turn the "read by eye" tables into checks. | GitHub can only block on tests that fail properly. Needed before anything automatic. | Small |
-| 2 | **Run the tests on every pull request with GitHub Actions**, and make them required on `main` (branch protection). | Today nothing stops an untested change from going live. This is the biggest risk. | Small |
-| 3 | **Build and deploy the site from GitHub Actions** instead of copying `index.html` by hand, or at least check that `index.html` matches the build. | Removes the chance that the live page differs from the tested source. | Small |
-| 4 | **Describe each case in a data file** and make the tests run over every case listed. Replace `baylor1.js`, `baylor2.js`, and the Quinn-only scripts step by step. | Must be done before the third case, or each case adds new scripts. | Medium |
-| 5 | **Keep the answer key import in the repository**: a script that reads the answer sheet table into the case file, plus a test that compares every key value to the correct PDF. | This is how Baylor's 281 values were checked. It should be repeatable for every case. | Medium |
-| 6 | **Fast developer tier**: move the reading engine into its own file (still built into the one page), add Node unit tests, add `npm run dev-test` that tests only the changed case and prints one line per test. | Fast iteration and low token use. | Medium |
-| 7 | **Check every PDF against every step at the engine level**, the way the sweep does, and keep only a few sample pairings through the page. Split check-in jobs by case. | The page-level version takes over 2 minutes for Baylor alone and about 14 minutes at 6 cases. The engine-level version takes seconds. | Medium |
-| 8 | **Replace fixed waits** with waits on the page's own signals (the Check button's ready state is already one). | Faster and less flaky. | Small |
-| 9 | **Static checks**: ESLint, an HTML check, the writing style rules (no em dashes or double hyphens), and a check that every message the guide quotes exists in the page. | Catches mistakes before a browser opens. | Small |
-| 10 | **WebKit and accessibility in check-in**: Playwright's WebKit browser for the main paths and an axe accessibility scan. | Covers Safari users and the large-print, keyboard, and screen reader needs of older volunteers. | Small |
-| 11 | **Live site check after each deploy, and a weekly scheduled run.** | Confirms the release reached the site and catches drift in Chrome or in the tools. | Small |
-| 12 | **Dependabot** for pdf.js and Playwright, with the full tests on each update. | Keeps the tools current without surprises. | Small |
-| 13 | **Saved progress from older versions**: keep a stored record from each released version and confirm the new page loads it. | Protects counselors' progress across releases as the storage grows. | Small |
-| 14 | **New tax year check**: when TaxSlayer moves to a new year, run the answer key check and the sweep on one new PDF per form before updating cases. | Form layouts can move from year to year, which would break reading. | Small, once a year |
-
-### What I need from you
-
-* **No new paid tools are needed.** Everything above uses GitHub (Actions, branch protection, Pages, Dependabot) and free npm packages (Playwright, which we already use, plus ESLint, an HTML checker, and axe).
-* **Three settings only you can change on GitHub:**
-  1. Allow GitHub Actions for the repository (Settings, Actions), if it is not already on.
-  2. Require the check-in tests to pass before merging into `main` (Settings, Branches or Rules).
-  3. Set Pages to deploy from GitHub Actions (Settings, Pages, Source) when we reach change 3.
-* **Workflow files:** the Claude GitHub connection may not be allowed to add files under `.github/workflows`. If a push is refused for that reason, you would add the file through the GitHub web page, the same way you upload releases today.
-* **Testing on real Safari and real ChromeOS automatically** would need a paid device service such as BrowserStack. I do not recommend it now. WebKit in GitHub Actions plus your checks on a real Chromebook and Mac at release cover it well enough.
-
-## Part 4: Remaining work, in buckets
-
-Each bucket is one piece of work: one session and one pull request. They are in the order I recommend. Changes 1 to 12 are done.
-
-| Bucket | What it includes | Why now | Needs from Carter | Size |
+| # | What | Why | Needs from Carter | Size |
 | --- | --- | --- | --- | --- |
-| **A. Release and site safety** (done) | Deploy the site from GitHub Actions (the rest of change 3), so `index.html` no longer needs to be copied by hand. A check of the live site after each deploy, and a weekly scheduled run of the full suite (change 11). Dependabot for pdf.js and Playwright (change 12). | Protects what counselors actually see, and keeps the tools current without surprises. | Set Pages to deploy from GitHub Actions (Settings, Pages, Source). Allow this session to reach jaycarterwells.github.io if the live check should also run here. | Small |
-| **B. Code checks before a browser opens** (done) | Static checks (change 9): ESLint for the engine, cases, and tests; an HTML check of the built page; the writing style rules (no em dashes or double hyphens) for docs and page text; and a check that every message the guide quotes exists in the page. All go into the developer test. | Cheap, fast, and catches mistakes earliest. The guide check enforces rule 3 automatically. | Nothing. | Small |
-| **C. More browsers and accessibility** (done) | Playwright's WebKit browser (Safari's engine) for the main paths, and an axe accessibility scan of the start page and results (change 10). Any real problems it finds become fixes in a patch release. | Covers Mac and Safari users and the large-print and keyboard needs of older volunteers. | Approve any visible fixes it leads to. | Small to medium |
-| **D. Steadier, faster page tests** (done) | Replace the 69 fixed waits in the page tests with waits on the page's own signals (change 8). Fold `verify2.js` and `verify5.js` into the case tests where they now overlap. | Faster runs, and no flaky failures on a slow GitHub machine. | Nothing. | Small |
-| **E. Counselor data and Quinn's key** | Saved progress from older versions: keep a stored record from each released version and prove the new page loads it (change 13). Import Quinn's answer sheet the same way as Baylor's, so no answer key is typed. | Protects counselors' saved progress across releases, and gives every case the same answer key safety. | Quinn's answer sheet file (the .doc or .docx used to make the answer key). | Small |
-| **F. New tax year (once a year)** | When TaxSlayer moves to a new tax year: run the answer key check and the sweep on one new printout of each form before updating cases, and write the steps into the release checklist (change 14). | Form layouts can move between years and would break reading. | New-year printouts of each form, when TaxSlayer releases them. | Small, once a year |
-
-**When to revisit:** if the full suite passes 15 minutes as cases are added, split the GitHub check by case. The required check must keep the name "tests", or the ruleset on `main` must be updated with it.
+| 1 | **Release 0.15.0.** The unreleased changes include two that counselors can see: Quinn's 9 new checked lines (its scores change, for example Step A from 4 to 34 checks) and the New tag color. New checks make this a MINOR version. Write the release notes, read the guide against the page, and do the real Chromebook and Mac checks. | Classes use Quinn; the stricter checks should reach them before they rely on the old scores. | Approve the 9 new Quinn hints and the release notes; the real-device checks. | Small |
+| 2 | **Keep a saved-progress record for each release.** After 0.15.0 is live, run `make_storage_fixture.js` on it and commit `tests/fixtures/storage/0.15.0.json` (release checklist step 18). Better: make `storage_upgrade.js` fail when a published version in the page's release notes has no record, so the step cannot be forgotten. | Protects counselors' progress across every future release, not only the two kept today. | Nothing. | Small |
+| 3 | **Decide on the wrong-step warning.** With full answer keys it can no longer appear for Quinn or Baylor (Part 5), but the guide still describes it. Options: keep it for future cases (as today), or remove it and its guide line to keep the page simpler. | Counselors read about a box they will never see. | Choose keep or remove. | Small |
+| 4 | **New tax year (once a year).** When TaxSlayer moves to a new year: print one return of each form, run the answer key import, `engine_cases.js`, and the sweep on them before updating any case, and write the steps into the release checklist. | Form layouts can move between years, which would break reading. The sweep is the safety net, but only on new-year PDFs. | New-year printouts of each form, when TaxSlayer releases them. | Small, once a year |
+| 5 | **Check every case's own notes in the page tests.** The page behavior tests use Quinn; Baylor's notes read from the PDF (N1, N2, N4, NP) are checked through `cases_steps.js` on correct PDFs only. Add one wrong-PDF check per note kind (for example a missing IP PIN fails N2), driven by `case.json`. | A note that always passes would be a false positive the sweep cannot see, since notes are not amounts. | Nothing. | Small |
+| 6 | **A pdf.js upgrade plan.** pdf.js major versions are held back. When one is taken: `engine_parity.js`, the sweep, and `webkit_check.js` must pass, and the page's size and opening time compared before and after. | pdf.js reads every amount; a change in how it reports text positions would move every reader. | Approve the upgrade when it comes. | Small, when needed |
+| 7 | **Split the GitHub check by case** only if the full suite passes 15 minutes as cases are added (about 1 minute per Baylor-size case today, so not before about 10 cases). The required check must keep the name "tests," or the ruleset on `main` must be updated with it. | Keeps check-in fast at the peak. | Update the ruleset if the check name changes. | Small |
+| 8 | **Teacher golden PDFs (feature, waiting).** If the teachers want to check a class against their own correct PDF, it would reuse the engine and the sweep's one-spot proof. | Only if the teachers ask for it. | The teachers' answers. | Medium |

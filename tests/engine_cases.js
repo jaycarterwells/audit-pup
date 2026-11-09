@@ -36,7 +36,10 @@ const { loadCases } = require('./cases');
         expect(`${c.id} Step ${s.id}: the page's expected values are the answer key's${basis?' at '+s.basis:''}`, !diff.length,
           diff.slice(0,4).map(k=>`${k}: page ${s.expected[k]}, key ${want[from][k]}`).join('; '));
       }
-    } else console.log(`${c.id}: no answer_key.json (answer key typed in source/cases/${c.id}.js)`);
+    } else expect(`${c.id}: has an answer_key.json made from its answer sheet (no answer key is typed)`, false);
+    // every checked line can be read and taught: a reader, a name, and one hint (rule 7)
+    const bare=Object.keys(K.lines).filter(k=>{ const L=K.lines[k]; return !Array.isArray(L.read) || !L.name || !(L.hint && L.hint.length>20); });
+    expect(`${c.id}: every line names its reader and has a name and a teaching hint`, !bare.length, bare.join(', '));
     // 2. case.json against the page
     if(!expect(`${c.id}: case.json lists the page's steps in order`, K.steps.map(s=>s.id).join('')===c.steps.join(''), `page ${K.steps.map(s=>s.id).join('')}, case.json ${c.steps.join('')}`)) continue;
     // 3 and 4. every printout against every step

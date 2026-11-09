@@ -1,7 +1,7 @@
 {
   "id": "baylor",
   "order": 2,
-  "about": "Test description of the Baylor case. The answer key, steps, and notes live in the page (source/audit-pup-template.html); this file tells the tests which PDF goes with each step.",
+  "about": "Test description of the Baylor case. The answer key is answer_key.json (made from answer_sheet.doc); the lines, steps, and notes are in source/cases/baylor.js. This file tells the tests which PDF goes with each step.",
   "pdf": { "A": "Baylor_Sec_A.pdf", "B": "Baylor_Sec_B.pdf", "C": "Baylor_Sec_C.pdf", "E": "Baylor_Sec_E.pdf", "F": "Baylor_Sec_F.pdf",
            "G": "Baylor_Sec_G.pdf", "H": "Baylor_Sec_H.pdf", "I": "Baylor_Sec_I.pdf", "J": "Baylor_Sec_J.pdf", "L": "Baylor_Sec_L.pdf",
            "M": "Baylor_Sec_M.pdf", "N": "Baylor_Sec_N.pdf", "O": "Baylor_Sec_O.pdf", "P": "Baylor_Sec_O.pdf", "R": "Baylor_Sec_R.pdf" },

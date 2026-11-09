@@ -18,24 +18,24 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
   p.on('console',m=>{ if(m.type()==='error' && !/Failed to load resource/.test(m.text())) errs.push(m.text()); });
   await open(p,'file://'+PAGE);
   let r;
-  r=await grade(p,'A',`${U}/Quinn_Sec_A.pdf`); console.log('A', r.score, '|', r.rows.join(', ')); expect('A scores 4/4',r.score==='4/4',r.score);
-  console.log('   N1 detail:', await p.$eval('li.check:nth-child(2) .yours',e=>e.textContent).catch(()=>'?'));
-  r=await grade(p,'B',`${U}/Quinn_Sec_B.pdf`); console.log('B', r.score, r.verdict); expect('B scores 21/21',r.score==='21/21',r.score);
-  r=await grade(p,'D',`${U}/Quinn_Sec_D.pdf`); console.log('D', r.score, r.verdict); expect('D scores 21/21 with no changes',r.score==='21/21'&&/No unexpected changes/.test(r.verdict),r.score+' '+r.verdict);
-  r=await grade(p,'E',`${U}/Quinn_Sec_E.pdf`); console.log('E (before notes)', r.score, '|', r.verdict); console.log('   order:', r.rows.join(', ')); expect('E before notes scores 25/27',r.score==='25/27',r.score);
+  r=await grade(p,'A',`${U}/Quinn_Sec_A.pdf`); console.log('A', r.score, '|', r.rows.join(', ')); expect('A scores 34/34 (blank lines checked as blank or $0)',r.score==='34/34',r.score);
+  console.log('   N1 detail:', await p.$$eval('li.check',els=>{ const n=els.find(e=>/N1/.test(e.textContent)); return n?(n.querySelector('.yours')||{}).textContent:'?'; }));
+  r=await grade(p,'B',`${U}/Quinn_Sec_B.pdf`); console.log('B', r.score, r.verdict); expect('B scores 33/33',r.score==='33/33',r.score);
+  r=await grade(p,'D',`${U}/Quinn_Sec_D.pdf`); console.log('D', r.score, r.verdict); expect('D scores 33/33 with no changes',r.score==='33/33'&&/No unexpected changes/.test(r.verdict),r.score+' '+r.verdict);
+  r=await grade(p,'E',`${U}/Quinn_Sec_E.pdf`); console.log('E (before notes)', r.score, '|', r.verdict); console.log('   order:', r.rows.join(', ')); expect('E before notes scores 34/36',r.score==='34/36',r.score);
   const ins=await p.$$('.ws-grid input'); const vals=['3027','2883','2,751','2571','2363'];   // option 3 typo on purpose
   for(let i=0;i<5;i++) await ins[i].fill(vals[i]); await p.selectOption('.ws-grid select','1');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''), n=await p.$$eval('.ws-grid .bad',e=>e.length); console.log('E N3 with a wrong option 3:', s, n,'bad field(s)'); expect('a wrong worksheet total marks exactly 1 field',n===1&&s==='25/27',s+' '+n); }
+  { const s=(await p.textContent('#score')).replace(/\s/g,''), n=await p.$$eval('.ws-grid .bad',e=>e.length); console.log('E N3 with a wrong option 3:', s, n,'bad field(s)'); expect('a wrong worksheet total marks exactly 1 field',n===1&&s==='34/36',s+' '+n); }
   await ins[2].fill('2715'); await p.selectOption('.ws-grid select','2');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E N3 right totals, wrong option circled:', s); expect('wrong option circled does not pass N3',s==='25/27',s); }
+  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E N3 right totals, wrong option circled:', s); expect('wrong option circled does not pass N3',s==='34/36',s); }
   await p.selectOption('.ws-grid select','1'); await p.check('.confirm input');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E all notes done:', s, '|', await p.textContent('#verdictV')); expect('E with all notes done scores 27/27',s==='27/27',s); }
-  r=await grade(p,'F',`${U}/Quinn_Sec_F.pdf`); console.log('F (entries kept)', r.score, '|', r.verdict); expect('F keeps the worksheet entries and scores 27/27',r.score==='27/27',r.score);
-  r=await grade(p,'B',`${T}/B_plus_extra_forms.pdf`); console.log('B+extra forms', r.score); expect('extra forms are ignored',r.score==='21/21',r.score);
-  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows 3 lines failing',r.score==='18/21'&&r.rows.filter(x=>/=Form missing/.test(x)).length===3,r.score);
-  r=await grade(p,'B',`${T}/B_without_scheduleA.pdf`); console.log('B-Schedule A', r.score); expect('removing a form that is not checked changes nothing',r.score==='21/21',r.score);
-  r=await grade(p,'E',`${T}/E_plus_extra_forms.pdf`); console.log('E+consent pages+Schedule A', r.score); expect('extra pages in a Step E printout are ignored',r.score==='27/27',r.score);
-  r=await grade(p,'E',`${U}/Quinn_Sec_B.pdf`); console.log('B graded as E', r.score, '|', r.rows.filter(x=>!/Correct|Confirmed/.test(x)).join(', ')); expect('the B file graded as E fails exactly the 5 MWP lines',r.score==='22/27'&&r.rows.filter(x=>/=Check/.test(x)).length===5,r.score);
+  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E all notes done:', s, '|', await p.textContent('#verdictV')); expect('E with all notes done scores 36/36',s==='36/36',s); }
+  r=await grade(p,'F',`${U}/Quinn_Sec_F.pdf`); console.log('F (entries kept)', r.score, '|', r.verdict); expect('F keeps the worksheet entries and scores 36/36',r.score==='36/36',r.score);
+  r=await grade(p,'B',`${T}/B_plus_extra_forms.pdf`); console.log('B+extra forms', r.score); expect('extra forms are ignored',r.score==='33/33',r.score);
+  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows its 3 filled lines as Form missing',r.score==='30/33'&&r.rows.filter(x=>/=Form missing/.test(x)).length===3,r.score);
+  r=await grade(p,'B',`${T}/B_without_scheduleA.pdf`); console.log('B-Schedule A', r.score); expect('removing a form that is not checked changes nothing',r.score==='33/33',r.score);
+  r=await grade(p,'E',`${T}/E_plus_extra_forms.pdf`); console.log('E+consent pages+Schedule A', r.score); expect('extra pages in a Step E printout are ignored',r.score==='36/36',r.score);
+  r=await grade(p,'E',`${U}/Quinn_Sec_B.pdf`); console.log('B graded as E', r.score, '|', r.rows.filter(x=>!/Correct|Confirmed/.test(x)).join(', ')); expect('the B file graded as E fails exactly the 5 MWP lines',r.score==='31/36'&&r.rows.filter(x=>/=Check/.test(x)).length===5,r.score);
   // N1 negative unit test using the page's own functions
   const neg=await p.evaluate(()=>{ const fake=[{form:'fed',items:[{x:100,y:500,s:'X'},{x:110,y:500,s:'Single'},{x:349,y:480,s:'Head of household (HOH)'}]}];
     return {fs:filingStatus(fake), dep:dependentInfo(fake,'JAMES')}; });

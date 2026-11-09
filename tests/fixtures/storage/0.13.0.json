@@ -1,0 +1,10 @@
+{
+ "about": "Saved progress left by Audit Pup 0.13.0, made by tests/make_storage_fixture.js. Do not edit by hand.",
+ "version": "0.13.0",
+ "chips": {
+  "quinn": "A:done B:done D:todo E:done F:none"
+ },
+ "storage": {
+  "auditpup.progress.v1.quinn": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":4,\"total\":4,\"when\":1794184308311,\"file\":\"Quinn_Sec_A.pdf\"},\"B\":{\"status\":\"done\",\"pass\":21,\"total\":21,\"when\":1794184309552,\"file\":\"Quinn_Sec_B.pdf\"},\"E\":{\"status\":\"done\",\"pass\":27,\"total\":27,\"when\":1794184310950,\"file\":\"Quinn_Sec_E.pdf\"},\"D\":{\"status\":\"todo\",\"pass\":21,\"total\":21,\"when\":1794184311278,\"file\":\"Quinn_Sec_B.pdf\"}},\"n3\":{\"v\":[\"3027\",\"2883\",\"2715\",\"2571\",\"2363\"],\"sel\":\"1\"},\"nn\":true,\"seen\":{\"259638-cc77532b-78974cbf\":{\"stepId\":\"A\",\"name\":\"Quinn_Sec_A.pdf\"},\"499747-1fd7356-bf012595\":{\"stepId\":\"B\",\"name\":\"Quinn_Sec_B.pdf\"},\"597175-31b2456c-40693855\":{\"stepId\":\"E\",\"name\":\"Quinn_Sec_E.pdf\"}}}"
+ }
+}

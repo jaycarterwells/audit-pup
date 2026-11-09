@@ -11,7 +11,7 @@ const { open, ready } = require('./page');
 const vis=(p,sel)=>p.$eval(sel,e=>!e.classList.contains('hidden')&&getComputedStyle(e).display!=='none').catch(()=>false);
 (async()=>{ const b=await chromium.launch();
  // [name, file, scripts on, want: steps listed?, 'did not start' note?, outcome]
- const cases=[['normal copy',PAGE,true,true,false,'graded 21/21'],['scripts blocked (preview)',PAGE,false,false,true,''],
+ const cases=[['normal copy',PAGE,true,true,false,'graded 33/33'],['scripts blocked (preview)',PAGE,false,false,true,''],
    ['cut off inside the app code',T+'/cut_in_app.html',true,false,true,''],['cut off inside PDF engine',T+'/cut_in_lib.html',true,true,false,'incomplete'],['cut off near the end',T+'/cut_in_worker.html',true,true,false,'incomplete']];
  for(const [name,file,js,wantSteps,wantBanner,wantOut] of cases){ const ctx=await b.newContext({javaScriptEnabled:js}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+file);   // the page starts, or reports why not, before it finishes loading
@@ -34,5 +34,5 @@ const vis=(p,sel)=>p.$eval(sel,e=>!e.classList.contains('hidden')&&getComputedSt
  await p.dispatchEvent('h1','drop',{dataTransfer:dt});
  { const fn=await p.$eval('#filename',e=>e.textContent), stay=(await p.title())==='Audit Pup'; console.log('\nPDF dropped on the page title (outside the box):', fn, '| still on Audit Pup:', stay); expect('a PDF dropped outside the box is taken and the page stays',/Quinn_Sec_B\.pdf/.test(fn)&&stay,fn); }
  await p.selectOption('#step','B'); await p.click('#grade'); await ready(p,{settle:false});
- { const sc=(await p.textContent('#score')).replace(/\s/g,''); console.log('Graded with File.arrayBuffer removed (older Safari path):', sc); expect('older Safari file reading still checks 21/21',sc==='21/21',sc); }
+ { const sc=(await p.textContent('#score')).replace(/\s/g,''); console.log('Graded with File.arrayBuffer removed (older Safari path):', sc); expect('older Safari file reading still checks 33/33',sc==='33/33',sc); }
  await b.close(); })();

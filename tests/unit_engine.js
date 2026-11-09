@@ -43,4 +43,18 @@ t('expectedFromKey: a blank cell becomes $0, a filled cell its amount', ex.A.fed
 let threw=false; try{ E.expectedFromKey({steps:['A'],rows:[{line:'fed_9',values:{A:1}},{line:'fed_9',values:{A:2}}]}); }catch(e){ threw=true; }
 t('expectedFromKey refuses two different values for one line at one step', threw);
 
+t('matches: a missing FTB 3514 passes only for a $0 answer (it is printed only with a California EITC)', E.matches(undefined,0,false,'ca3514')==='pass' && E.matches(undefined,15000,false,'ca3514')==='missing');
+
+// the wrong-step warning: only when the picked step passes and a step with MORE checks also passes. With full
+// answer keys no real printout triggers it (a later printout fails the earlier step's blanks); it guards partial keys.
+{ const saved=[E.LINES,E.STEPS];
+  E.LINES={fed_1a:{form:'fed'}, fed_9:{form:'fed'}};
+  const sA={id:'A',expected:{fed_1a:0}}, sB={id:'B',expected:{fed_1a:15000, fed_9:15000}}; E.STEPS=[sA,sB];
+  const present={fed:true};
+  const warnB=E.laterMatches({id:'A',expected:{fed_9:15000}},{fed_1a:15000,fed_9:15000},present);
+  t('laterMatches: a passing step with fewer checks warns when a step with more checks also passes', warnB.length===1 && warnB[0].id==='B');
+  t('laterMatches: no warning when the picked step fails', E.laterMatches(sA,{fed_1a:15000,fed_9:15000},present).length===0);
+  t('laterMatches: no warning when no step with more checks passes', E.laterMatches(sA,{fed_1a:0,fed_9:0},present).length===0);
+  [E.LINES,E.STEPS]=saved; }
+
 console.log(`${n} engine unit tests run`);
