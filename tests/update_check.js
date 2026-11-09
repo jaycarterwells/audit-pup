@@ -30,11 +30,11 @@ const Q=path.join(__dirname,'..','cases','quinn');
   // 1. website, a newer version is out when the page opens
   { const site={v:'99.0.0'}, {ctx,p,errs}=await setup(site);
     await p.goto(LIVE); await started(p); await answered(p,1);
-    expect('website, newer version: the update box shows with the new version number', await boxShown(p) && /updated to version 99\.0\.0/.test(await p.textContent('#updatebox')), await p.textContent('#updatebox'));
+    expect('website, newer version: the update box shows with the new version number', await boxShown(p) && /Please update Audit Pup before you check a PDF/.test(await p.textContent('#updatebox')) && /99\.0\.0/.test(await p.textContent('#updatebox')), await p.textContent('#updatebox'));
     await p.setInputFiles('#file',`${Q}/Quinn_Sec_A.pdf`);
     expect('website, newer version: Check stays off after a PDF is chosen', await p.$eval('#grade',e=>e.disabled));
     await axe(p,'website update box');
-    expect('website, newer version: Zeke says to update first', /new version/.test(await p.textContent('#guidesay')), await p.textContent('#guidesay'));
+    expect('website, newer version: Zeke says Check is off until the update', /cannot check a PDF until you click Update/.test(await p.textContent('#guidesay')), await p.textContent('#guidesay'));
     await Promise.all([p.waitForURL(u=>String(u).startsWith(LIVE+'?v=99.0.0')), p.click('#updatebtn')]);
     await started(p);
     expect('website: Update loads the newest page', p.url()===LIVE+'?v=99.0.0', p.url());

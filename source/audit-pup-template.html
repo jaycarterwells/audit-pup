@@ -979,8 +979,8 @@ function updateBlocks(){ return !!(NEWER && ON_LIVE); }
 function showUpdate(){
   var box=document.getElementById('updatebox');
   if(ON_LIVE){
-    box.innerHTML='<span class="ic">!</span><div><b>Audit Pup has been updated to version '+esc(NEWER)+'.</b> Click Update to get it. Your progress is kept.'+
-      ' Then choose your PDF again.<div class="btns"><button type="button" id="updatebtn">Update</button></div></div>';
+    box.innerHTML='<span class="ic">!</span><div><b>Please update Audit Pup before you check a PDF.</b> Version '+esc(NEWER)+' is out, and Audit Pup cannot check'+
+      ' until you update. Click Update: it takes a few seconds and your progress is kept. Then choose your PDF again.<div class="btns"><button type="button" id="updatebtn">Update</button></div></div>';
     document.getElementById('updatebtn').addEventListener('click',function(){ location.replace(LIVE_URL+'?v='+encodeURIComponent(NEWER)); });
     gradeBtn.disabled=true;
   } else {
@@ -1119,7 +1119,7 @@ function updateGuide(){
   var id=stepSel.value, r=STORE.steps[id], st=r?r.status:'none', msg;
   var allDone=STEPS.every(function(s){ var x=STORE.steps[s.id]; return x && x.status==='done'; });
   var anyChecked=STEPS.some(function(s){ return !!STORE.steps[s.id]; });
-  if(updateBlocks()){ document.getElementById('guidesay').textContent='Audit Pup has a new version. Click Update in the yellow box above before you check a PDF.'; return; }
+  if(updateBlocks()){ document.getElementById('guidesay').textContent='There is a new version of Audit Pup. You cannot check a PDF until you click Update in the yellow box above. Your progress is kept.'; return; }
   var shown=!!(CTX && CTX.step.id===id);   /* results for this step are on the page */
   if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
   else if(justDone && allDone) msg='Nice work on Step '+justDone+'! Every step of this case is done.';
