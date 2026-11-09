@@ -52,7 +52,7 @@ When a step is done, Audit Pup selects the **next step** for you and clears the 
 | **Confirmed** | An item you checked off yourself. |
 
 * On a line that needs another look, click **Show a hint** to see the answer key value and where to look in the problem.
-* **Lines that should be blank:** the lines that should have nothing on them yet at your step are checked together, in one row at the end of the list. If any of them has an amount, that row lists each one, and its hint shows the answer key as **blank or $0**.
+* **Lines that should be blank:** the lines that should have nothing on them yet at your step are checked together, in one row at the end of the list, together with any box that should not be checked. If any of them has an amount or a check mark, that row lists each one, and its hint shows the answer key as **blank or $0**.
 * **Notes Audit Pup checks for you:** some answer key notes, such as an Identity Protection PIN, a Preparer Note, or the address on a W-2, are read from your PDF. They show **Correct** or **Check** like any other line.
 * **Worksheet entries:** some steps ask you to type values from a worksheet you completed, and to pick the option you chose. Type them in the boxes shown.
 * **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it. Click **See an example note** for a sample.

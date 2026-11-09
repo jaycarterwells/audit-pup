@@ -61,6 +61,13 @@ jobs:
             { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # a case still waiting for a corrected printout or answer sheet (case.json "awaiting") is not ready for counselors
+          waiting=$(node -e "const fs=require('fs');for(const d of fs.readdirSync('cases')){const f='cases/'+d+'/case.json';if(!fs.existsSync(f))continue;const a=JSON.parse(fs.readFileSync(f,'utf8')).awaiting||{};if(Object.keys(a).length)console.log(d+': Step '+Object.keys(a).join(', Step '))}")
+          if [ -n "$waiting" ]; then
+            echo "::warning::v$version is not released: these cases still wait for corrected files: $waiting"
+            { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           { echo "tag=v$version"; echo "version=$version"; echo "deploy=true"; echo "new=true"; } >> "$GITHUB_OUTPUT"
 
       - name: Write the release notes from the page's What's new list

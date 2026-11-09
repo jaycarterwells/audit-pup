@@ -3,7 +3,9 @@
 //  * change every printed amount on the forms the case reads, one at a time, by $7, and record which checked
 //    lines move by exactly $7. Each checked line must be read from exactly ONE spot;
 //  * at that spot, a $1 error must fail and a blanked amount must fail (unless the answer is $0);
-//  * a line whose answer is blank has nothing printed to change: put $5 in its empty box, which must fail.
+//  * a line whose answer is blank has nothing printed to change: put $5 in its empty box, which must fail;
+//  * a checkbox line (Form 1040 line 4c, 5c): add or remove its X, which must fail, and flip every other checkbox,
+//    which must not change it (it is read from its own box only).
 // Prints SWEEP OK when no check misses a planted mistake. Usage: node engine_sweep.js [--case baylor]
 const path=require('path'), fs=require('fs');
 const { expect } = require('./expect');
@@ -24,7 +26,20 @@ const { loadCases } = require('./cases');
           keys.forEach(k=>{ if(got[k]!==base[k] && got[k]===base[k]+7) readers[k].push({pi,ii}); });
           it.s=orig; }); });
       const rep={};
-      keys.forEach(k=>{ const rd=readers[k], f=L[k].form, out={readers:rd.length};
+      // checkboxes: flip the X beside the label (remove it, or add one)
+      const flip=k=>{ const R=L[k].read, undo=[];
+        pages.forEach(pg=>{ if(pg.form!==R[1]) return; const box=t=>pg.items.find(i=>i.s===t&&i.x>=200&&i.x<=260), a=box(R[2]), b=box(R[3]); if(!a||!b) return;
+          pg.items.filter(l=>l.s===R[4]&&l.y<=a.y&&l.y>=b.y).forEach(l=>{ const xs=pg.items.filter(i=>/^[xX]$/.test(i.s)&&Math.abs(i.y-l.y)<=4&&i.x<l.x&&i.x>=l.x-20);
+            if(xs.length) xs.forEach(x=>{ const at=pg.items.indexOf(x); pg.items.splice(at,1); undo.push(()=>pg.items.splice(at,0,x)); });   // put back in place: other checks find items by position
+            else { const x={x:l.x-12,y:l.y,s:'X'}; pg.items.push(x); undo.push(()=>pg.items.splice(pg.items.indexOf(x),1)); } }); });
+        return ()=>undo.reverse().forEach(u=>u()); };
+      const marks=Object.keys(L).filter(k=>L[k].read&&L[k].read[0]==='mark');
+      keys.filter(k=>marks.includes(k)).forEach(k=>{ const f=L[k].form, out={mark:true};
+        let undo=flip(k); out.flipped=E.matches(extract()[k],step.expected[k],present[f],f); undo(); caseMut++;
+        out.cross=marks.filter(m=>m!==k).filter(m=>{ const u=flip(m), moved=extract()[k]!==base[k]; u(); caseMut++; return moved; });
+        if(out.flipped!=='fail' || out.cross.length){ missed.push(`${c.id} ${step.id}:${k}`); console.log(`FAIL ${c.id} Step ${step.id} ${k}: box flipped->${out.flipped} | moved by ${out.cross.join(', ')||'nothing else'}`); }
+        rep[k]=out; });
+      keys.filter(k=>!marks.includes(k)).forEach(k=>{ const rd=readers[k], f=L[k].form, out={readers:rd.length};
         if(rd.length===1){ const it=pages[rd[0].pi].items[rd[0].ii], orig=it.s;
           out.where=`page ${pages[rd[0].pi].page} (${f}) at x=${Math.round(it.x)} y=${Math.round(it.y)}, printed "${orig}"`;
           it.s=String(E.parseNum(orig)+1); out.plus1=E.matches(extract()[k],step.expected[k],present[f],f);

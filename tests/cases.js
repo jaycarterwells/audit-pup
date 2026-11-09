@@ -12,9 +12,11 @@ function loadCases(){
     m.pdfPath=s=>path.join(m.dir,m.pdf[s]);
     m.files=[...new Set(Object.values(m.pdf))];                       // each printout once (Baylor P and O share one)
     m.stepsOf=file=>m.steps.filter(s=>m.pdf[s]===file);
-    m.todo=m.todo||{}; m.sameReturn=m.sameReturn||[];
+    m.todo=m.todo||{}; m.sameReturn=m.sameReturn||[]; m.awaiting=m.awaiting||{};
     // a PDF may pass a step when it is that step's printout or a printout of a step with the same return
     m.mayPass=(file,step)=>m.stepsOf(file).some(s=>s===step||m.sameReturn.some(g=>g.includes(s)&&g.includes(step)));
+    // lines a printout is known to get wrong while a corrected file is awaited (case.json "awaiting"); every other line must pass
+    m.known=(file,step)=>{ const a=m.stepsOf(file).find(s=>m.awaiting[s]); return a && m.mayPass(file,step) ? m.awaiting[a].lines : []; };
     return m;
   }).sort((a,b)=>(a.order||99)-(b.order||99));
 }
@@ -27,7 +29,7 @@ async function grade(p,caseId,step,file){
   await ready(p,{settle:false});   // the results are drawn before the button says ready; motion does not matter here
   return p.evaluate(()=>({
     score:document.getElementById('score').textContent.replace(/\s/g,''),
-    rows:[...document.querySelectorAll('#groups li.check')].map(l=>({cls:l.className.replace('check','').trim(), name:l.querySelector('.name').textContent, st:l.querySelector('.state').textContent, yours:(l.querySelector('.yours')||{}).textContent||''})),
+    rows:[...document.querySelectorAll('#groups li.check')].map(l=>({line:l.getAttribute('data-line'), cls:l.className.replace('check','').trim(), name:l.querySelector('.name').textContent, st:l.querySelector('.state').textContent, yours:(l.querySelector('.yours')||{}).textContent||''})),
     warn:document.getElementById('stepwarn').classList.contains('hidden')?'':document.getElementById('stepwarn').textContent,
     err:document.getElementById('error').classList.contains('hidden')?'':document.getElementById('error').textContent }));
 }

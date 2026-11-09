@@ -451,7 +451,7 @@ var CASES = [], CASE = null, LINES, STEPS, ORDER, NOTES, WORKSHEET;
 /*__ENGINE_AND_CASES__*/   // built in from engine.js, the cases folder, and each case answer_key.json: see build_html.js
 var FORM_TITLES = {fed:'Federal Form 1040', ca540:'California Form 540', ca3514:'California Form 3514 (EITC)',
   sch1:'Schedule 1 (Additional Income and Adjustments)', sch2:'Schedule 2 (Additional Taxes)', sch3:'Schedule 3 (Additional Credits)',
-  schA:'Schedule A (Itemized Deductions)', f8880:'Form 8880 (Saver\'s Credit)'};
+  schA:'Schedule A (Itemized Deductions)', f8880:'Form 8880 (Saver\'s Credit)', schCA:'California Schedule CA (540)'};
 
 var NSTATE = {n3:{v:['','','','',''], sel:''}};   /* student entries for the worksheet note; checkboxes live in STORE (see markGet) */
 
@@ -497,7 +497,7 @@ async function loadPages(arrayBuffer){
   }
   return pages;
 }
-function fmt(n){ if(n===null||n===undefined) return 'blank'; return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US'); }
+function fmt(n){ if(n===null||n===undefined) return 'blank'; if(n===true) return 'checked'; if(n===false) return 'not checked'; return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US'); }
 var FORM_MISSING = {
   fed:'TaxSlayer always produces the Form 1040, so this PDF may be incomplete. Print the full return for this step and check again.',
   ca540:'The California Form 540 is not in this PDF. Check that the state return was started for this taxpayer in TaxSlayer.',
@@ -506,7 +506,8 @@ var FORM_MISSING = {
   sch2:'TaxSlayer prints Schedule 2 only when there is an additional tax. Check the entries for this step that create the tax.',
   sch3:'TaxSlayer prints Schedule 3 only when there is an additional credit. Check the entries for this step that create the credit.',
   schA:'TaxSlayer prints Schedule A when state taxes or itemized deductions are entered. Check the state information on each W-2.',
-  f8880:'TaxSlayer prints Form 8880 only when there is a retirement contribution. Check box 12 of the W-2s.'
+  f8880:'TaxSlayer prints Form 8880 only when there is a retirement contribution. Check box 12 of the W-2s.',
+  schCA:'TaxSlayer prints Schedule CA (540) only when California adjustments are entered. Check the California adjustment for this step.'
 };
 /* ---------- UI ---------- */
 var stepSel=document.getElementById('step'), caseSel=document.getElementById('assignment');
@@ -599,19 +600,20 @@ function answerLine(html){ return el('div','ans','Answer key: '+html); }
 /* ----- answer key line ----- */
 function lineRow(step,k,got,present){
   var L=LINES[k], f=L.form, nochange=step.type==='nochange', exp=step.expected[k];
-  var r=makeRow(f, L.name, FORM_TITLES[f]+', '+L.line);
+  var r=makeRow(f, L.name, FORM_TITLES[f]+', '+L.line); r.li.setAttribute('data-line',k);
   var st=matches(got[k],exp,present[f],f);
   setStatus(r,st,{nochange:nochange});
   if(st==='pass'){ r.amt.textContent=fmt(got[k]); return r; }
   var yours=el('div','yours');
   if(st==='missing') yours.innerHTML='This form is not in your PDF.';
   else if(st==='warn') yours.innerHTML='The checker could not find this line in your PDF.';
+  else if(L.read && L.read[0]==='mark') yours.innerHTML='On your return the box is <b>'+fmt(got[k])+'</b>.';
   else yours.innerHTML='Your return shows <b>'+fmt(got[k])+'</b> on '+L.line+'.';
   r.body.appendChild(yours);
   /* a note from the answer sheet for this line at this step replaces the line's usual hint */
   var hint=(step.hints && step.hints[k]) || L.hint;
   addHint(r,null,function(box){
-    box.appendChild(answerLine('<b>'+(exp===0 && L.read ? 'blank or $0' : fmt(exp))+'</b>'+(nochange?' (same as at '+step.basis+')':'')));
+    box.appendChild(answerLine('<b>'+(exp===0 && L.read ? 'blank or $0' : (L.read && L.read[0]==='mark' ? (exp?'checked':'not checked') : fmt(exp)))+'</b>'+(nochange?' (same as at '+step.basis+')':'')));
     var c=el('div');
     if(st==='missing') c.textContent=FORM_MISSING[f];
     else if(st==='warn') c.textContent='Compare '+FORM_TITLES[f]+', '+L.line+' to the answer key by hand. '+hint;
@@ -631,16 +633,16 @@ var BLANK_GROUP='Lines that should be blank';
 function blankRow(step,keys,got,present){
   var nochange=step.type==='nochange';
   var r=makeRow('blank', 'Every line that is blank on the answer key', keys.length+' line'+(keys.length===1?'':'s')+' should be blank or $0 at Step '+step.id);
-  r.groupTitle=BLANK_GROUP;
+  r.groupTitle=BLANK_GROUP; r.li.setAttribute('data-line','blank');
   var bad=[], unread=[];
-  keys.forEach(function(k){ var L=LINES[k], f=L.form, st=matches(got[k],0,present[f],f);
+  keys.forEach(function(k){ var L=LINES[k], f=L.form, st=matches(got[k],step.expected[k],present[f],f);
     if(st==='fail'||st==='missing') bad.push({k:k,st:st}); else if(st==='warn') unread.push(k); });
   var where=function(k){ return FORM_TITLES[LINES[k].form]+', '+LINES[k].line; };
   setStatus(r, bad.length?'fail':(unread.length?'warn':'pass'), {nochange:nochange});
   if(!bad.length && !unread.length) return r;
   var ul=el('ul','blanklist');
   bad.forEach(function(b){ ul.appendChild(el('li',null, b.st==='missing' ? '<b>'+esc(where(b.k))+'</b>: this form is not in your PDF.'
-    : '<b>'+esc(where(b.k))+'</b> shows <b>'+fmt(got[b.k])+'</b>.')); });
+    : '<b>'+esc(where(b.k))+'</b> '+(got[b.k]===true?'is checked':'shows <b>'+fmt(got[b.k])+'</b>')+'.')); });
   unread.forEach(function(k){ ul.appendChild(el('li',null,'<b>'+esc(where(k))+'</b>: the checker could not find this line in your PDF.')); });
   r.body.appendChild(el('div','yours', bad.length ? (bad.length===1?'This line should be blank:':'These '+bad.length+' lines should be blank:') : 'Confirm these lines by hand:'));
   r.body.appendChild(ul);
@@ -665,6 +667,21 @@ function noteRow(step,id,got,present,pages){
   var r=makeRow(N.form, N.name, 'Answer key note '+chip, chip);
   var w=WORKSHEET?WORKSHEET.rows[WORKSHEET.circled-1]:null;
 
+  if(N.kind==='filing' && N.deps){
+    var fs2=filingStatus(pages), tp=taxpayerName(pages), have=dependentCredits(pages)||[];
+    var boxName={ctc:'child tax credit', odc:'credit for other dependents'};
+    var checks=N.deps.map(function(d){ var f=have.filter(function(x){ return x.name.toUpperCase().indexOf(d.first)===0; })[0];
+      var box=f ? (f.ctc&&!f.odc?'ctc':(f.odc&&!f.ctc?'odc':(f.ctc?'both':'none'))) : null; return {d:d, box:box, ok:box===d.box}; });
+    var extra=have.filter(function(x){ return !N.deps.some(function(d){ return x.name.toUpperCase().indexOf(d.first)===0; }); });
+    var okf=!!(fs2 && N.status.test(fs2) && tp && tp.toUpperCase().indexOf(N.taxpayer)===0 && checks.every(function(c){return c.ok;}) && !extra.length);
+    setStatus(r, okf?'pass':'fail', {nochange:nochange});
+    var parts2=['filing status <b>'+(fs2||'not found')+'</b>', 'taxpayer <b>'+(tp?cap(tp.split(' ')[0]):'not found')+'</b>'];
+    checks.forEach(function(c){ parts2.push(esc(c.d.name)+': <b>'+(c.box===null?'not listed as a dependent':(c.box==='none'?'no credit box checked':(c.box==='both'?'both credit boxes checked':boxName[c.box])))+'</b>'); });
+    extra.forEach(function(x){ parts2.push('also listed: <b>'+cap(x.name)+'</b>'); });
+    r.body.appendChild(el('div','yours','Your return shows '+parts2.join('; ')+'.'));
+    if(!okf) addHint(r,null,function(box){ box.appendChild(answerLine(N.key)); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
   if(N.kind==='filing'){
     var fs=filingStatus(pages), dep=dependentInfo(pages,N.dependent);
     var ctc=N.ctc?firstDependentCTC(pages):null;
@@ -797,7 +814,7 @@ function render(step, got, present, pages, alt, reuse){
   var rows=[], notes=step.notes||[];
   var blanks=[];
   ORDER.forEach(function(id){
-    if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)){ if(step.expected[id]===0) blanks.push(id); else rows.push(lineRow(step,id,got,present)); } }
+    if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)){ if(step.expected[id]===0 || step.expected[id]===false) blanks.push(id); else rows.push(lineRow(step,id,got,present)); } }
     else if(notes.indexOf(id)>=0) rows.push(noteRow(step,id,got,present,pages));
   });
   if(blanks.length) rows.push(blankRow(step,blanks,got,present));
@@ -993,7 +1010,9 @@ function showUpdate(){
 }
 var CHANGELOG=[
   {version:'0.17.0', date:'2026-11-09',
-   added:['Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
+   added:['A third case: Graham (Stacey and Sean Graham, 2025), with 23 steps covering self-employment, IRA and pension 1099-R forms, Social Security, railroad retirement, military retirement, adjustments, itemizing, and the education credit. Pick it in the first box.',
+          'Checkboxes on the return are checked too, such as the Rollover, QCD, and PSO boxes on Form 1040 lines 4c and 5c, and lines on California Schedule CA.',
+          'Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
           'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.']},
   {version:'0.16.0', date:'2026-11-09',
    changed:['The lines that should still be blank at your step are now checked together in one row, Lines that should be blank, at the end of the list. If any of them has an amount, that row lists each one. The list of checks is much shorter.'],

@@ -24,7 +24,7 @@ var Q_LINES = {
     hint:'Total tax is the tax minus credits plus other taxes. If line 16 is right, look for a credit or an extra tax entered in TaxSlayer that is not in the problem.'},
   fed_25d: {form:'fed', line:'Line 25d', name:'Federal tax withheld', read:['box','fed','25d'],
     hint:'Line 25d is federal withholding from your W-2 entries. Re-open the W-2 and compare box 2 to the source document.'},
-  fed_27:  {form:'fed', line:'Line 27',  name:'Earned income credit (EIC)', read:['box','fed','27a'],
+  fed_27a: {form:'fed', line:'Line 27a', name:'Earned income credit (EIC)', read:['box','fed','27a'],
     hint:'The EIC depends on earned income and the qualifying person. Re-check the dependent entry and whether earned income was entered as the problem intends.'},
   fed_33:  {form:'fed', line:'Line 33',  name:'Total payments', read:['box','fed','33'],
     hint:'Line 33 totals your payments and refundable credits. If it is off, the mistake is in a withholding or credit line above it.'},
@@ -85,7 +85,7 @@ var Q_STEPS = [
 ];
 
 /* Output order follows the answer key, top to bottom. Notes sit where the key places them. */
-var Q_ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_24','fed_25d','fed_27','fed_33','fed_35a','fed_37','N2','N1','NN',
+var Q_ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_24','fed_25d','fed_27a','fed_33','fed_35a','fed_37','N2','N1','NN',
   'ca540_12','ca540_14','ca540_16','ca540_17','ca540_18','ca540_19','ca540_31','ca540_32','ca540_35','ca540_64','ca540_71','ca540_75','ca540_78','ca540_111','ca540_115',
   'ca3514_2','ca3514_13','ca3514_14','ca3514_19','N3'];
 

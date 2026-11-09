@@ -33,6 +33,12 @@ const chips=p=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.c
       await grade(p,'baylor','A',`${B}/Baylor_Sec_A.pdf`);
       expect(`${v}: Baylor's Step A TS Note box comes back`, await p.$eval('.confirm input',e=>e.checked));
     }
+    if(fx.chips.graham){
+      await p.selectOption('#assignment','graham');
+      expect(`${v}: Graham's step trail shows the saved statuses`, (await chips(p))===fx.chips.graham, `${await chips(p)} | saved ${fx.chips.graham}`);
+      await grade(p,'graham','C',path.join(__dirname,'..','cases','graham','Graham_Sec_C.pdf'));
+      expect(`${v}: Graham's Step C TS Note box comes back`, await p.$eval('.confirm input',e=>e.checked));
+    }
     const keys=await p.evaluate(()=>Object.keys(localStorage).filter(k=>/^auditpup\./.test(k)).sort().join(','));
     expect(`${v}: no saved progress is lost`, Object.keys(fx.storage).every(k=>keys.split(',').includes(k)), keys);
     await reload(p);

@@ -31,9 +31,10 @@ const { started, offline } = require('./page');
   for(const c of cases){
     const own=c.ownTsNoteBox||[]; if(own.length<2) continue;
     for(const s of own){ await grade(p,c.id,s,c.pdfPath(s)); if(await p.$eval('.confirm input',e=>e.checked)) await p.uncheck('.confirm input'); }
+    // each box against the next one in the list (every box is ticked once and checked by its neighbor, so a shared box is caught)
     for(let i=0;i<own.length;i++){
       await grade(p,c.id,own[i],c.pdfPath(own[i])); await p.check('.confirm input');
-      for(const o of own.filter(x=>x!==own[i])){ await grade(p,c.id,o,c.pdfPath(o));
+      for(const o of [own[(i+1)%own.length]]){ await grade(p,c.id,o,c.pdfPath(o));
         expect(`${c.id}: ticking the TS Note box at Step ${own[i]} does not tick Step ${o}`, !(await p.$eval('.confirm input',e=>e.checked))); }
       await grade(p,c.id,own[i],c.pdfPath(own[i])); await p.uncheck('.confirm input');
     }

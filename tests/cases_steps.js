@@ -17,8 +17,11 @@ const { open, offline } = require('./page');
     if(!expect(`${c.id}: case.json lists the page's steps in order`, pc && pc.steps.join('')===c.steps.join(''), pc?`page ${pc.steps.join('')}, case.json ${c.steps.join('')}`:'not on the page')) continue;
     for(const s of c.steps){
       const r=await grade(p,c.id,s,c.pdfPath(s));
-      const todo=r.rows.filter(x=>x.cls==='todo').length, bad=r.rows.filter(x=>x.cls!=='pass'&&x.cls!=='todo');
-      const ok=expect(`${c.id} Step ${s}: its own PDF passes every check`, !bad.length && !r.err, bad.map(x=>`${x.st}: ${x.name} | ${x.yours}`).join(' || ')||r.err)
+      const known=c.known(c.pdf[s],s), todo=r.rows.filter(x=>x.cls==='todo').length, off=r.rows.filter(x=>x.cls!=='pass'&&x.cls!=='todo');
+      const bad=off.filter(x=>!known.includes(x.line)), fixed=known.filter(k=>!off.some(x=>x.line===k));
+      if(known.length){ console.log(`WAITING ${c.id} Step ${s}: ${known.join(', ')} (${(c.awaiting[s]||{}).why||'see case.json'})`);
+        expect(`${c.id} Step ${s}: the awaited difference is still there (remove it from case.json "awaiting" once fixed)`, !fixed.length, fixed.join(', ')); }
+      const ok=expect(`${c.id} Step ${s}: its own PDF passes every check${known.length?' except the awaited fix':''}`, !bad.length && !r.err, bad.map(x=>`${x.st}: ${x.name} | ${x.yours}`).join(' || ')||r.err)
         & expect(`${c.id} Step ${s}: ${c.todo[s]||0} item(s) left for the student`, todo===(c.todo[s]||0), `${todo} To do`);
       console.log(`${ok?'ok  ':'FAIL'} ${c.id} Step ${s} | ${r.score} | ${r.rows.length} rows, ${todo} to do`);
     }
