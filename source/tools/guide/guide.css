@@ -1,0 +1,37 @@
+/* Print layout for the guide PDFs made by make_guide.js. Fonts are Audit Pup's own, filled in by the script. */
+@font-face{font-family:Atkinson;font-weight:400;src:url(__ATK400__) format('woff2')}
+@font-face{font-family:Atkinson;font-weight:700;src:url(__ATK700__) format('woff2')}
+@font-face{font-family:Bitter;font-weight:800;src:url(__BITTER__) format('woff2')}
+@page{size:letter;margin:0.6in 0.65in 0.7in}
+:root{--ink:#24262b;--muted:#5d5a52;--gold:#86610f;--gold2:#c9a24a;--paper:#fbf7ec;--line:#e4d9bf;--warn:#a87508}
+*{box-sizing:border-box}
+body{font-family:Atkinson,Arial,sans-serif;color:var(--ink);font-size:12pt;line-height:1.42;margin:0}
+h1,h2,h3{font-family:Bitter,Georgia,serif;font-weight:800;line-height:1.2}
+h2{font-size:18pt;margin:16pt 0 8pt;padding-bottom:4pt;border-bottom:2.5pt solid var(--gold2);break-after:avoid}
+h3{font-size:13.5pt;margin:12pt 0 5pt;break-after:avoid}
+p{margin:0 0 8pt}
+ul,ol{margin:0 0 8pt;padding-left:20pt} li{margin:0 0 4pt}
+a{color:var(--gold)}
+code{font-family:inherit;font-weight:700}
+.section{break-before:page}
+.sec{break-inside:avoid}
+.end{font-size:11pt;line-height:1.36}.end h2{margin-top:0}.end li{margin-bottom:2pt}
+.cover{height:9.4in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--paper);border:1.5pt solid var(--line);border-radius:14pt;padding:40pt}
+.cover img{width:2.3in;height:2.3in;border-radius:50%}
+.cover h1{font-size:34pt;margin:22pt 0 6pt}
+.cover .sub{font-size:16pt;color:var(--muted);margin-bottom:24pt}
+.cover .ver{display:inline-block;background:var(--gold);color:#fffdf7;font-weight:700;font-size:13pt;padding:5pt 14pt;border-radius:20pt;margin-bottom:22pt}
+.cover .url{font-size:14pt;font-weight:700}
+.cover .small{font-size:11pt;color:var(--muted);margin-top:28pt}
+figure{margin:6pt 0 12pt;break-inside:avoid}
+figure img{max-width:100%;max-height:3.9in;width:auto;border:1pt solid var(--line);border-radius:6pt;display:block;margin:0 auto}
+figure.short img{max-height:3.6in}
+figcaption{font-size:10.5pt;color:var(--muted);margin-top:4pt;text-align:center}
+.two{display:flex;gap:12pt;break-inside:avoid}.two figure{flex:1;margin:0}.two figure img{max-height:2.1in}
+.box{background:var(--paper);border:1pt solid var(--line);border-left:4pt solid var(--gold2);border-radius:6pt;padding:9pt 12pt;margin:6pt 0 12pt;break-inside:avoid}
+.box.warn{border-left-color:var(--warn)}
+table{border-collapse:collapse;width:100%;margin:4pt 0 12pt;break-inside:avoid;font-size:11.5pt}
+th,td{border:1pt solid var(--line);padding:5pt 8pt;text-align:left;vertical-align:top}
+th{background:var(--paper);font-weight:700}
+.check li{list-style:none;margin-left:-16pt;padding-left:22pt;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:3pt;width:11pt;height:11pt;border:1.3pt solid var(--ink);border-radius:2pt}
