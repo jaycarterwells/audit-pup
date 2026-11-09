@@ -228,6 +228,10 @@
     border:1px solid var(--gold); border-radius:999px; padding:1px 8px; margin-right:7px; vertical-align:1px}
   .yours,.notecopy{font-size:15.5px; color:var(--muted); padding:0 15px 8px 56px}
   .yours b{color:var(--text); font-variant-numeric:tabular-nums}
+  .check > div > .blanklist{font-size:15.5px; color:var(--muted); margin:0; padding:0 15px 8px 76px}
+  .blanklist li{margin:2px 0}
+  .blanklist b{color:var(--text); font-variant-numeric:tabular-nums}
+  .hint .blanklist{padding-left:20px; margin:6px 0 0}
   .hintbtn{margin:2px 15px 12px 56px; background:transparent; color:var(--text); border:1.5px solid var(--gold);
     border-radius:10px; padding:9px 14px; min-height:42px; font-size:15.5px; font-weight:700; cursor:pointer}
   .hint{margin:0 15px 13px 56px; padding:13px 15px; background:var(--surface-2); border:1px solid var(--border);
@@ -544,7 +548,7 @@ gradeBtn.addEventListener('click',async function(){
     pages.forEach(function(pg){ present[pg.form]=true; });
     gradedName=chosen.name;
     var got=extractAll(pages);
-    var alt=laterMatches(step, got, present);
+    var alt=otherMatches(step, got, present);
     /* same file reused for a later step: the student probably did not print a new PDF */
     var prev=SEEN[fp], reuse=(prev && stepIndex(step.id)>stepIndex(prev.stepId))?prev:null;
     render(step, got, present, pages, alt, reuse);
@@ -611,6 +615,41 @@ function lineRow(step,k,got,present){
     else if(exp===0 && L.read) c.textContent='Nothing should be on this line yet at Step '+step.id+'. Look for an entry made too early, or one that does not belong on this return. '+hint;
     else c.textContent=hint;
     box.appendChild(c);
+    if(step.tip) box.appendChild(el('div',null,step.tip));
+  });
+  return r;
+}
+
+/* ----- the lines that should be blank: one row for all of them ----- */
+/* A blank answer sheet cell is checked as "blank or $0". Those lines are shown together, so the list stays short;
+   the row fails when any of them has an amount (or its form is missing) and names each one. */
+var BLANK_GROUP='Lines that should be blank';
+function blankRow(step,keys,got,present){
+  var nochange=step.type==='nochange';
+  var r=makeRow('blank', 'Every line that is blank on the answer key', keys.length+' line'+(keys.length===1?'':'s')+' should be blank or $0 at Step '+step.id);
+  r.groupTitle=BLANK_GROUP;
+  var bad=[], unread=[];
+  keys.forEach(function(k){ var L=LINES[k], f=L.form, st=matches(got[k],0,present[f],f);
+    if(st==='fail'||st==='missing') bad.push({k:k,st:st}); else if(st==='warn') unread.push(k); });
+  var where=function(k){ return FORM_TITLES[LINES[k].form]+', '+LINES[k].line; };
+  setStatus(r, bad.length?'fail':(unread.length?'warn':'pass'), {nochange:nochange});
+  if(!bad.length && !unread.length) return r;
+  var ul=el('ul','blanklist');
+  bad.forEach(function(b){ ul.appendChild(el('li',null, b.st==='missing' ? '<b>'+esc(where(b.k))+'</b>: this form is not in your PDF.'
+    : '<b>'+esc(where(b.k))+'</b> shows <b>'+fmt(got[b.k])+'</b>.')); });
+  unread.forEach(function(k){ ul.appendChild(el('li',null,'<b>'+esc(where(k))+'</b>: the checker could not find this line in your PDF.')); });
+  r.body.appendChild(el('div','yours', bad.length ? (bad.length===1?'This line should be blank:':'These '+bad.length+' lines should be blank:') : 'Confirm these lines by hand:'));
+  r.body.appendChild(ul);
+  addHint(r,null,function(box){
+    box.appendChild(answerLine('<b>blank or $0</b> on '+(bad.length+unread.length===1?'this line':'each line listed')+(nochange?' (same as at '+step.basis+')':'')));
+    box.appendChild(el('div',null, nochange ? 'These lines were blank at '+step.basis+' and should still be blank, so look at what you entered since then.'
+      : 'Nothing should be on these lines yet at Step '+step.id+'. Look for an entry made too early, or one that does not belong on this return.'));
+    var hl=el('ul','blanklist');
+    bad.map(function(b){return b.k;}).concat(unread).forEach(function(k){
+      var hint=(step.hints && step.hints[k]) || LINES[k].hint;
+      if(!present[LINES[k].form]) hint=FORM_MISSING[LINES[k].form]||hint;
+      hl.appendChild(el('li',null,'<b>'+esc(where(k))+'</b>: '+esc(hint))); });
+    box.appendChild(hl);
     if(step.tip) box.appendChild(el('div',null,step.tip));
   });
   return r;
@@ -752,10 +791,12 @@ function stepIndex(id){ for(var i=0;i<STEPS.length;i++) if(STEPS[i].id===id) ret
 function render(step, got, present, pages, alt, reuse){
   CTX=null;
   var rows=[], notes=step.notes||[];
+  var blanks=[];
   ORDER.forEach(function(id){
-    if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)) rows.push(lineRow(step,id,got,present)); }
+    if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)){ if(step.expected[id]===0) blanks.push(id); else rows.push(lineRow(step,id,got,present)); } }
     else if(notes.indexOf(id)>=0) rows.push(noteRow(step,id,got,present,pages));
   });
+  if(blanks.length) rows.push(blankRow(step,blanks,got,present));
   rows.forEach(function(r){ if(r.init) r.init(); });
   CTX={step:step, rows:rows, celebrated:false, alt:alt||[], reuse:reuse||null};
   hideReward();
@@ -765,7 +806,19 @@ function render(step, got, present, pages, alt, reuse){
     '<div class="tile"><div class="k">Checked against</div><div class="val"><span class="colbadge">'+esc(step.id)+'</span>'+
     '<span>Step '+esc(step.id)+': '+esc(cap1(colTitle))+'<span class="sub">'+esc(colSub)+'</span></span></div></div>';
   var sw=document.getElementById('stepwarn');
-  if(CTX.alt.length){
+  var failing=!linesPass(step,got,present);
+  if(CTX.alt.length && failing && CTX.reuse){ sw.classList.add('hidden'); sw.innerHTML=''; }   /* the same-file note below says it more exactly */
+  else if(CTX.alt.length && failing){
+    /* the check failed, but this PDF matches every line of another step: most often the previous step's PDF */
+    var names2=CTX.alt.map(function(s){return 'Step '+s.id;}).join(' or ');
+    var earlier=stepIndex(CTX.alt[0].id)<stepIndex(step.id);
+    sw.innerHTML='<span class="ic">!</span><div><b>Did you pick the right step?</b> This PDF matches '+names2+', not Step '+esc(step.id)+'.'+
+      ' <span class="why">'+(earlier ? 'Print a new PDF after finishing Step '+esc(step.id)+'.' : 'It is from a later step.')+'</span><div class="btns"></div></div>';
+    var bx2=sw.querySelector('.btns');
+    CTX.alt.forEach(function(s){ var b=document.createElement('button'); b.type='button'; b.textContent='Check against Step '+s.id+' instead';
+      b.addEventListener('click',function(){ stepSel.value=s.id; gradeBtn.click(); }); bx2.appendChild(b); });
+    sw.classList.remove('hidden');
+  } else if(CTX.alt.length){
     var names=CTX.alt.map(function(s){return 'Step '+s.id;}).join(' or ');
     sw.innerHTML='<span class="ic">!</span><div><b>Did you pick the right step?</b> This PDF also passes every check for '+names+(CTX.alt.length>1?', which come later and check more lines.':', which comes later and checks more lines.')+' <span class="why">Step '+esc(step.id)+' checks only '+Object.keys(step.expected).length+
       ' lines, so a later step\'s PDF can pass it too.</span><div class="btns"></div></div>';
@@ -785,7 +838,7 @@ function render(step, got, present, pages, alt, reuse){
   var groups=document.getElementById('groups'); groups.innerHTML='';
   var cur=null, ul=null;
   rows.forEach(function(r){
-    if(r.form!==cur){ cur=r.form; groups.appendChild(el('div','groupttl',FORM_TITLES[cur])); ul=el('ul','checks'); groups.appendChild(ul); }
+    if(r.form!==cur){ cur=r.form; groups.appendChild(el('div','groupttl',r.groupTitle||FORM_TITLES[cur])); ul=el('ul','checks'); groups.appendChild(ul); }
     ul.appendChild(r.li);
   });
   document.getElementById('stepnote').innerHTML='';
@@ -803,7 +856,10 @@ function updateSummary(){
   document.getElementById('score').innerHTML=c.pass+'<small>/'+total+'</small>';
   var v=document.getElementById('verdictV'), d=document.getElementById('verdictD');
   var todoTxt=c.todo?(' '+c.todo+(c.todo===1?' item is':' items are')+' still marked To do.'):'';
-  if(c.fail>0){
+  if(c.fail>0 && (CTX.alt.length || CTX.reuse)){
+    v.textContent='This PDF does not match Step '+step.id+'.'; v.style.color='var(--fail)';
+    d.textContent='See the yellow note above.';
+  }else if(c.fail>0){
     v.textContent=c.fail+(c.fail===1?' check needs another look.':' checks need another look.');
     v.style.color='var(--fail)';
     d.textContent=(nochange?('Something changed since '+step.basis+'. '):'')+
@@ -893,6 +949,9 @@ try{ var saved=localStorage.getItem('taxaide-theme'); if(saved) document.documen
 /* ---------- Version and release notes (semantic versioning: MAJOR.MINOR.PATCH). Newest first. ---------- */
 var APP_VERSION='__APP_VERSION__';
 var CHANGELOG=[
+  {version:'0.16.0', date:'2026-11-09',
+   changed:['The lines that should still be blank at your step are now checked together in one row, Lines that should be blank, at the end of the list. If any of them has an amount, that row lists each one. The list of checks is much shorter.'],
+   added:['If your PDF does not pass the step you picked but matches a different step, for example the PDF you printed for the previous step, a yellow box names that step, with a button to check against it. Your progress for the step you picked does not change.']},
   {version:'0.15.0', date:'2026-11-09',
    changed:['Quinn now checks every line on its answer sheet, including the lines that should be blank or $0 (federal lines 15, 16, 24, and 37, and California lines 14, 16, 35, 64, and 111), the same way Baylor does. Quinn steps now have more checks, so a score such as 4 of 4 is now 34 of 34.',
           'Checking a later step\'s PDF for an earlier step now shows the lines that do not match, instead of a "Did you pick the right step?" box.',
@@ -1020,7 +1079,7 @@ function updateGuide(){
   else if(justDone) msg='Nice work on Step '+justDone+'! Step '+id+' is up next. Finish it in TaxSlayer, print a new PDF, and drop it below.';
   else if(allDone) msg='Every step of this case is done. Pick any step to check it again.';
   else if(shown && CTX.reuse) msg='This is the same file you checked for Step '+CTX.reuse.stepId+'. Print a new PDF from TaxSlayer for Step '+id+' and drop it below.';
-  else if(shown && CTX.alt.length) msg='This PDF looks like it is from a later step. Read the yellow box in the results below.';
+  else if(shown && CTX.alt.length) msg='This PDF looks like it is from '+(stepIndex(CTX.alt[0].id)<stepIndex(id)?'an earlier':'a later')+' step. Read the yellow box in the results below.';
   else if(st==='fix') msg='Step '+id+' had lines to fix. Correct them in TaxSlayer, print a new PDF, and drop it below.';
   else if(st==='todo') msg='Step '+id+' still has items to finish.'+(shown?' They are marked To do in the results below.':' Check your PDF again to see them.');
   else if(st==='done') msg='Step '+id+' is already done. You can check it again, or tap another step.';

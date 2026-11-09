@@ -32,6 +32,6 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
  const cdp=await ctx.newCDPSession(p); await cdp.send('Emulation.setCPUThrottlingRate',{rate:6});
  await open(p,'file://'+PAGE);
  for(const [s,f] of [['F','Quinn_Sec_F'],['A','Quinn_Sec_A']]){ const t0=Date.now(); await grade(p,s,`${U}/${f}.pdf`); const sec=(Date.now()-t0)/1000, sc=(await p.textContent('#score')).replace(/\s/g,''); console.log(`CPU throttled 6x: Step ${s} PDF graded in ${sec.toFixed(1)} s, score ${sc}`);
-   expect(`slowed processor: Step ${s} checks in under 15 s with the right score`,sec<15&&sc===(s==='F'?'34/36':'34/34'),`${sec.toFixed(1)} s, ${sc}`); }
+   expect(`slowed processor: Step ${s} checks in under 15 s with the right score`,sec<15&&sc===(s==='F'?'26/28':'5/5'),`${sec.toFixed(1)} s, ${sc}`); }
  const t1=Date.now(); await p.reload(); await p.waitForFunction(()=>!!window.pdfjsWorker); { const sec=(Date.now()-t1)/1000; console.log(`CPU throttled 6x: page open time ${sec.toFixed(1)} s`); expect('slowed processor: page opens in under 5 s',sec<5,sec.toFixed(1)+' s'); }
  await b.close(); })();

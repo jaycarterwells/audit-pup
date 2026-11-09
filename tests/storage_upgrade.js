@@ -24,7 +24,7 @@ const chips=p=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.c
     expect(`${v}: Quinn opens on the first unfinished step (D)`, await p.$eval('#step',e=>e.value)==='D', await p.$eval('#step',e=>e.value));
     let r=await grade(p,'quinn','E',`${Q}/Quinn_Sec_E.pdf`);
     const ws=await p.$$eval('.ws-grid input',e=>e.map(x=>x.value).join(',')), sel=await p.$eval('.ws-grid select',e=>e.value), nn=await p.$eval('.confirm input',e=>e.checked);
-    expect(`${v}: the MWP Worksheet entries and the TS Note box come back, so Step E is done right away`, ws==='3027,2883,2715,2571,2363'&&sel==='1'&&nn&&r.score==='36/36', `${ws} option ${sel} box ${nn} ${r.score}`);
+    expect(`${v}: the MWP Worksheet entries and the TS Note box come back, so Step E is done right away`, ws==='3027,2883,2715,2571,2363'&&sel==='1'&&nn&&r.score==='28/28', `${ws} option ${sel} box ${nn} ${r.score}`);
     r=await grade(p,'quinn','D',`${Q}/Quinn_Sec_B.pdf`);
     expect(`${v}: the same-file memory comes back (the Step B file checked for Step D warns)`, await p.$eval('#reusewarn',e=>!e.classList.contains('hidden')), r.score);
     if(fx.chips.baylor){

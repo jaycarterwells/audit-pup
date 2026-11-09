@@ -199,6 +199,17 @@ function laterMatches(step,got,present){
   return hits;
 }
 
+/* Wrong-PDF guard for a check that fails: the steps whose every line this PDF matches (for example the previous
+   step's PDF checked again, or a later step's PDF checked too early). Steps with identical expected values
+   (a no-change step and the step it repeats) are named once, by the earlier one. Only ever warns. */
+function otherMatches(step,got,present){
+  if(linesPass(step,got,present)) return laterMatches(step,got,present);
+  var hits=[], seen={}; seen[JSON.stringify(step.expected)]=1;
+  STEPS.forEach(function(s){ var key=JSON.stringify(s.expected); if(seen[key]) return; seen[key]=1;
+    if(linesPass(s,got,present)) hits.push(s); });
+  return hits;
+}
+
 /* Read every line with the reader named in its definition:
    ['box', form, token, xMin, xMax]   the amount box beside a line token (federal forms and schedules)
    ['ca', token, valueMin, form, tokXMin, tokXMax]   a California line (form is ca540 unless named, e.g. ca3514) */
