@@ -37,7 +37,7 @@ const { expect }=require('./expect');
     { files:['tests/**/*.js'], languageOptions:{ globals:{ ...globals.browser, ...shared } } }] });
   const results=[];
   for(const [name,code] of pageFiles) for(const r of await page.lintText(code,{filePath:path.join(ROOT,name)})) results.push({...r, shown:name.replace('.page-script.js',' (page script)')});
-  const nodeFiles=['source/build_html.js','source/release_notes.js',...fs.readdirSync(path.join(SRC,'tools')).filter(f=>f.endsWith('.js')).map(f=>'source/tools/'+f),
+  const nodeFiles=['source/build_html.js','source/release_notes.js',...fs.readdirSync(path.join(SRC,'tools')).filter(f=>f.endsWith('.js')).map(f=>'source/tools/'+f), ...fs.readdirSync(path.join(SRC,'tools','guide')).filter(f=>f.endsWith('.js')).map(f=>'source/tools/guide/'+f),
     ...fs.readdirSync(path.join(ROOT,'tests')).filter(f=>f.endsWith('.js')).map(f=>'tests/'+f)];
   for(const r of await node.lintFiles(nodeFiles.map(f=>path.join(ROOT,f)))) results.push({...r, shown:path.relative(ROOT,r.filePath)});
   let n=0;

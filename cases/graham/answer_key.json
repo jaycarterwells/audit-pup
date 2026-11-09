@@ -1,0 +1,911 @@
+{
+ "about": "Made by source/tools/import_answer_sheet.js from the answer sheet. Do not edit by hand: re-run the import.",
+ "source": {
+  "file": "answer_sheet.doc",
+  "sha256": "f937fde59085e3ebad6da701c7c80d8342874e07ae36a8610fc64de2e3aa2905"
+ },
+ "steps": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "R2",
+  "S"
+ ],
+ "rows": [
+  {
+   "line": "fed_4a",
+   "sheet": "4a IRA distributions",
+   "values": { "A": null, "B": null, "C": 1800, "D": 3625, "E": 5450, "F": 26288 }
+  },
+  {
+   "line": "fed_4b",
+   "sheet": "4b Taxable IRA dist",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": 1825, "F": 2663 },
+   "notes": { "F": "N5" }
+  },
+  {
+   "line": "fed_4c1",
+   "sheet": "4c1 Rollover Box",
+   "values": { "A": null, "B": null, "C": true, "D": true, "E": true, "F": true },
+   "kind": "mark"
+  },
+  {
+   "line": "fed_4c2",
+   "sheet": "4c2 QCD Box",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": true },
+   "kind": "mark"
+  },
+  {
+   "line": "fed_8",
+   "sheet": "8 Addl inc Sch 1 line 10",
+   "values": { "A": null, "B": 23021, "C": 23021, "D": 23021, "E": 23021, "F": 23021 },
+   "notes": { "B": "N2b" }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "A": null, "B": 23021, "C": 23021, "D": 23021, "E": 24846, "F": 25684 }
+  },
+  {
+   "line": "fed_10",
+   "sheet": "10 Adj to income Sch1 - 26",
+   "values": { "A": null, "B": 5627, "C": 5627, "D": 5627, "E": 5627, "F": 5627 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "A": null, "B": 17394, "C": 17394, "D": 17394, "E": 19219, "F": 20057 }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/itemized deductions",
+   "values": { "A": 33100, "B": 33100, "C": 33100, "D": 33100, "E": 33100, "F": 33100 }
+  },
+  {
+   "line": "fed_13b",
+   "sheet": "13b Add deductions sch 1-A",
+   "values": { "A": 6000, "B": 6000, "C": 6000, "D": 6000, "E": 6000, "F": 6000 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "fed_23",
+   "sheet": "23 Other taxes (SE) Sch 2-21",
+   "values": { "A": null, "B": 3253, "C": 3253, "D": 3253, "E": 3353, "F": 3353 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "A": null, "B": 3253, "C": 3253, "D": 3253, "E": 3353, "F": 3353 }
+  },
+  {
+   "line": "fed_25d",
+   "sheet": "25d Fed tax withheld",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "fed_27a",
+   "sheet": "27 EIC",
+   "values": { "A": null, "B": 7152, "C": 7152, "D": 7152, "E": 7152, "F": 7152 }
+  },
+  {
+   "line": "fed_28",
+   "sheet": "28 ACTC",
+   "values": { "A": null, "B": 1700, "C": 1700, "D": 1700, "E": 1700, "F": 1700 }
+  },
+  {
+   "line": "fed_33",
+   "sheet": "33 Total payments",
+   "values": { "A": null, "B": 8852, "C": 8852, "D": 8852, "E": 8852, "F": 8852 }
+  },
+  {
+   "line": "fed_35a",
+   "sheet": "35a Refund",
+   "values": { "A": null, "B": 5599, "C": 5599, "D": 5599, "E": 5499, "F": 5499 }
+  },
+  {
+   "line": "sch1_3",
+   "sheet": "Sch 1-3 business income",
+   "values": { "A": null, "B": 23021, "C": 23021, "D": 23021, "E": 23021, "F": 23021 }
+  },
+  {
+   "line": "sch1_15",
+   "sheet": "Sch 1-15 Ded part of SE tax",
+   "values": { "A": null, "B": 1627, "C": 1627, "D": 1627, "E": 1627, "F": 1627 }
+  },
+  {
+   "line": "sch1_17",
+   "sheet": "Sch 1-17 Self-emp health ins",
+   "values": { "A": null, "B": 4000, "C": 4000, "D": 4000, "E": 4000, "F": 4000 }
+  },
+  {
+   "line": "sch2_4",
+   "sheet": "Sch 2-4 SE tax",
+   "values": { "A": null, "B": 3253, "C": 3253, "D": 3253, "E": 3253, "F": 3253 }
+  },
+  {
+   "line": "sch2_8",
+   "sheet": "Sch 2-8 Addl tax on IRA",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": 100, "F": 100 },
+   "notes": { "E": "N4" }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "A": 11412, "B": 11412, "C": 11412, "D": 11412, "E": 11412, "F": 11412 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "A": null, "B": 5982, "C": 5982, "D": 5982, "E": 7807, "F": 8645 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "A": null, "B": 60, "C": 60, "D": 60, "E": 78, "F": 86 }
+  },
+  {
+   "line": "ca540_32",
+   "sheet": "32 Exemption credits",
+   "values": { "A": 1884, "B": 1884, "C": 1884, "D": 1884, "E": 1884, "F": 1884 }
+  },
+  {
+   "line": "ca540_46",
+   "sheet": "46 Nonrefundable renter’s cr",
+   "values": { "A": 0, "B": null, "C": null, "D": null, "E": null, "F": null },
+   "notes": { "A": "N2" }
+  },
+  {
+   "line": "ca540_63",
+   "sheet": "63 Other taxes",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": 25, "F": 25 }
+  },
+  {
+   "line": "ca540_75",
+   "sheet": "75 EIC",
+   "values": { "A": null, "B": 484, "C": 484, "D": 484, "E": 484, "F": 484 }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "A": null, "B": 484, "C": 484, "D": 484, "E": 459, "F": 459 }
+  },
+  {
+   "line": "fed_4a",
+   "sheet": "4a IRA distributions",
+   "values": { "G": 26288, "H": 26288 }
+  },
+  {
+   "line": "fed_4b",
+   "sheet": "4b Taxable IRA dist",
+   "values": { "G": 2663, "H": 2663 }
+  },
+  {
+   "line": "fed_5a",
+   "sheet": "5a Pensions",
+   "values": { "G": 10440, "H": 13680 }
+  },
+  {
+   "line": "fed_5b",
+   "sheet": "5b Taxable Pensions",
+   "values": { "G": 4500, "H": 6740 }
+  },
+  {
+   "line": "fed_5c2",
+   "sheet": "5c2",
+   "values": { "G": true, "H": true },
+   "kind": "mark",
+   "notes": { "G": "N6" }
+  },
+  {
+   "line": "fed_8",
+   "sheet": "8 Addl inc Sch 1 line 10",
+   "values": { "G": 23021, "H": 23021 }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "G": 30184, "H": 32424 }
+  },
+  {
+   "line": "fed_10",
+   "sheet": "10 Adj to income Sch1 - 26",
+   "values": { "G": 5627, "H": 5627 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "G": 24557, "H": 26797 }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/itemized deductions",
+   "values": { "G": 33100, "H": 33100 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "G": null, "H": null }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "G": null, "H": null }
+  },
+  {
+   "line": "fed_23",
+   "sheet": "23 Other taxes (SE) Sch 2-21",
+   "values": { "G": 3353, "H": 3353 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "G": 3353, "H": 3353 }
+  },
+  {
+   "line": "fed_25d",
+   "sheet": "25d Fed tax withheld",
+   "values": { "G": 750, "H": 990 }
+  },
+  {
+   "line": "fed_27a",
+   "sheet": "27a EIC",
+   "values": { "G": 7152, "H": 7152 }
+  },
+  {
+   "line": "fed_28",
+   "sheet": "28 ACTC",
+   "values": { "G": 1700, "H": 1700 }
+  },
+  {
+   "line": "fed_33",
+   "sheet": "33 Total payments",
+   "values": { "G": 9602, "H": 9842 }
+  },
+  {
+   "line": "fed_35a",
+   "sheet": "35a Refund",
+   "values": { "G": 6249, "H": 6489 }
+  },
+  {
+   "line": "sch1_3",
+   "sheet": "Sch 1-3 business income",
+   "values": { "G": 23021, "H": 23021 }
+  },
+  {
+   "line": "sch1_15",
+   "sheet": "Sch 1-15 Ded part of self-empt tax",
+   "values": { "G": 1627, "H": 1627 }
+  },
+  {
+   "line": "sch2_4",
+   "sheet": "Sch 2-4 Self-empl tax",
+   "values": { "G": 3253, "H": 3253 }
+  },
+  {
+   "line": "sch2_8",
+   "sheet": "Sch 2-8 Addl tax on IRA",
+   "values": { "G": 100, "H": 100 }
+  },
+  {
+   "line": "schA_1",
+   "sheet": "Sch A Line 1",
+   "values": { "G": 700, "H": 983 },
+   "notes": { "G": "N7", "H": "N8" }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "G": null, "H": null }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "G": null, "H": null }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "G": 11412, "H": 11412 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "G": 13145, "H": 15385 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "G": 131, "H": 154 }
+  },
+  {
+   "line": "ca540_32",
+   "sheet": "32 Exemption credits",
+   "values": { "G": 1884, "H": 1884 }
+  },
+  {
+   "line": "ca540_63",
+   "sheet": "63 Other taxes",
+   "values": { "G": 25, "H": 25 }
+  },
+  {
+   "line": "ca540_75",
+   "sheet": "75 EIC",
+   "values": { "G": 349, "H": 257 }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "G": 324, "H": 232 }
+  },
+  {
+   "line": "fed_1h",
+   "sheet": "1h Other earned inc",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": 4762, "N": 4762, "O": 4762 },
+   "notes": { "M": "N12" }
+  },
+  {
+   "line": "fed_5a",
+   "sheet": "5a Pensions",
+   "values": { "I": 24025, "J": 24675, "K": 30076, "L": 39501, "M": 39501, "N": 39501, "O": 40590 }
+  },
+  {
+   "line": "fed_5b",
+   "sheet": "5b Pensions taxable",
+   "values": { "I": 17085, "J": 17085, "K": 20715, "L": 29869, "M": 29869, "N": 29869, "O": 30958 },
+   "notes": { "J": "N9", "K": "N10" }
+  },
+  {
+   "line": "fed_6a",
+   "sheet": "6a SSA",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": null, "N": 1200, "O": 13700 }
+  },
+  {
+   "line": "fed_6b",
+   "sheet": "6b SSA Taxable",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": null, "N": 1020, "O": 11645 }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "I": 42769, "J": 42769, "K": 46399, "L": 55553, "M": 60315, "N": 61335, "O": 73049 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "I": 37142, "J": 37142, "K": 40772, "L": 49926, "M": 54688, "N": 55708, "O": 67422 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "I": null, "J": null, "K": 1338, "L": 8661, "M": 12470, "N": 13286, "O": 24843 }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "I": null, "J": null, "K": 134, "L": 868, "M": 1248, "N": 1328, "O": 2502 }
+  },
+  {
+   "line": "fed_23",
+   "sheet": "23 Sch2 Line 21",
+   "values": { "I": 3353, "J": 3353, "K": 3353, "L": 3353, "M": 3353, "N": 3353, "O": 3353 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "I": 3353, "J": 3353, "K": 3353, "L": 3353, "M": 3353, "N": 3353, "O": 3353 }
+  },
+  {
+   "line": "fed_25d",
+   "sheet": "25d Fed tax withheld",
+   "values": { "I": 990, "J": 990, "K": 990, "L": 1705, "M": 1705, "N": 1825, "O": 2025 }
+  },
+  {
+   "line": "fed_27a",
+   "sheet": "27a EIC",
+   "values": { "I": 5750, "J": 5750, "K": 4982, "L": 3055, "M": 2054, "N": 1833, "O": 0 }
+  },
+  {
+   "line": "fed_28",
+   "sheet": "28 ACTC",
+   "values": { "I": 1700, "J": 1700, "K": 1700, "L": 1700, "M": 1700, "N": 1700, "O": 698 }
+  },
+  {
+   "line": "fed_33",
+   "sheet": "33 Total payments",
+   "values": { "I": 8440, "J": 8440, "K": 7672, "L": 6460, "M": 5459, "N": 5358, "O": 2723 }
+  },
+  {
+   "line": "fed_35a",
+   "sheet": "35a Refund",
+   "values": { "I": 5087, "J": 5087, "K": 4319, "L": 3107, "M": 2106, "N": 2005, "O": null }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 owe",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": null, "N": null, "O": 630 }
+  },
+  {
+   "line": "sch2_4",
+   "sheet": "Sch 2-4 SE",
+   "values": { "I": 3253, "J": 3253, "K": 3253, "L": 3253, "M": 3253, "N": 3253, "O": 3253 }
+  },
+  {
+   "line": "sch2_8",
+   "sheet": "Sch 2-8 Addl tax on IRA",
+   "values": { "I": 100, "J": 100, "K": 100, "L": 100, "M": 100, "N": 100, "O": 100 }
+  },
+  {
+   "line": "schA_1",
+   "sheet": "Sch A-1 medical",
+   "values": { "I": 983, "J": 983, "K": 983, "L": 983, "M": 983, "N": 1328, "O": 1517 }
+  },
+  {
+   "line": "schA_16",
+   "sheet": "Sch A-16 Other itemized deductions",
+   "values": { "I": null, "J": null, "K": null, "L": 3425, "M": 3425, "N": 3475, "O": 3475 },
+   "notes": { "L": "N11" }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": null, "N": 1020, "O": 12734 }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "I": null, "J": null, "K": null, "L": null, "M": null, "N": null, "O": null }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 Std or item ded",
+   "values": { "I": 11412, "J": 11412, "K": 11412, "L": 11412, "M": 11412, "N": 11412, "O": 11412 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "I": 25730, "J": 25730, "K": 29360, "L": 38514, "M": 43276, "N": 43276, "O": 43276 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "I": 292, "J": 292, "K": 366, "L": 548, "M": 644, "N": 644, "O": 644 }
+  },
+  {
+   "line": "ca540_32",
+   "sheet": "32 Exemptions",
+   "values": { "I": 1884, "J": 1884, "K": 1884, "L": 1884, "M": 1884, "N": 1884, "O": 1884 }
+  },
+  {
+   "line": "ca540_63",
+   "sheet": "63 Other taxes",
+   "values": { "I": 25, "J": 25, "K": 25, "L": 25, "M": 25, "N": 25, "O": 25 }
+  },
+  {
+   "line": "ca540_71",
+   "sheet": "71 CA inc tax w/h",
+   "values": { "I": null, "J": null, "K": 50, "L": 50, "M": 50, "N": 50, "O": 50 }
+  },
+  {
+   "line": "ca540_111",
+   "sheet": "111 Amt due",
+   "values": { "I": 25, "J": 25, "K": null, "L": null, "M": null, "N": null, "O": null }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "I": null, "J": null, "K": 25, "L": 25, "M": 25, "N": 25, "O": 25 }
+  },
+  {
+   "line": "fed_5a",
+   "sheet": "5a Pensions",
+   "values": {
+    "P": 75590,
+    "Q": 75590,
+    "R": 75590,
+    "R2": 75590,
+    "S": 75590
+   }
+  },
+  {
+   "line": "fed_5b",
+   "sheet": "5b Pensions taxable",
+   "values": {
+    "P": 65958,
+    "Q": 65958,
+    "R": 65958,
+    "R2": 65958,
+    "S": 65958
+   }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": {
+    "P": 108049,
+    "Q": 108049,
+    "R": 108049,
+    "R2": 108049,
+    "S": 108049
+   }
+  },
+  {
+   "line": "fed_10",
+   "sheet": "10 Adjustments to inc",
+   "values": {
+    "P": 5627,
+    "Q": 8527,
+    "R": 8527,
+    "R2": 8527,
+    "S": 8527
+   }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": {
+    "P": 102422,
+    "Q": 99522,
+    "R": 99522,
+    "R2": 99522,
+    "S": 99522
+   }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/item deductions",
+   "values": {
+    "P": 33100,
+    "Q": 33100,
+    "R": 33100,
+    "R2": 33100,
+    "S": 33100
+   },
+   "notes": {
+    "R2": "N15"
+   }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": {
+    "P": 59843,
+    "Q": 56943,
+    "R": 56943,
+    "R2": 56943,
+    "S": 56943
+   }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": {
+    "P": 6702,
+    "Q": 6354,
+    "R": 6354,
+    "R2": 6354,
+    "S": 6354
+   }
+  },
+  {
+   "line": "fed_19",
+   "sheet": "19 CTC & ODC",
+   "values": {
+    "P": 3200,
+    "Q": 3200,
+    "R": 3200,
+    "R2": 3200,
+    "S": 3200
+   }
+  },
+  {
+   "line": "fed_20",
+   "sheet": "20 Sch 3 line 8",
+   "values": {
+    "P": null,
+    "Q": null,
+    "R": null,
+    "R2": null,
+    "S": 950
+   },
+   "notes": { "S": "N16" }
+  },
+  {
+   "line": "fed_21",
+   "sheet": "21 Total credits",
+   "values": {
+    "P": 3200,
+    "Q": 3200,
+    "R": 3200,
+    "R2": 3200,
+    "S": 4150
+   }
+  },
+  {
+   "line": "fed_23",
+   "sheet": "23 Other taxes SE",
+   "values": {
+    "P": 3353,
+    "Q": 3353,
+    "R": 3353,
+    "R2": 3353,
+    "S": 3353
+   }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": {
+    "P": 6855,
+    "Q": 6507,
+    "R": 6507,
+    "R2": 6507,
+    "S": 5557
+   }
+  },
+  {
+   "line": "fed_25d",
+   "sheet": "25d Fed income tax w/h",
+   "values": {
+    "P": 5730,
+    "Q": 5730,
+    "R": 5730,
+    "R2": 5730,
+    "S": 5730
+   }
+  },
+  {
+   "line": "fed_29",
+   "sheet": "29 Amer Opportunity Cr",
+   "values": {
+    "P": null,
+    "Q": null,
+    "R": null,
+    "R2": null,
+    "S": 633
+   },
+   "notes": { "S": "N16" }
+  },
+  {
+   "line": "fed_33",
+   "sheet": "33 Total payments",
+   "values": {
+    "P": 5730,
+    "Q": 5730,
+    "R": 5730,
+    "R2": 5730,
+    "S": 6363
+   }
+  },
+  {
+   "line": "fed_35a",
+   "sheet": "35a Refund",
+   "values": {
+    "P": null,
+    "Q": null,
+    "R": null,
+    "R2": null,
+    "S": 806
+   }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 Owe",
+   "values": {
+    "P": 1125,
+    "Q": 777,
+    "R": 777,
+    "R2": 777,
+    "S": null
+   }
+  },
+  {
+   "line": "sch1_11",
+   "sheet": "Sch 1-11 Educator expenses",
+   "values": {
+    "P": null,
+    "Q": 300,
+    "R": 300,
+    "R2": 300,
+    "S": 300
+   }
+  },
+  {
+   "line": "sch1_19a",
+   "sheet": "Sch 1-19a Alimony paid",
+   "values": {
+    "P": null,
+    "Q": 1800,
+    "R": 1800,
+    "R2": 1800,
+    "S": 1800
+   }
+  },
+  {
+   "line": "sch1_21",
+   "sheet": "Sch 1-21 Student Ln interest",
+   "values": {
+    "P": null,
+    "Q": 800,
+    "R": 800,
+    "R2": 800,
+    "S": 800
+   }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": {
+    "P": 32734,
+    "Q": 32434,
+    "R": 32434,
+    "R2": 32434,
+    "S": 32434
+   }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": {
+    "P": 11412,
+    "Q": 11412,
+    "R": 11412,
+    "R2": 11412,
+    "S": 11412
+   }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": {
+    "P": 58276,
+    "Q": 55676,
+    "R": 55676,
+    "R2": 55676,
+    "S": 55676
+   }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": {
+    "P": 1060,
+    "Q": 956,
+    "R": 956,
+    "R2": 956,
+    "S": 956
+   }
+  },
+  {
+   "line": "ca540_32",
+   "sheet": "32 Exemptions",
+   "values": {
+    "P": 1884,
+    "Q": 1884,
+    "R": 1884,
+    "R2": 1884,
+    "S": 1884
+   }
+  },
+  {
+   "line": "ca540_78",
+   "sheet": "78 Total payments",
+   "values": {
+    "P": 50,
+    "Q": 50,
+    "R": 50,
+    "R2": 50,
+    "S": 50
+   }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": {
+    "P": 25,
+    "Q": 25,
+    "R": 25,
+    "R2": 25,
+    "S": 25
+   }
+  },
+  {
+   "line": "schCA_5b_B",
+   "sheet": "CA Adj, side 1 Part 1, Sec A, Line 5b column B",
+   "values": {
+    "P": 21089,
+    "Q": 21089,
+    "R": 21089,
+    "R2": 21089,
+    "S": 21089
+   },
+   "notes": { "P": "N13" }
+  },
+  {
+   "line": "schCA_19",
+   "sheet": "CA Adj, side 6 Line 19 unreimbursed employee expenses",
+   "values": {
+    "P": null,
+    "Q": 1500,
+    "R": 1500,
+    "R2": 1500,
+    "S": 1500
+   }
+  }
+ ],
+ "notes": [
+  {
+   "step": "A",
+   "notes": "N1"
+  },
+  {
+   "step": "C",
+   "notes": "N3, NN"
+  },
+  {
+   "step": "D",
+   "notes": "N3"
+  },
+  {
+   "step": "E",
+   "notes": "NN"
+  },
+  {
+   "step": "F",
+   "notes": "NN"
+  },
+  {
+   "step": "G",
+   "notes": "NN"
+  },
+  {
+   "step": "K",
+   "notes": "NN"
+  },
+  {
+   "step": "L",
+   "notes": "NN"
+  },
+  {
+   "step": "M",
+   "notes": "NN"
+  },
+  {
+   "step": "R",
+   "notes": "N14"
+  }
+ ]
+}

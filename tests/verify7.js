@@ -3,9 +3,9 @@ const { expect, finish } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
-const { open, ready } = require('./page');
+const { open, ready, offline } = require('./page');
 const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quinn_Sec_F'};
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
  await ctx.addInitScript(()=>{ try{ if(!sessionStorage.getItem('keep')){ localStorage.clear(); } }catch(e){} });  // each page load starts with no saved progress
  const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  const fresh=()=>open(p,'file://'+PAGE);

@@ -5,8 +5,8 @@ const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT
 const U=path.join(__dirname,'..','cases','quinn');
 const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quinn_Sec_F'};
 const url='file://'+PAGE;
-const { open, reload, ready } = require('./page');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+const { open, reload, ready, offline } = require('./page');
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
  const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  const chips=()=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.className.replace('pchip','').replace('sel','').trim()).join(' '));
  const grade=async(step,pdf)=>{ await p.selectOption('#step',step); await p.setInputFiles('#file',`${U}/${F[pdf]}.pdf`); await p.click('#grade');
@@ -36,7 +36,7 @@ const { open, reload, ready } = require('./page');
  check('after Start over and reopening: still cleared, worksheet empty', (await p.$$eval('.ws-grid input',e=>e.map(x=>x.value).join('')))==='' && !(await p.$eval('.confirm input',e=>e.checked)));
  const stored=await p.evaluate(()=>Object.keys(localStorage)); check('only Audit Pup keys in storage', stored.every(k=>k.startsWith('auditpup') || k==='taxaide-theme'), stored.join(', '));
  // browser that refuses storage (some private modes or locked-down settings)
- const c2=await b.newContext(); await c2.addInitScript(()=>{ Object.defineProperty(window,'localStorage',{get(){ throw new Error('blocked'); }}); });
+ const c2=await b.newContext(); await offline(c2); await c2.addInitScript(()=>{ Object.defineProperty(window,'localStorage',{get(){ throw new Error('blocked'); }}); });
  const p2=await c2.newPage(); const e2=[]; p2.on('pageerror',e=>e2.push(e.message)); await open(p2,url);
  await p2.selectOption('#step','B'); await p2.setInputFiles('#file',`${U}/${F.B}.pdf`); await p2.click('#grade'); await ready(p2,{settle:false});
  check('storage blocked: still checks, says progress is not saved', (await p2.textContent('#score')).replace(/\s/g,'')==='22/22' && !!(await p2.$('.nosave')) && !e2.length, e2.join(';'));

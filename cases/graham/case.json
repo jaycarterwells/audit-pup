@@ -1,0 +1,23 @@
+{
+  "id": "graham",
+  "order": 3,
+  "about": "Test description of the Graham case. The answer key is answer_key.json (made from answer_sheet.doc); the lines, steps, and notes are in source/cases/graham.js. This file tells the tests which PDF goes with each step.",
+  "pdf": { "A": "Graham_Sec_A.pdf", "B": "Graham_Sec_B.pdf", "C": "Graham_Sec_C.pdf", "D": "Graham_Sec_D.pdf", "E": "Graham_Sec_E.pdf",
+           "F": "Graham_Sec_F.pdf", "G": "Graham_Sec_G.pdf", "H": "Graham_Sec_H.pdf", "I": "Graham_Sec_I.pdf", "J": "Graham_Sec_J.pdf",
+           "K": "Graham_Sec_K.pdf", "L": "Graham_Sec_L.pdf", "M": "Graham_Sec_M.pdf", "N": "Graham_Sec_N.pdf", "O": "Graham_Sec_O.pdf",
+           "P": "Graham_Sec_P.pdf", "Q": "Graham_Sec_Q.pdf", "R": "Graham_Sec_Q.pdf", "R2": "Graham_Sec_Q.pdf",
+           "S": "Graham_Sec_S.pdf", "U": "Graham_Sec_W.pdf", "V": "Graham_Sec_W.pdf", "W": "Graham_Sec_W.pdf" },
+  "pdfWhy": "Steps R and R2 use Step Q's printout: the R and R2 printouts in Drive have the QCD mistake that note N5 describes, and their answer key values are the same as Step Q's. Steps U and V (no change) use Step W's printout. Graham_Sec_S.pdf is the Drive file 'SEC T.pdf'; the problem has no Step T. Graham_Sec_H.pdf is 'Sec H from Iris.pdf'.",
+  "todo": { "C": 1, "E": 1, "F": 1, "G": 1, "K": 1, "L": 1, "M": 1, "P": 1 },
+  "todoWhy": "Steps C, E, F, G, K, L, M, and P each leave one TS Note box for the student to tick (the answer sheet marks NN at C, E, F, G, K, L, M; Carter added P, which the problem and the TS Note examples ask for).",
+  "ownTsNoteBox": ["C", "E", "F", "G", "K", "L", "M", "P"],
+  "ownTsNoteBoxWhy": "Each of these steps keeps its own TS Note box: ticking one must not tick another.",
+  "sameReturn": [["Q", "R", "R2"], ["S", "U", "V", "W"]],
+  "awaiting": {
+    "G": { "lines": ["schA_1"], "why": "The Step G printout shows Schedule A line 1 = $983 (the Step H amount); the answer sheet says $700. Carter is getting a corrected Step G printout." },
+    "N": { "lines": ["schA_16"], "why": "The answer sheet says Schedule A line 16 = $3,475; every printout shows $3,425, as at L and M. Carter is having the answer sheet corrected." },
+    "O": { "lines": ["schA_16"], "why": "As for Step N." }
+  },
+  "awaitingWhy": "Steps whose printout and answer sheet disagree on the lines listed, until the corrected file arrives. Every test treats exactly those lines as known differences and fails if they ever match (time to remove the entry) or if any other line differs. The case must not be released while anything is listed here.",
+  "speed": { "step": "W", "maxSeconds": 20 }
+}

@@ -50,10 +50,14 @@ const { loadCases } = require('./cases');
       const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;
       if(c.mayPass(f,s.id)){
-        const bad=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
-        expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
+        const known=c.known(f,s.id), off=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
+        const bad=off.filter(k=>!known.includes(k)), fixed=known.filter(k=>!off.includes(k));
+        if(known.length){
+          expect(`${c.id}: ${f} passes Step ${s.id} except the awaited fix (${known.join(', ')})`, !bad.length, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; '));
+          expect(`${c.id}: ${f} at Step ${s.id}: the awaited difference is still there (remove it from case.json "awaiting" once fixed)`, !fixed.length, fixed.join(', '));
+        } else expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
       } else expect(`${c.id}: ${f} does not pass Step ${s.id} silently`, !pass || warn, 'passes with no warning');
-      if(!c.mayPass(f,s.id)) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
+      if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.awaiting[x])) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
         alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
     console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s`);

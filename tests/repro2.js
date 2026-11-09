@@ -2,7 +2,7 @@ const { expect } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn'), T=OUT;
-const { open, ready } = require('./page');
+const { open, ready, offline } = require('./page');
 // damaged copies of the current build: cut off inside the app code, inside the PDF engine, and near the end
 { const s=require('fs').readFileSync(PAGE,'utf8'), fs2=require('fs');
   fs2.writeFileSync(path.join(T,'cut_in_app.html'), s.slice(0, s.indexOf('function extractAll')+200));
@@ -13,7 +13,7 @@ const vis=(p,sel)=>p.$eval(sel,e=>!e.classList.contains('hidden')&&getComputedSt
  // [name, file, scripts on, want: steps listed?, 'did not start' note?, outcome]
  const cases=[['normal copy',PAGE,true,true,false,'graded 22/22'],['scripts blocked (preview)',PAGE,false,false,true,''],
    ['cut off inside the app code',T+'/cut_in_app.html',true,false,true,''],['cut off inside PDF engine',T+'/cut_in_lib.html',true,true,false,'incomplete'],['cut off near the end',T+'/cut_in_worker.html',true,true,false,'incomplete']];
- for(const [name,file,js,wantSteps,wantBanner,wantOut] of cases){ const ctx=await b.newContext({javaScriptEnabled:js}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ for(const [name,file,js,wantSteps,wantBanner,wantOut] of cases){ const ctx=await b.newContext({javaScriptEnabled:js}); await offline(ctx); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+file);   // the page starts, or reports why not, before it finishes loading
   const opts=await p.$$eval('#step option',e=>e.length).catch(()=>0), banner=await vis(p,'#startup'), err=await p.$eval('#error',e=>e.classList.contains('hidden')?'':e.textContent).catch(()=>'');
   let check='';
@@ -26,7 +26,7 @@ const vis=(p,sel)=>p.$eval(sel,e=>!e.classList.contains('hidden')&&getComputedSt
   if(wantOut==='incomplete') expect(`${name}: says the copy is incomplete`,!!err&&/incomplete/i.test(check),check); else if(wantOut) expect(`${name}: ${wantOut}`,check===wantOut,check);
   await ctx.close(); }
  // drop a PDF outside the box: page must stay and take the file
- const ctx=await b.newContext(); await ctx.addInitScript(()=>{ delete File.prototype.arrayBuffer; });  // also simulate older Safari (no File.arrayBuffer)
+ const ctx=await b.newContext(); await offline(ctx); await ctx.addInitScript(()=>{ delete File.prototype.arrayBuffer; });  // also simulate older Safari (no File.arrayBuffer)
  const p=await ctx.newPage(); await open(p,'file://'+PAGE);
  const fs=require('fs'); const b64=fs.readFileSync(`${U}/Quinn_Sec_B.pdf`).toString('base64');
  const dt=await p.evaluateHandle(b64=>{ const bin=atob(b64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);

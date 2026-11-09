@@ -1,6 +1,6 @@
 # Audit Pup hints for review
 
-Every hint a counselor can see, for every case, as Audit Pup 0.16.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
+Every hint a counselor can see, for every case, as Audit Pup 0.17.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
 
 How hints work: when a line fails, the counselor opens one hint. It shows the answer key value ("Answer key: ...") and the text below, which says where to look in the problem. Lines that are blank on the answer sheet are checked together in one row, "Lines that should be blank"; when it fails, its hint lists each line that has an amount, with that line's hint below. A step can replace a line's hint with an answer sheet note for that step only. Answer key notes have their own text.
 
@@ -8,6 +8,7 @@ Reviewers: please check that each hint teaches without giving more away than the
 
 * [Quinn (Raymond Quinn, 2025)](#quinn)
 * [Baylor (Michael Baylor, 2025)](#baylor)
+* [Graham (Stacey and Sean Graham, 2025)](#graham)
 
 <a id="quinn"></a>
 
@@ -29,7 +30,7 @@ Steps: A, B, D, E, F.
 | Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income (line 15) is right, this follows. |
 | Line 24 | Total tax | Total tax is the tax minus credits plus other taxes. If line 16 is right, look for a credit or an extra tax entered in TaxSlayer that is not in the problem. |
 | Line 25d | Federal tax withheld | Line 25d is federal withholding from your W-2 entries. Re-open the W-2 and compare box 2 to the source document. |
-| Line 27 | Earned income credit (EIC) | The EIC depends on earned income and the qualifying person. Re-check the dependent entry and whether earned income was entered as the problem intends. |
+| Line 27a | Earned income credit (EIC) | The EIC depends on earned income and the qualifying person. Re-check the dependent entry and whether earned income was entered as the problem intends. |
 | Line 33 | Total payments | Line 33 totals your payments and refundable credits. If it is off, the mistake is in a withholding or credit line above it. |
 | Line 35a | Refund | The refund is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow. |
 | Line 37 | Amount you owe | The amount owed is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow. |
@@ -235,4 +236,180 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
 * Box the student ticks: I added a TS Note for Step N (the HSA interest) in TaxSlayer
 * Example: STEP N - HSA INTEREST: INTEREST AMOUNT OF $10 MUST BE REPORTED AS TAXABLE FOR CA. ENTERED ON 1099-INT, FED TAX EXEMPT MADE TAXABLE FOR CA.
+
+
+<a id="graham"></a>
+
+## Graham (Stacey and Sean Graham, 2025)
+
+Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, R2, S, U, V, W.
+
+### Federal Form 1040
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 1h | Other earned income | Line 1h is where Stacey's disability pension goes until she reaches the company's normal retirement age (Step M). Re-open that 1099-R in TaxSlayer and check the disability box at the bottom of the screen. |
+| Line 4a | IRA distributions | Line 4a adds box 1 of every IRA 1099-R entered so far (Steps C, D, E, and F), even the ones that were rolled over. Compare each IRA 1099-R you entered with box 1 of the forms in the problem. |
+| Line 4b | Taxable IRA distributions | Line 4b is only the taxable part of the IRA distributions. A rollover (Steps C and D) adds nothing here, and a qualified charitable distribution (Step F) is left out. Re-check box 2a and the rollover and QCD choices on each IRA 1099-R. |
+| Line 4c box 1 | Rollover box | The Rollover box on line 4c is checked when an IRA distribution was rolled over (Steps C and D). On the 1099-R screen, mark the distribution as a rollover rather than only changing the taxable amount. |
+| Line 4c box 2 | QCD box | The QCD box on line 4c is checked when part of an IRA distribution went straight to a charity (Step F). See 'Qualified Charitable Distributions' in Pub 4012 for where TaxSlayer asks about a QCD. |
+| Line 5a | Pensions and annuities | Line 5a adds box 1 of every pension 1099-R entered so far. Compare each pension 1099-R you entered with box 1 of the forms in the problem. |
+| Line 5b | Taxable pensions and annuities | Line 5b is the taxable part of the pensions. Look at the step's 1099-R: box 2a, the PSO health insurance exclusion (Step G), and the Simplified Method results (Steps K and L) all change it. |
+| Line 5c box 2 | PSO box | The PSO box on line 5c is checked when a retired public safety officer's health insurance premiums reduce the taxable pension (Step G). Use the PSO option under box 2a on the 1099-R screen. |
+| Line 6a | Social Security benefits | Line 6a is the net benefits from Sean's SSA-1099 (Step N) and the tier 1 benefits from his RRB-1099 (Step O). Compare box 5 of each form with what you entered. |
+| Line 6b | Taxable Social Security benefits | TaxSlayer works out the taxable part of the benefits from the other income. If line 6a and the income lines above are right, this follows. |
+| Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10, which here is Stacey's tutoring business income from Schedule C (Step B). Check the Schedule C income and expenses first. |
+| Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
+| Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26: the deductible part of self-employment tax, the self-employed health insurance, and from Step Q the educator expenses, alimony paid, and student loan interest. Check the Schedule 1 lines in this list. |
+| Line 11a | Adjusted gross income | Line 11a is total income minus the adjustments. If lines 9 and 10 are right, this follows. |
+| Line 12e | Standard or itemized deduction | The standard deduction follows from the filing status (married filing jointly) and the ages of Stacey and Sean. Itemizing is right only when Schedule A is larger. Re-check the filing status and birth dates from Step A. |
+| Line 13b | Additional deductions (Schedule 1-A) | Line 13b comes from Schedule 1-A, the new additional deductions, such as the deduction for a taxpayer age 65 or older. Check the birth dates entered in Step A. |
+| Line 15 | Taxable income | Taxable income is AGI minus the deductions on lines 12e through 13b, never below zero. If those lines are right, this follows. |
+| Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income (line 15) is right, this follows. |
+| Line 19 | Child tax credit and credit for other dependents | Line 19 depends on Joshua qualifying for the child tax credit and Jeremy and Gail for the credit for other dependents (note N1). Re-check the dependent screens from Step A. |
+| Line 20 | Credits from Schedule 3, line 8 | Line 20 is the nonrefundable part of Jeremy's education credit, from Schedule 3 (Step S). Re-check the 1098-T and the education expenses you entered. |
+| Line 21 | Total credits | Line 21 adds lines 19 and 20. If those are right, this follows. |
+| Line 23 | Other taxes (Schedule 2, line 21) | Line 23 comes from Schedule 2, line 21: here the self-employment tax and the additional tax on the early IRA distribution. Check the Schedule 2 lines in this list. |
+| Line 24 | Total tax | Total tax is the tax minus credits plus other taxes. Check lines 16, 21, and 23 first; this follows from them. |
+| Line 25d | Federal tax withheld | Line 25d adds federal withholding (box 4) from every 1099-R and the SSA and RRB forms entered so far. Compare each form you entered with the problem. |
+| Line 27a | Earned income credit (EIC) | The EIC depends on earned income (Stacey's business and disability pension) and on Joshua as a qualifying child. Gail does not qualify the family for the EIC. Re-check the dependent screens from Step A. |
+| Line 28 | Additional child tax credit (ACTC) | The additional child tax credit depends on Joshua qualifying for the child tax credit (note N1) and on earned income. Re-check his dependent screen. |
+| Line 29 | American opportunity credit (refundable part) | Line 29 is the refundable part of Jeremy's American opportunity credit (Step S). Re-check the 1098-T, the 1099-Q, and the expenses his parents paid. |
+| Line 33 | Total payments | Line 33 totals withholding and refundable credits. If it is off, the mistake is in a withholding or credit line above it. |
+| Line 35a | Refund | The refund is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow. |
+| Line 37 | Amount you owe | The amount owed is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow. |
+
+### Schedule 1
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 3 | Business income (Schedule C) | Schedule 1, line 3 is the profit from Stacey's tutoring business on Schedule C (Step B). Compare her income and each expense with the problem. |
+| Line 11 | Educator expenses | Line 11 is the educator expense deduction from Step Q. Check who qualifies as an eligible educator and the limit in Pub 4012. |
+| Line 15 | Deductible part of self-employment tax | Line 15 is half of the self-employment tax, worked out from the Schedule C profit. If Schedule 1, line 3 is right, this follows. |
+| Line 17 | Self-employed health insurance deduction | Line 17 is the health insurance Stacey paid for herself and Joshua through her business (Step B). Check the premiums entered on the Schedule C health insurance screen. |
+| Line 19a | Alimony paid | Line 19a is the alimony paid from Step Q. Check the amount and the divorce date in the problem: only a decree from before 2019 makes alimony deductible. |
+| Line 21 | Student loan interest deduction | Line 21 is the student loan interest deduction from Step Q. Compare the 1098-E amount with what you entered. |
+
+### Schedule 2
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 4 | Self-employment tax | Line 4 is the self-employment tax on Stacey's Schedule C profit. If Schedule 1, line 3 is right, this follows. |
+| Line 8 | Additional tax on IRAs (Form 5329) | Line 8 is the 10% additional tax on the early IRA distribution from Step E, after any exception on Form 5329. Review the early distribution exception codes in Pub 4012. |
+
+### Schedule A
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 1 | Medical and dental expenses | Schedule A, line 1 collects the medical insurance not already used elsewhere: what is left after the PSO exclusion (Step G), and the premiums on the OPM, SSA, and RRB forms (Steps H, N, and O). Do not count the same premium twice. |
+| Line 16 | Other itemized deductions | Line 16 is the unrecovered investment in the Northern Trust pension, from the Pension Exclusion Calculator (Step L). See the comments on the Calculator results. |
+
+### California Form 540
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 14 | California subtractions | Line 14 comes from Schedule CA, column B: California does not tax Social Security or railroad tier 1 benefits, and Step P adds the military retirement exclusion. Check the CA adjustments you entered. |
+| Line 16 | California additions | Line 16 comes from Schedule CA, column C. Look for an amount entered on a California adjustment screen that does not belong on this return. |
+| Line 18 | California deduction | The California standard deduction follows from the filing status. Itemizing for California is right only when the California itemized total is larger (Step R2). |
+| Line 19 | California taxable income | California taxable income is California AGI minus the deduction. If the federal income and the CA subtractions are right, this follows. |
+| Line 31 | California tax | California tax comes from taxable income (line 19) through the tax table. If line 19 is right, this follows. |
+| Line 32 | Exemption credits | The exemption credits follow from the filing status, the ages, and the number of dependents entered in Step A. Re-check those screens. |
+| Line 46 | Nonrefundable renter’s credit | Line 46 is the renter's credit. Read its requirements in the Duck Book and check whether the Grahams qualify. |
+| Line 63 | Other California taxes | Line 63 is California's additional tax on the early IRA distribution from Step E (form FTB 3805P). It follows from the federal Form 5329 entries. |
+| Line 71 | California tax withheld | Line 71 adds the state tax withheld on the 1099-R forms (box 14). Compare each one you entered with the problem. |
+| Line 75 | California EITC | The California earned income tax credit depends on earned income and on Joshua as a qualifying child. If the federal EIC lines are right, check the California credit screens. |
+| Line 78 | Total payments | Line 78 totals California withholding and refundable credits. If it is off, the mistake is in a withholding or credit line above it. |
+| Line 111 | California amount you owe | The amount owed is the end result. If it is wrong, one of the checked California lines above it is wrong. Fix those first and this should follow. |
+| Line 115 | California refund | The refund is the end result. If it is wrong, one of the checked California lines above it is wrong. Fix those first and this should follow. |
+
+### schCA
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Part I, line 5b, column B | Pension subtraction | Schedule CA, line 5b, column B is the part of the pensions California does not tax, including the military retirement exclusion from Step P. Review the handout on the CA exclusion for military retirement and enter the CA adjustment. |
+| Part II, line 19 | Unreimbursed employee expenses | Schedule CA, Part II, line 19 is the unreimbursed employee expenses California still allows (Step Q). Enter them as a California adjustment, since they are not deductible on the federal return. |
+
+### Notes for one step only
+
+At these steps the line's hint above is replaced by the answer sheet note, or the step shows a tip.
+
+| Step | Line | Text |
+| --- | --- | --- |
+| A | California Form 540, Line 46 | Note N2: if line 46 is more than $0, go back and review the California renter's credit requirements in the Duck Book. |
+| B | Federal Form 1040, Line 8 | Note N2b: if your answer is incorrect, check Schedule C for the probable error: car and truck expenses, line 9 = $1,491; other interest, line 16b = $300; other expenses, line 27b = $108 ($75 for the DMV plus $33 for parking and tolls). |
+| B | Schedule 1, Line 3 | Note N2b: if your answer is incorrect, check Schedule C for the probable error: car and truck expenses, line 9 = $1,491; other interest, line 16b = $300; other expenses, line 27b = $108 ($75 for the DMV plus $33 for parking and tolls). |
+| C | Federal Form 1040, Line 4b | Note N3: did you forget to zero out box 2a and check the box at the bottom of the screen indicating it was a rollover? |
+| C | Federal Form 1040, Line 4c box 1 | Note N3: did you forget to zero out box 2a and check the box at the bottom of the screen indicating it was a rollover? |
+| D | Federal Form 1040, Line 4b | Note N3: did you forget to zero out box 2a and check the box at the bottom of the screen indicating it was a rollover? |
+| D | Federal Form 1040, Line 4c box 1 | Note N3: did you forget to zero out box 2a and check the box at the bottom of the screen indicating it was a rollover? |
+| E | Schedule 2, Line 8 | Note N4: review Pub 4012 on Form 5329 exception codes and the requirements for code 23. Be sure to read the footnotes for code 23. If that does not fix it, make sure you marked TP for both the 1099-R and Form 5329. |
+| F | Federal Form 1040, Line 4b | Note N5: did you specify that the QCD was only $20,000 instead of the entire amount? |
+| G | Federal Form 1040, Line 5c box 2 | Note N6: enter the 1099-R, including box 2a. Then click 'click here for option' below box 2a, choose the PSO option, and enter the health insurance amount. TaxSlayer works out the taxable amount and creates the 'nontaxable retirement distribution' entry. |
+| G | Schedule A, Line 1 | Note N7: a public safety officer can use only up to $3,000 of health insurance premiums to reduce the taxable amount. The premiums above that can go on Schedule A when itemizing. |
+| H | Schedule A, Line 1 | Note N8: box 5 of the OPM 1099-R ($283) goes on Schedule A as a medical expense, along with the $700 from Step G. |
+| J | Federal Form 1040, Line 5b | Note N9: refer back to the handout 'Retirement Income (non-IRA)'. |
+| K | Federal Form 1040, Line 5b | Note N10: on the Exclusion Calculator, did you check 'if deceased' and 'died in 20CC'? On the Simplified Method screen, did you check the box indicating the annuity benefits are based on the annuitant and beneficiary? |
+| L | Schedule A, Line 16 | Note N11: did you enter the unrecovered investment in the pension from the Pension Exclusion Calculator? |
+| M | Federal Form 1040, Line 1h | Note N12: did you mark this 1099-R as a disability, so the distribution is treated as wages? |
+| P | undefined, Part I, line 5b, column B | Note N13: did you enter the California adjustment as instructed in the step? |
+| R | (step tip) | Note N14: there is no need to enter the 1099-G, since the Grahams itemized and took the sales tax deduction last year. |
+| R2 | Federal Form 1040, Line 12e | Note N15: Stacey did not have enough additional itemized deductions to exceed the California standard deduction. The health insurance premiums she listed were already entered in Steps B, G, H, N, and O. |
+| R2 | California Form 540, Line 18 | Note N15: Stacey did not have enough additional itemized deductions to exceed the California standard deduction. The health insurance premiums she listed were already entered in Steps B, G, H, N, and O. |
+| S | Federal Form 1040, Line 20 | Note N16: go back and review the video. |
+| S | Federal Form 1040, Line 29 | Note N16: go back and review the video. |
+
+### Answer key notes
+
+**N1: Filing status and dependents** (Step A)
+
+* Answer key: Filing status = MFJ. Stacey should be listed as the Taxpayer. Using the QC/QR Resource Tool, Joshua = Box 35, CTC. Jeremy = Box 35, ODC. Gail = Chart 2 Box 25, ODC, No EIC.
+* Hint: Walk each dependent through the 'Qualifying Child or Relative Resource Tool' and the handout 'CTC ODC Chart': Joshua is a qualifying child for the child tax credit; Jeremy and Gail qualify only for the credit for other dependents. List Stacey as the taxpayer, then check the filing status and each dependent's credit on the dependent screens.
+
+**NN_C: TS Note added for Step C** (Step C)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step C (the IRA rollover) in TaxSlayer
+* Example: STEP C - IRA ROLLOVER: TP ROLLED ENTIRE IRA DISTRIBUTION BACK INTO AN IRA ACCOUNT WITHIN 60 DAYS SO THERE WAS NO EARLY WITHDRAWAL PENALTY.
+
+**NN_E: TS Note added for Step E** (Step E)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step E (the early IRA distribution) in TaxSlayer
+* Example: STEP E - EARLY IRA DIST: $1,825 EARLY WITHDRAWAL FROM WELLS FARGO WAS USED FOR CAR REPAIRS NEEDED TO COMMUTE TO WORK. $825 WAS EXEMPT FROM THE EARLY WITHDRAWAL PENALTY UNDER 'PERSONAL EMERGENCY EXPENSE'.
+
+**NN_F: TS Note added for Step F** (Step F)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step F (the QCD) in TaxSlayer
+* Example: STEP F - QCD: $20,000 OF THE $20,838 RMD FOR SEAN FROM WELLS FARGO WAS A QCD TO THEIR CHURCH AND EXCLUDED FROM TAXABLE INCOME.
+
+**NN_G: TS Note added for Step G** (Step G)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step G (the PSO exclusion) in TaxSlayer
+* Example: STEP G - PSO: EDC SHERIFF 1099-R FOR SEAN - BOX 2 TAXABLE AMOUNT WAS REDUCED BY $3K FOR PUBLIC SAFETY OFFICER HEALTH INSURANCE. ADDN'L $700 ENTERED ON SCH A ITEMIZED DEDUCTIONS.
+
+**NN_K: TS Note added for Step K** (Step K)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step K (the Simplified Method) in TaxSlayer
+* Example: STEP K - SIMPLIFIED METHOD: NATHANS HAMBURGER 1099-R IS A JOINT SURVIVOR ANNUITY, USED SIMPLIFIED METHOD. ANNUITY START DATE 9/1/2019. ANNUAL EXCLUSION $1,771. FINAL YEAR 2053 WITH AN EXCLUSION OF $1,466.
+
+**NN_L: TS Note added for Step L** (Step L)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step L (the Simplified Method) in TaxSlayer
+* Example: STEP L - SIMPLIFIED METHOD: NORTHERN TRUST 1099-R WAS NOT A JOINT SURVIVOR ANNUITY. ANNUITY START DATE 1/1/2017. ANNUAL EXCLUSION $271. THIS WAS THE LAST YEAR, THE UNRECOVERED $3,425 WAS ENTERED ON SCH A AS 'OTHER DEDUCTIONS'.
+
+**NN_M: TS Note added for Step M** (Step M)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step M (the disability pension) in TaxSlayer
+* Example: STEP M - DISABILITY PENSION: STACEY WENT ON DISABILITY AT AGE 45. NORMAL RETIREMENT AGE AT THE COMPANY IS 65. MUST CHECK THE DISABILITY BOX AT THE BOTTOM OF THE INPUT PAGE SO THE AMOUNT IS REPORTED AS WAGES.
+
+**NN_P: TS Note added for Step P** (Step P)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Box the student ticks: I added a TS Note for Step P (the CA military retirement exclusion) in TaxSlayer
+* Example: STEP P - CA EXCLUSION FOR MILITARY RETIREMENT: SINCE SEAN WAS IN UNIFORMED SERVICE, $20,000 OF THE TAXABLE AMOUNT WAS EXCLUDED FOR CA.
 

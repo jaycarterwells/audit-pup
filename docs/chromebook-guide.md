@@ -52,7 +52,7 @@ When a step is done, Audit Pup selects the **next step** for you and clears the 
 | **Confirmed** | An item you checked off yourself. |
 
 * On a line that needs another look, click **Show a hint** to see the answer key value and where to look in the problem.
-* **Lines that should be blank:** the lines that should have nothing on them yet at your step are checked together, in one row at the end of the list. If any of them has an amount, that row lists each one, and its hint shows the answer key as **blank or $0**.
+* **Lines that should be blank:** the lines that should have nothing on them yet at your step are checked together, in one row at the end of the list, together with any box that should not be checked. If any of them has an amount or a check mark, that row lists each one, and its hint shows the answer key as **blank or $0**.
 * **Notes Audit Pup checks for you:** some answer key notes, such as an Identity Protection PIN, a Preparer Note, or the address on a W-2, are read from your PDF. They show **Correct** or **Check** like any other line.
 * **Worksheet entries:** some steps ask you to type values from a worksheet you completed, and to pick the option you chose. Type them in the boxes shown.
 * **Items you confirm yourself:** some items, such as a TS Note, are not printed in the PDF. Check the box yourself once you have done it. Click **See an example note** for a sample.
@@ -84,6 +84,8 @@ The **Theme** button switches between light and dark. The **Version** button sho
 * **"That file is not a PDF"**: save the return from TaxSlayer as a PDF and try again.
 * **"Could not read that PDF"**: make sure you picked the PDF printed from TaxSlayer for this step, then try again.
 * **"This is the same file you checked for Step B"** (or another step): you are reusing an older PDF. Print a new PDF from TaxSlayer after finishing the current step, then check that one.
+* **"Please update Audit Pup before you check a PDF"**: a newer version is out, and Audit Pup will not check a PDF until you update, so no one checks against an old answer key. Click **Update**. The page reloads with the newest version in a few seconds and keeps your progress; then choose your PDF again.
+* **"This copy of Audit Pup is out of date"**: you opened a downloaded copy. Click **Open the Audit Pup website** and use the website, which always has the newest version.
 * **"Audit Pup did not finish loading"**: reload the page with **Ctrl + R**.
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
 * **"This browser is not saving progress"**: your browser is blocking saved data. Use a normal Chrome window, signed in to your own account.

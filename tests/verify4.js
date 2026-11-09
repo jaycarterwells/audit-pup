@@ -2,14 +2,14 @@ const { expect } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path'); const fs=require('fs');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
-const { open, ready, settled, dogShown } = require('./page');
+const { open, ready, settled, dogShown, noUpdateCheck } = require('./page');
 async function grade(p,step,file){ await p.selectOption('#step',step); await p.setInputFiles('#file',file); await p.click('#grade');
   await ready(p); }
 const barColor=p=>p.$eval('#barfill',e=>getComputedStyle(e).backgroundColor);
 const rewardState=p=>p.$eval('#reward',e=>e.classList.contains('hidden')?'hidden':(e.classList.contains('hasdog')?'dog: '+document.getElementById('dogcap').textContent:'check mark only'));
 (async()=>{ const b=await chromium.launch();
   for (const mode of ['online','offline']){
-    const ctx=await b.newContext({viewport:{width:820,height:900},deviceScaleFactor:1.5});
+    const ctx=await b.newContext({viewport:{width:820,height:900},deviceScaleFactor:1.5}); await noUpdateCheck(ctx);
     await ctx.addInitScript(()=>{ window.Worker=function(){throw new Error('blocked');}; });
     if(mode==='online'){
       await ctx.route('https://dog.ceo/**',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({message:'https://images.dog.ceo/breeds/retriever-golden/n02099601_1.jpg',status:'success'})}));

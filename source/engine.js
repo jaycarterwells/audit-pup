@@ -64,7 +64,7 @@ function caValue(pages,form,token,valueMin,tokXMin,tokXMax,tol){
 function filingStatus(pages){
   var re=/^(Single|Married filing jointly|Married filing separately|Head of household|Qualifying surviving spouse)/;
   for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
-    var its=pages[p].items, labels=its.filter(function(i){return re.test(i.s);}), xs=its.filter(function(i){return i.s==='X';});
+    var its=pages[p].items, labels=its.filter(function(i){return re.test(i.s);}), xs=its.filter(function(i){return i.s==='X'||i.s==='x';});
     for(var a=0;a<labels.length;a++) for(var b=0;b<xs.length;b++){
       var gap=labels[a].x-xs[b].x;
       if(Math.abs(xs[b].y-labels[a].y)<=4 && gap>0 && gap<30) return labels[a].s.match(re)[1];
@@ -97,6 +97,8 @@ function classifyPage(items){
   var sch=lead.match(/^SCHEDULE ([123A]) \(Form 1040\)/)||lead.match(/^Schedule ([123A]) \(Form 1040\) \d{4} Page \d/);
   if(sch) return 'sch'+sch[1];
   if(/^Form 8880 Department of the Treasury/.test(lead)) return 'f8880';
+  /* Schedule CA (540): every side starts with its 7-digit code, side number, and title, in either order */
+  if(/^\d{7} Side \d+ Schedule CA \(540\) \d{4}/.test(lead) || /^Schedule CA \(540\) \d{4} Side \d+ \d{7}/.test(lead)) return 'schCA';
   return 'other';
 }
 
@@ -105,7 +107,8 @@ function classifyPage(items){
    (x from xMin to xMax). If the same box appears more than once with different amounts, the line is
    reported as unread rather than guessed. Returns a number, null (box printed but empty), or
    undefined (box not found). */
-function boxValue(pages,form,token,xMin,xMax){
+/* vMin, vMax (optional): the amount must be in that column (Schedule CA prints columns A, B, and C on one row) */
+function boxValue(pages,form,token,xMin,xMax,vMin,vMax){
   xMin=xMin||370; xMax=xMax||500;
   var saw=false, vals=[];
   for(var p=0;p<pages.length;p++){ if(pages[p].form!==form) continue;
@@ -113,7 +116,7 @@ function boxValue(pages,form,token,xMin,xMax){
     its.forEach(function(t){
       if(t.s!==token || t.x<xMin || t.x>xMax) return;
       saw=true;
-      var row=its.filter(function(i){ return Math.abs(i.y-t.y)<=4 && i.x>t.x+3 && i.x<t.x+140 && isMoney(i.s); });
+      var row=its.filter(function(i){ return Math.abs(i.y-t.y)<=4 && (vMin!=null ? (i.x>=vMin && i.x<=vMax) : (i.x>t.x+3 && i.x<t.x+140)) && isMoney(i.s); });
       row.sort(function(a,b){return a.x-b.x;});
       vals.push(row.length?parseNum(row[row.length-1].s):null);
     });
@@ -148,6 +151,32 @@ function firstDependentCTC(pages){
   return null;
 }
 
+/* The dependents on Form 1040 (or 1040-SR) page 1, with their credit boxes: one column per dependent, the first name
+   (with middle initial) on the "First name" row, and on the credits row an X just left of "Child" (child tax credit)
+   or "Credit for" (credit for other dependents). null when the dependents section is not found. */
+function dependentCredits(pages){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, lab=its.filter(function(i){ return i.s==='First name'; })[0];
+    if(!lab) continue;
+    var names=its.filter(function(i){ return Math.abs(i.y-lab.y)<=3 && i.x>lab.x+20 && /^[A-Z][A-Z' -]*$/.test(i.s); }).sort(function(a,b){return a.x-b.x;});
+    var child=its.filter(function(i){ return i.s==='Child' && i.y<lab.y; }).sort(function(a,b){return a.x-b.x;});
+    var other=its.filter(function(i){ return i.s==='Credit for' && i.y<lab.y; }).sort(function(a,b){return a.x-b.x;});
+    var xed=function(l){ return !!l && its.some(function(i){ return /^[xX]$/.test(i.s) && Math.abs(i.y-l.y)<=8 && i.x<l.x && i.x>=l.x-16; }); };
+    return names.map(function(n,k){ return {name:n.s, ctc:xed(child[k]), odc:xed(other[k])}; });
+  }
+  return null;
+}
+/* The taxpayer's first name and middle initial, as printed under "Your first name and middle initial" */
+function taxpayerName(pages){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, lab=its.filter(function(i){ return /^Your first name/.test(i.s); })[0];
+    if(!lab) continue;
+    var v=its.filter(function(i){ return i.y<lab.y && i.y>lab.y-20 && i.x>=lab.x-10 && i.x<lab.x+180; }).sort(function(a,b){return a.x-b.x;});
+    return v.length ? v.map(function(i){return i.s;}).join(' ') : null;
+  }
+  return null;
+}
+
 /* Text of TaxSlayer's Preparer Notes page, if one was printed */
 function preparerNotes(pages){
   for(var p=0;p<pages.length;p++){ var its=pages[p].items;
@@ -175,7 +204,7 @@ function onW2(pages,employer,text){
 /* Schedules and forms TaxSlayer leaves out when nothing goes on them. A blank answer on one of these
    is correct when the form is not printed at all. The 1040 and 540 are always required. The FTB 3514 is
    printed only when a California EITC is claimed (not at Quinn's Step A). */
-var OPTIONAL_FORMS = {sch1:1, sch2:1, sch3:1, schA:1, f8880:1, ca3514:1};
+var OPTIONAL_FORMS = {sch1:1, sch2:1, sch3:1, schA:1, f8880:1, ca3514:1, schCA:1};
 
 function matches(got,exp,present,form){
   if(!present) return (exp===0 && OPTIONAL_FORMS[form]) ? 'pass' : 'missing';
@@ -210,13 +239,29 @@ function otherMatches(step,got,present){
   return hits;
 }
 
+/* A checkbox, such as Form 1040 line 4c box 1 (Rollover): the label printed between line boxes fromToken and toToken
+   (the 4a and 5a amount boxes, at x 200 to 260). Checked when an "X" is printed just left of the label. undefined when the
+   label is not found, or two copies of the form disagree. */
+function markValue(pages,form,fromToken,toToken,label){
+  var vals=[];
+  pages.forEach(function(pg){ if(pg.form!==form) return; var its=pg.items;
+    var box=function(tok){ return its.filter(function(i){ return i.s===tok && i.x>=200 && i.x<=260; })[0]; };
+    var a=box(fromToken), b=box(toToken); if(!a || !b) return;
+    its.forEach(function(l){ if(l.s!==label || l.y>a.y || l.y<b.y) return;
+      vals.push(its.some(function(i){ return /^[xX]$/.test(i.s) && Math.abs(i.y-l.y)<=4 && i.x<l.x && i.x>=l.x-20; })); });
+  });
+  if(!vals.length) return undefined;
+  return vals.every(function(v){ return v===vals[0]; }) ? vals[0] : undefined;
+}
+
 /* Read every line with the reader named in its definition:
-   ['box', form, token, xMin, xMax]   the amount box beside a line token (federal forms and schedules)
+   ['box', form, token, xMin, xMax, vMin, vMax]   the amount box beside a line token (federal forms and schedules); vMin/vMax pick a column
+   ['mark', form, fromToken, toToken, label]   a checkbox: true when an X is printed just left of the label, on the rows between two line boxes
    ['ca', token, valueMin, form, tokXMin, tokXMax]   a California line (form is ca540 unless named, e.g. ca3514) */
 function extractByLines(lines,pages){
   var got={};
   Object.keys(lines).forEach(function(k){ var r=lines[k].read;
-    got[k]= r[0]==='box' ? boxValue(pages,r[1],r[2],r[3],r[4]) : caValue(pages,r[3]||'ca540',r[1],r[2],r[4],r[5]); });
+    got[k]= r[0]==='box' ? boxValue(pages,r[1],r[2],r[3],r[4],r[5],r[6]) : r[0]==='mark' ? markValue(pages,r[1],r[2],r[3],r[4]) : caValue(pages,r[3]||'ca540',r[1],r[2],r[4],r[5]); });
   return got;
 }
 
@@ -226,7 +271,7 @@ function expectedFromKey(key){
   var exp={};
   key.steps.forEach(function(s){ exp[s]={}; });
   key.rows.forEach(function(r){ Object.keys(r.values).forEach(function(s){
-    if(Object.prototype.hasOwnProperty.call(exp[s],r.line) && exp[s][r.line]!==(r.values[s]||0)) throw new Error('Answer key has two values for '+r.line+' at Step '+s);
-    exp[s][r.line]=r.values[s]===null?0:r.values[s]; }); });
+    if(Object.prototype.hasOwnProperty.call(exp[s],r.line) && exp[s][r.line]!==(r.values[s]||(r.kind==='mark'?false:0))) throw new Error('Answer key has two values for '+r.line+' at Step '+s);
+    exp[s][r.line]=r.values[s]===null?(r.kind==='mark'?false:0):r.values[s]; }); });
   return exp;
 }

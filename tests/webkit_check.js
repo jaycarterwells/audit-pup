@@ -6,7 +6,7 @@
 const { webkit } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
-const { open, reload } = require('./page');
+const { open, reload, offline } = require('./page');
 (async()=>{
   let b;
   try{ b=await webkit.launch(); }
@@ -14,7 +14,7 @@ const { open, reload } = require('./page');
     if(process.env.CI){ expect('WebKit is installed on GitHub', false, e.message.split('\n')[0]); return; }
     console.log('SKIPPED: WebKit is not installed here (GitHub runs this test). '+e.message.split('\n')[0]); return;
   }
-  const ctx=await b.newContext({viewport:{width:1280,height:800}}); await ctx.route('https://dog.ceo/**',r=>r.abort());
+  const ctx=await b.newContext({viewport:{width:1280,height:800}}); await offline(ctx);
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await open(p,'file://'+PAGE);
   expect('WebKit: the page starts (no "did not start" note)', await p.$eval('#startup',e=>e.classList.contains('hidden')));

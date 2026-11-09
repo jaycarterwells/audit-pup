@@ -28,4 +28,9 @@ async function dogShown(p){
   await p.waitForSelector('#reward.hasdog',{state:'attached',timeout:10000}).catch(()=>{});
   await settled(p);
 }
-module.exports={ started, open, reload, settled, ready, dogShown };
+// Tests never ask the real website whether a newer Audit Pup exists (update_check.js tests that with a stand-in);
+// offline() also blocks the Dog API.
+const LIVE='https://jaycarterwells.github.io/**';
+async function noUpdateCheck(ctx){ await ctx.route(LIVE,r=>r.abort()); }
+async function offline(ctx){ await ctx.route('https://dog.ceo/**',r=>r.abort()); await noUpdateCheck(ctx); }
+module.exports={ started, open, reload, settled, ready, dogShown, noUpdateCheck, offline };
