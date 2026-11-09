@@ -173,8 +173,9 @@ function onW2(pages,employer,text){
 }
 
 /* Schedules and forms TaxSlayer leaves out when nothing goes on them. A blank answer on one of these
-   is correct when the form is not printed at all. The 1040 and 540 are always required. */
-var OPTIONAL_FORMS = {sch1:1, sch2:1, sch3:1, schA:1, f8880:1};
+   is correct when the form is not printed at all. The 1040 and 540 are always required. The FTB 3514 is
+   printed only when a California EITC is claimed (not at Quinn's Step A). */
+var OPTIONAL_FORMS = {sch1:1, sch2:1, sch3:1, schA:1, f8880:1, ca3514:1};
 
 function matches(got,exp,present,form){
   if(!present) return (exp===0 && OPTIONAL_FORMS[form]) ? 'pass' : 'missing';
@@ -198,11 +199,13 @@ function laterMatches(step,got,present){
   return hits;
 }
 
-/* Read every Baylor line with the reader named in its definition */
+/* Read every line with the reader named in its definition:
+   ['box', form, token, xMin, xMax]   the amount box beside a line token (federal forms and schedules)
+   ['ca', token, valueMin, form, tokXMin, tokXMax]   a California line (form is ca540 unless named, e.g. ca3514) */
 function extractByLines(lines,pages){
   var got={};
   Object.keys(lines).forEach(function(k){ var r=lines[k].read;
-    got[k]= r[0]==='box' ? boxValue(pages,r[1],r[2],r[3],r[4]) : caValue(pages,'ca540',r[1],r[2]); });
+    got[k]= r[0]==='box' ? boxValue(pages,r[1],r[2],r[3],r[4]) : caValue(pages,r[3]||'ca540',r[1],r[2],r[4],r[5]); });
   return got;
 }
 

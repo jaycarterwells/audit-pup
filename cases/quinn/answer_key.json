@@ -1,0 +1,192 @@
+{
+ "about": "Made by source/tools/import_answer_sheet.js from the answer sheet. Do not edit by hand: re-run the import.",
+ "source": {
+  "file": "answer_sheet.doc",
+  "sha256": "f22c4693985038504935e2c01f99fa8f75b27f606bc1b08310e585c8cd89fa6a"
+ },
+ "steps": [
+  "A",
+  "B",
+  "E"
+ ],
+ "rows": [
+  {
+   "line": "fed_1a",
+   "sheet": "1a Wages",
+   "values": { "A": null, "B": 15000, "E": 15000 }
+  },
+  {
+   "line": "fed_1d",
+   "sheet": "1d MWP not reported on W2",
+   "values": { "A": null, "B": null, "E": 15679 }
+  },
+  {
+   "line": "fed_8",
+   "sheet": "8 Add’l. Income (SCH 1 Line 8s)",
+   "values": { "A": null, "B": null, "E": -15679 }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "A": null, "B": 15000, "E": 15000 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "A": null, "B": 15000, "E": 15000 }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/itemized deductions",
+   "values": { "A": 23625, "B": 23625, "E": 23625 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "fed_25d",
+   "sheet": "25d Fed tax withheld",
+   "values": { "A": null, "B": 1800, "E": 1800 }
+  },
+  {
+   "line": "fed_27",
+   "sheet": "27 EIC",
+   "values": { "A": null, "B": 312, "E": 312 }
+  },
+  {
+   "line": "fed_33",
+   "sheet": "33 Total payments",
+   "values": { "A": null, "B": 2112, "E": 2112 }
+  },
+  {
+   "line": "fed_35a",
+   "sheet": "35a Refund",
+   "values": { "A": null, "B": 2112, "E": 2112 },
+   "notes": { "E": "N2" }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 Owe",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_12",
+   "sheet": "12 State wages from W2, box 16",
+   "values": { "A": null, "B": 15000, "E": 30679 }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_17",
+   "sheet": "17 CA AGI",
+   "values": { "A": null, "B": 15000, "E": 15000 }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "A": 11412, "B": 11412, "E": 11412 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "A": null, "B": 3588, "E": 3588 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "A": null, "B": 36, "E": 36 }
+  },
+  {
+   "line": "ca540_32",
+   "sheet": "32 Exemption cr",
+   "values": { "A": 628, "B": 628, "E": 628 }
+  },
+  {
+   "line": "ca540_35",
+   "sheet": "35 Tax after credits",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_64",
+   "sheet": "64 Total Tax",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_71",
+   "sheet": "71 CA tax withheld",
+   "values": { "A": null, "B": 750, "E": 750 }
+  },
+  {
+   "line": "ca540_75",
+   "sheet": "75 EITC",
+   "values": { "A": null, "B": 165, "E": 165 }
+  },
+  {
+   "line": "ca540_78",
+   "sheet": "78 Total payments",
+   "values": { "A": null, "B": 915, "E": 915 }
+  },
+  {
+   "line": "ca540_111",
+   "sheet": "111 owe",
+   "values": { "A": null, "B": null, "E": null }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "A": null, "B": 915, "E": 915 },
+   "notes": { "E": "N2" }
+  },
+  {
+   "line": "ca3514_2",
+   "sheet": "Line 2 Fed AGI",
+   "values": { "A": null, "B": 15000, "E": 15000 }
+  },
+  {
+   "line": "ca3514_13",
+   "sheet": "Line 13 CA Wages",
+   "values": { "A": null, "B": 15000, "E": 30679 }
+  },
+  {
+   "line": "ca3514_14",
+   "sheet": "Line 14 IHSS (MWP) Payments",
+   "values": { "A": null, "B": null, "E": 15679 }
+  },
+  {
+   "line": "ca3514_19",
+   "sheet": "Line 19 CA EI",
+   "values": { "A": null, "B": 15000, "E": 15000 },
+   "notes": { "E": "N3" }
+  }
+ ],
+ "notes": [
+  {
+   "step": "A",
+   "notes": "N1"
+  },
+  {
+   "step": "E",
+   "notes": "NN"
+  }
+ ]
+}

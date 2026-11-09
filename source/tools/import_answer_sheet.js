@@ -12,7 +12,8 @@
 //   "Sch 1-8c", "Sch A-5a"    schedule line           -> sch1_8c, schA_5a
 //   "8880" with "L2" in label Form 8880 line 2        -> f8880_2
 //   rows after the "CA 540" row                        -> ca540_<line>
-// A blank cell means "blank or $0" at that step (stored as null). Notes such as "N7" after a value are kept
+//   rows after the "CA 3514" row ("Line 2" ...)         -> ca3514_<line>
+// A blank cell means "blank or $0" at that step (stored as null). An amount in parentheses, "(15,679)", is negative. Notes such as "N7" after a value are kept
 // in "notes" and stripped from the value. Rows like "(additional notes)" and "Comments" are kept as notes only.
 const fs=require('fs'), path=require('path'), crypto=require('crypto');
 const [caseId, htmlFile, flag]=process.argv.slice(2);
@@ -35,14 +36,16 @@ const rows=[], notes=[], steps=[];
 tables.forEach((t,ti)=>{
   const cols=t[0].slice(2).map(h=>{ const m=h.match(/['‘’]([A-Z])['‘’]/)||h.match(/^([A-Z])\b/); if(!m) throw new Error(`table ${ti+1}: cannot read step from header "${h}"`); return m[1]; });
   cols.forEach(s=>{ if(!steps.includes(s)) steps.push(s); });
-  let ca=false;
+  let ca=false, ftb3514=false;
   t.slice(1).forEach(r=>{
     const code=(r[0]||'').trim(), label=(r[1]||'').trim(), cells=r.slice(2);
-    if(/^CA 540/i.test(code)){ ca=true; return; }
+    if(/^CA 540/i.test(code)){ ca=true; ftb3514=false; return; }
+    if(/^CA 3514/i.test(code)){ ftb3514=true; ca=false; return; }
     if(!code){ if(/note/i.test(label)) cols.forEach((s,i)=>{ if(cells[i]) notes.push({step:s, notes:cells[i]}); }); return; }
     if(/^comments?$/i.test(code)){ cols.forEach((s,i)=>{ if(cells[i]) notes.push({step:s, notes:cells[i]}); }); return; }
     let line;
-    if(ca) line='ca540_'+code;
+    if(ftb3514){ const m=code.match(/^(?:Line )?(\d+[a-z]?)$/i); if(!m) throw new Error(`table ${ti+1}: cannot read the 3514 line in "${code}"`); line='ca3514_'+m[1]; }
+    else if(ca) line='ca540_'+code;
     else if(/^Sch ([123A])-(\w+)$/i.test(code)){ const m=code.match(/^Sch ([123A])-(\w+)$/i); line='sch'+m[1].toUpperCase()+'_'+m[2]; }
     else if(/^\d{4}$/.test(code)){ const m=label.match(/\bL(\d+[a-z]?)\b/); if(!m) throw new Error(`table ${ti+1}: form ${code} row needs "L<line>" in its label: "${label}"`); line='f'+code+'_'+m[1]; }
     else if(/^\d+[a-z]?$/.test(code)) line='fed_'+code;
@@ -50,7 +53,7 @@ tables.forEach((t,ti)=>{
     const values={}, rowNotes={};
     cols.forEach((s,i)=>{ const c=(cells[i]||'').trim(); const n=c.match(/\b(N[0-9A-Z]+)\b/g);
       if(n) rowNotes[s]=n.join(', ');
-      const v=c.replace(/\bN[0-9A-Z]+\b/g,'').replace(/[,\s$]/g,'');
+      let v=c.replace(/\bN[0-9A-Z]+\b/g,'').replace(/[,\s$]/g,''); if(/^\(\d+\)$/.test(v)) v='-'+v.slice(1,-1);
       if(v && !/^-?\d+$/.test(v)) throw new Error(`table ${ti+1}, ${code}, step ${s}: "${c}" is not a whole-dollar amount`);
       values[s]=v?parseInt(v,10):null; });
     const row={line, sheet:`${code} ${label}`.trim(), values};
