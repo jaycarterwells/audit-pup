@@ -135,23 +135,25 @@ var B_ORDER = ['fed_1a','fed_1b','fed_2a','fed_8','fed_9','fed_11a','fed_12e','f
   'ca540_12','ca540_14','ca540_16','ca540_18','ca540_19','ca540_31','ca540_32','ca540_40','ca540_46','ca540_47','ca540_71','ca540_75','ca540_78','ca540_91','ca540_111','ca540_115'];
 
 var B_TSNOTE_COACH="Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.";
+/* carry: true = checked at its own step and again at every later step (read from the PDF, stays once added);
+   false = checked at its own step only. N4 is false: the later printouts do not show the Betts W-2 address. */
 var B_NOTES = {
-  N1:{form:'fed', kind:'filing', name:'Filing status and dependent', status:/qualifying surviving spouse/i, dependent:'WILLIAM', dependentName:'Willie (William)', minMonths:7, ctc:true,
+  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/qualifying surviving spouse/i, dependent:'WILLIAM', dependentName:'Willie (William)', minMonths:7, ctc:true,
     key:"Filing status = QSS. Using the 'Qualifying Child or Relative Resource Tool', Willie = Box 35, CTC.",
     coach:"Joan died in 2023 and Michael supports his son, so check the qualifying surviving spouse rules. Walk Willie through the Resource Tool and the handout 'CTC ODC Chart' to decide his dependent status and the child tax credit box. Then check the filing status and dependent screens in TaxSlayer."},
-  N2:{form:'fed', kind:'ippin', name:'Identity Protection PIN entered', pin:'543456',
+  N2:{form:'fed', kind:'ippin', carry:true, name:'Identity Protection PIN entered', pin:'543456',
     coach:"Michael's IP PIN is in the Interview Notes. Enter it in TaxSlayer where the taxpayer's Identity Protection PIN is asked for, and add a TS Note about it (the next item)."},
-  NN_A:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step A', mark:'nn_A', confirm:'I added a TS Note for Step A (the IP PIN) in TaxSlayer',
+  NN_A:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step A', mark:'nn_A', confirm:'I added a TS Note for Step A (the IP PIN) in TaxSlayer',
     example:'STEP A - IP PIN: TP HAS AN IP PIN', coach:B_TSNOTE_COACH},
-  N4:{form:'fed', kind:'w2text', name:'Betts W-2 address matches the form', employer:'BETTS', text:'PO BOX 540', shown:'PO Box 540',
+  N4:{form:'fed', kind:'w2text', carry:false, name:'Betts W-2 address matches the form', employer:'BETTS', text:'PO BOX 540', shown:'PO Box 540',
     coach:"The Betts Technology W-2 shows Michael's address as PO Box 540. Enter the address on the W-2 screen in TaxSlayer exactly as it is printed on the form."},
-  NP:{form:'fed', kind:'prepnote', name:'Preparer Note added',
+  NP:{form:'fed', kind:'prepnote', carry:true, name:'Preparer Note added',
     coach:"Pub 4012, 'Election Worker Income', says to add a Preparer Note when election worker pay is entered. Add one in TaxSlayer and print a new PDF."},
-  NN_E:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step E', mark:'nn_E', confirm:'I added a TS Note for Step E (the wage difference) in TaxSlayer',
+  NN_E:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step E', mark:'nn_E', confirm:'I added a TS Note for Step E (the wage difference) in TaxSlayer',
     example:'STEP E - FED/STATE WAGE DIFFERENCE: ESKATON PROPERTIES W-2 HAD A FED/STATE WAGE DIFFERENCE. A MANUAL ADJUSTMENT WAS MADE TO THE CA STATE RETURN.', coach:B_TSNOTE_COACH},
-  NN_I:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step I', mark:'nn_I', confirm:'I added a TS Note for Step I (election worker pay) in TaxSlayer',
+  NN_I:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step I', mark:'nn_I', confirm:'I added a TS Note for Step I (election worker pay) in TaxSlayer',
     example:'STEP I - ELECTION WORKER PAY: ELECTION WORKER PAY ENTERED AS HOUSEHOLD EMPLOYEE INCOME.', coach:B_TSNOTE_COACH},
-  NN_N:{form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step N', mark:'nn_N', confirm:'I added a TS Note for Step N (the HSA interest) in TaxSlayer',
+  NN_N:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step N', mark:'nn_N', confirm:'I added a TS Note for Step N (the HSA interest) in TaxSlayer',
     example:'STEP N - HSA INTEREST: INTEREST AMOUNT OF $10 MUST BE REPORTED AS TAXABLE FOR CA. ENTERED ON 1099-INT, FED TAX EXEMPT MADE TAXABLE FOR CA.', coach:B_TSNOTE_COACH}
 };
 

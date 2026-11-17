@@ -661,6 +661,30 @@ function blankRow(step,keys,got,present){
   return r;
 }
 
+/* ----- notes from earlier steps: one row ----- */
+/* A note marked carry:true (one Audit Pup reads from the PDF and that stays in the return once added) is checked
+   again at every later step, in one row. It fails when any is missing and names each one with its hint. Notes the
+   student enters or ticks (TS Note boxes, worksheets) are one-time checks and are never asked again. */
+var CARRY_GROUP='Notes from earlier steps';
+function carryRow(step,carried,pages){
+  var r=makeRow('carry', 'Answer key notes added at earlier steps', carried.map(function(c){ return (NOTES[c.id].chip||c.id)+' (Step '+c.from+')'; }).join(', ')+' should still be in your return');
+  r.groupTitle=CARRY_GROUP; r.li.setAttribute('data-line','carry');
+  var missing=carried.filter(function(c){ return noteOk(NOTES[c.id],pages)!==true; });
+  setStatus(r, missing.length?'fail':'pass');
+  if(!missing.length) return r;
+  var ul=el('ul','blanklist');
+  missing.forEach(function(c){ var N=NOTES[c.id]; ul.appendChild(el('li',null,'<b>'+esc((N.chip||c.id)+': '+N.name)+'</b> (added at Step '+esc(c.from)+') is not in your return.')); });
+  r.body.appendChild(el('div','yours', missing.length===1?'This note from an earlier step is missing:':'These notes from earlier steps are missing:'));
+  r.body.appendChild(ul);
+  addHint(r,null,function(box){
+    box.appendChild(el('div',null,'Something added at an earlier step is no longer in the return. Check that it is still entered in TaxSlayer and that your printout includes it.'));
+    var hl=el('ul','blanklist');
+    missing.forEach(function(c){ var N=NOTES[c.id]; hl.appendChild(el('li',null,'<b>'+esc(N.chip||c.id)+'</b>: '+esc(N.key?N.key+' ':'')+esc(N.coach||''))); });
+    box.appendChild(hl);
+  });
+  return r;
+}
+
 /* ----- answer key notes ----- */
 function noteRow(step,id,got,present,pages){
   var N=NOTES[id], nochange=step.type==='nochange', chip=N.chip||id;
@@ -673,7 +697,7 @@ function noteRow(step,id,got,present,pages){
     var checks=N.deps.map(function(d){ var f=have.filter(function(x){ return x.name.toUpperCase().indexOf(d.first)===0; })[0];
       var box=f ? (f.ctc&&!f.odc?'ctc':(f.odc&&!f.ctc?'odc':(f.ctc?'both':'none'))) : null; return {d:d, box:box, ok:box===d.box}; });
     var extra=have.filter(function(x){ return !N.deps.some(function(d){ return x.name.toUpperCase().indexOf(d.first)===0; }); });
-    var okf=!!(fs2 && N.status.test(fs2) && tp && tp.toUpperCase().indexOf(N.taxpayer)===0 && checks.every(function(c){return c.ok;}) && !extra.length);
+    var okf=noteOk(N,pages);   /* the engine's rule, the same one the later-step row and the tests use */
     setStatus(r, okf?'pass':'fail', {nochange:nochange});
     var parts2=['filing status <b>'+(fs2||'not found')+'</b>', 'taxpayer <b>'+(tp?cap(tp.split(' ')[0]):'not found')+'</b>'];
     checks.forEach(function(c){ parts2.push(esc(c.d.name)+': <b>'+(c.box===null?'not listed as a dependent':(c.box==='none'?'no credit box checked':(c.box==='both'?'both credit boxes checked':boxName[c.box])))+'</b>'); });
@@ -685,7 +709,7 @@ function noteRow(step,id,got,present,pages){
   if(N.kind==='filing'){
     var fs=filingStatus(pages), dep=dependentInfo(pages,N.dependent);
     var ctc=N.ctc?firstDependentCTC(pages):null;
-    var ok=!!(fs && N.status.test(fs) && dep && (dep.months==null || dep.months>=N.minMonths) && (!N.ctc || ctc===true));
+    var ok=noteOk(N,pages);
     setStatus(r, ok?'pass':'fail', {nochange:nochange});
     var parts=[];
     parts.push('filing status <b>'+(fs||'not found')+'</b>');
@@ -698,14 +722,14 @@ function noteRow(step,id,got,present,pages){
   }
 
   if(N.kind==='ippin'){
-    var pin=ipPin(pages), okp=pin===N.pin;
+    var pin=ipPin(pages), okp=noteOk(N,pages);
     setStatus(r, okp?'pass':'fail', {nochange:nochange});
     r.body.appendChild(el('div','yours', pin ? 'Your return shows the Identity Protection PIN <b>'+esc(pin)+'</b>.' : 'Your return shows <b>no Identity Protection PIN</b>.'));
     if(!okp) addHint(r,null,function(box){ box.appendChild(answerLine('IP PIN <b>'+esc(N.pin)+'</b>')); box.appendChild(el('div',null,N.coach)); });
     return r;
   }
   if(N.kind==='w2text'){
-    var hasT=onW2(pages,N.employer,N.text), okw=hasT===true;
+    var hasT=onW2(pages,N.employer,N.text), okw=noteOk(N,pages);
     setStatus(r, okw?'pass':'fail', {nochange:nochange});
     r.body.appendChild(el('div','yours', hasT===null ? 'The checker could not find this W-2 in your PDF.' :
       (okw ? 'Your W-2 shows the address <b>'+esc(N.shown)+'</b>.' : 'Your W-2 does <b>not</b> show the address <b>'+esc(N.shown)+'</b>.')));
@@ -713,7 +737,7 @@ function noteRow(step,id,got,present,pages){
     return r;
   }
   if(N.kind==='prepnote'){
-    var pn=preparerNotes(pages), okn=!!pn;
+    var pn=preparerNotes(pages), okn=noteOk(N,pages);
     setStatus(r, okn?'pass':'fail', {nochange:nochange});
     r.body.appendChild(el('div','yours', okn ? 'Your return has a Preparer Note: <b>'+esc(pn.length>140?pn.slice(0,140)+'...':pn)+'</b>' : 'Your return has <b>no Preparer Note</b>.'));
     if(!okn) addHint(r,null,function(box){ box.appendChild(answerLine('a Preparer Note about the election worker pay')); box.appendChild(el('div',null,N.coach)); });
@@ -817,6 +841,7 @@ function render(step, got, present, pages, alt, reuse){
     if(LINES[id]){ if(Object.prototype.hasOwnProperty.call(step.expected,id)){ if(step.expected[id]===0 || step.expected[id]===false) blanks.push(id); else rows.push(lineRow(step,id,got,present)); } }
     else if(notes.indexOf(id)>=0) rows.push(noteRow(step,id,got,present,pages));
   });
+  var carried=carriedNotes(STEPS,NOTES,step); if(carried.length) rows.push(carryRow(step,carried,pages));
   if(blanks.length) rows.push(blankRow(step,blanks,got,present));
   rows.forEach(function(r){ if(r.init) r.init(); });
   CTX={step:step, rows:rows, celebrated:false, alt:alt||[], reuse:reuse||null};
@@ -1011,6 +1036,7 @@ function showUpdate(){
 var CHANGELOG=[
   {version:'0.17.0', date:'2026-11-09',
    added:['A third case: Graham (Stacey and Sean Graham, 2025), with 23 steps covering self-employment, IRA and pension 1099-R forms, Social Security, railroad retirement, military retirement, adjustments, itemizing, and the education credit. Pick it in the first box.',
+          'Some answer key notes, such as a Preparer Note or your filing status, are checked again at every later step, in one row, Notes from earlier steps. If one is missing from a later PDF, that row names it. Boxes you tick yourself, such as a TS Note, are not asked about again.',
           'Checkboxes on the return are checked too, such as the Rollover, QCD, and PSO boxes on Form 1040 lines 4c and 5c, and lines on California Schedule CA.',
           'Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
           'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.']},

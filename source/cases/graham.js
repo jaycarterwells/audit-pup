@@ -173,10 +173,12 @@ var G_ORDER = ['fed_1h','fed_4a','fed_4b','fed_4c1','fed_4c2','fed_5a','fed_5b',
   'schCA_5b_B','schCA_19'];
 
 var G_TSNOTE_COACH="Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.";
-function gNN(step,what,example){ return {form:'fed', kind:'confirm', chip:'NN', name:'TS Note added for Step '+step, mark:'nn_'+step,
+function gNN(step,what,example){ return {form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step '+step, mark:'nn_'+step,
   confirm:'I added a TS Note for Step '+step+' ('+what+') in TaxSlayer', example:example, coach:G_TSNOTE_COACH}; }
+/* carry: true = checked at its own step and again at every later step; false = its own step only. N1 is false for
+   now: the Step H printout (Iris's) does not show it the same way; revisit when Graham's awaited files arrive. */
 var G_NOTES = {
-  N1:{form:'fed', kind:'filing', name:'Filing status and dependents', status:/married filing jointly/i, taxpayer:'STACEY', taxpayerName:'Stacey',
+  N1:{form:'fed', kind:'filing', carry:false, name:'Filing status and dependents', status:/married filing jointly/i, taxpayer:'STACEY', taxpayerName:'Stacey',
     deps:[{first:'JOSHUA', name:'Joshua', box:'ctc'}, {first:'JEREMY', name:'Jeremy', box:'odc'}, {first:'GAIL', name:'Gail', box:'odc'}],
     key:"Filing status = MFJ. Stacey should be listed as the Taxpayer. Using the QC/QR Resource Tool, Joshua = Box 35, CTC. Jeremy = Box 35, ODC. Gail = Chart 2 Box 25, ODC, No EIC.",
     coach:"Walk each dependent through the 'Qualifying Child or Relative Resource Tool' and the handout 'CTC ODC Chart': Joshua is a qualifying child for the child tax credit; Jeremy and Gail qualify only for the credit for other dependents. List Stacey as the taxpayer, then check the filing status and each dependent's credit on the dependent screens."},

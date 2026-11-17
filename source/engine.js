@@ -188,6 +188,36 @@ function preparerNotes(pages){
   return null;
 }
 
+/* Is an answer key note that Audit Pup reads from the PDF met by this printout? true or false; null for a note the
+   student enters or ticks (a worksheet, a TS Note box), which a printout cannot show. The page's note rows and the
+   "Notes from earlier steps" row both use this, and so do the tests. */
+function noteOk(N,pages){
+  if(N.kind==='filing' && N.deps){
+    var fs=filingStatus(pages), tp=taxpayerName(pages), have=dependentCredits(pages)||[];
+    var deps=N.deps.every(function(d){ var f=have.filter(function(x){ return x.name.toUpperCase().indexOf(d.first)===0; })[0];
+      return !!f && f.ctc===(d.box==='ctc') && f.odc===(d.box==='odc'); });
+    var extra=have.some(function(x){ return !N.deps.some(function(d){ return x.name.toUpperCase().indexOf(d.first)===0; }); });
+    return !!(fs && N.status.test(fs) && tp && tp.toUpperCase().indexOf(N.taxpayer)===0 && deps && !extra);
+  }
+  if(N.kind==='filing'){
+    var st=filingStatus(pages), dep=dependentInfo(pages,N.dependent), ctc=N.ctc?firstDependentCTC(pages):null;
+    return !!(st && N.status.test(st) && dep && (dep.months==null || dep.months>=N.minMonths) && (!N.ctc || ctc===true));
+  }
+  if(N.kind==='ippin') return ipPin(pages)===N.pin;
+  if(N.kind==='w2text') return onW2(pages,N.employer,N.text)===true;
+  if(N.kind==='prepnote') return !!preparerNotes(pages);
+  return null;
+}
+/* The notes checked again at a step: every note marked carry:true that an EARLIER step lists, and this step does not.
+   Each one is listed once, with the step it first belongs to. */
+function carriedNotes(steps,notes,step){
+  var at=steps.indexOf(step), out=[], seen={};
+  (step.notes||[]).forEach(function(id){ seen[id]=1; });
+  for(var i=0;i<at;i++) (steps[i].notes||[]).forEach(function(id){
+    if(!seen[id] && notes[id] && notes[id].carry===true){ seen[id]=1; out.push({id:id, from:steps[i].id}); } });
+  return out;
+}
+
 /* Is this text printed on the same page as an employer's W-2 (for example the employee address)? */
 function onW2(pages,employer,text){
   var found=null;

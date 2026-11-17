@@ -20,22 +20,22 @@ async function grade(p,step,file){ await p.selectOption('#step',step); await p.s
   let r;
   r=await grade(p,'A',`${U}/Quinn_Sec_A.pdf`); console.log('A', r.score, '|', r.rows.join(', ')); expect('A scores 5/5 (3 lines, N1, and one row for the 30 lines that should be blank)',r.score==='5/5',r.score);
   console.log('   N1 detail:', await p.$$eval('li.check',els=>{ const n=els.find(e=>/N1/.test(e.textContent)); return n?(n.querySelector('.yours')||{}).textContent:'?'; }));
-  r=await grade(p,'B',`${U}/Quinn_Sec_B.pdf`); console.log('B', r.score, r.verdict); expect('B scores 22/22',r.score==='22/22',r.score);
-  r=await grade(p,'D',`${U}/Quinn_Sec_D.pdf`); console.log('D', r.score, r.verdict); expect('D scores 22/22 with no changes',r.score==='22/22'&&/No unexpected changes/.test(r.verdict),r.score+' '+r.verdict);
-  r=await grade(p,'E',`${U}/Quinn_Sec_E.pdf`); console.log('E (before notes)', r.score, '|', r.verdict); console.log('   order:', r.rows.join(', ')); expect('E before notes scores 26/28',r.score==='26/28',r.score);
+  r=await grade(p,'B',`${U}/Quinn_Sec_B.pdf`); console.log('B', r.score, r.verdict); expect('B scores 23/23',r.score==='23/23',r.score);
+  r=await grade(p,'D',`${U}/Quinn_Sec_D.pdf`); console.log('D', r.score, r.verdict); expect('D scores 23/23 with no changes',r.score==='23/23'&&/No unexpected changes/.test(r.verdict),r.score+' '+r.verdict);
+  r=await grade(p,'E',`${U}/Quinn_Sec_E.pdf`); console.log('E (before notes)', r.score, '|', r.verdict); console.log('   order:', r.rows.join(', ')); expect('E before notes scores 27/29',r.score==='27/29',r.score);
   const ins=await p.$$('.ws-grid input'); const vals=['3027','2883','2,751','2571','2363'];   // option 3 typo on purpose
   for(let i=0;i<5;i++) await ins[i].fill(vals[i]); await p.selectOption('.ws-grid select','1');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''), n=await p.$$eval('.ws-grid .bad',e=>e.length); console.log('E N3 with a wrong option 3:', s, n,'bad field(s)'); expect('a wrong worksheet total marks exactly 1 field',n===1&&s==='26/28',s+' '+n); }
+  { const s=(await p.textContent('#score')).replace(/\s/g,''), n=await p.$$eval('.ws-grid .bad',e=>e.length); console.log('E N3 with a wrong option 3:', s, n,'bad field(s)'); expect('a wrong worksheet total marks exactly 1 field',n===1&&s==='27/29',s+' '+n); }
   await ins[2].fill('2715'); await p.selectOption('.ws-grid select','2');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E N3 right totals, wrong option circled:', s); expect('wrong option circled does not pass N3',s==='26/28',s); }
+  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E N3 right totals, wrong option circled:', s); expect('wrong option circled does not pass N3',s==='27/29',s); }
   await p.selectOption('.ws-grid select','1'); await p.check('.confirm input');
-  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E all notes done:', s, '|', await p.textContent('#verdictV')); expect('E with all notes done scores 28/28',s==='28/28',s); }
-  r=await grade(p,'F',`${U}/Quinn_Sec_F.pdf`); console.log('F (entries kept)', r.score, '|', r.verdict); expect('F keeps the worksheet entries and scores 28/28',r.score==='28/28',r.score);
-  r=await grade(p,'B',`${T}/B_plus_extra_forms.pdf`); console.log('B+extra forms', r.score); expect('extra forms are ignored',r.score==='22/22',r.score);
-  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows its 3 filled lines as Form missing',r.score==='19/22'&&r.rows.filter(x=>/=Form missing/.test(x)).length===3,r.score);
-  r=await grade(p,'B',`${T}/B_without_scheduleA.pdf`); console.log('B-Schedule A', r.score); expect('removing a form that is not checked changes nothing',r.score==='22/22',r.score);
-  r=await grade(p,'E',`${T}/E_plus_extra_forms.pdf`); console.log('E+consent pages+Schedule A', r.score); expect('extra pages in a Step E printout are ignored',r.score==='28/28',r.score);
-  r=await grade(p,'E',`${U}/Quinn_Sec_B.pdf`); console.log('B graded as E', r.score, '|', r.rows.filter(x=>!/Correct|Confirmed/.test(x)).join(', ')); expect('the B file graded as E fails exactly the 5 MWP lines',r.score==='23/28'&&r.rows.filter(x=>/=Check/.test(x)).length===5,r.score);
+  { const s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E all notes done:', s, '|', await p.textContent('#verdictV')); expect('E with all notes done scores 29/29',s==='29/29',s); }
+  r=await grade(p,'F',`${U}/Quinn_Sec_F.pdf`); console.log('F (entries kept)', r.score, '|', r.verdict); expect('F keeps the worksheet entries and scores 29/29',r.score==='29/29',r.score);
+  r=await grade(p,'B',`${T}/B_plus_extra_forms.pdf`); console.log('B+extra forms', r.score); expect('extra forms are ignored',r.score==='23/23',r.score);
+  r=await grade(p,'B',`${T}/B_without_3514.pdf`); console.log('B-3514', r.score); expect('a missing 3514 shows its 3 filled lines as Form missing',r.score==='20/23'&&r.rows.filter(x=>/=Form missing/.test(x)).length===3,r.score);
+  r=await grade(p,'B',`${T}/B_without_scheduleA.pdf`); console.log('B-Schedule A', r.score); expect('removing a form that is not checked changes nothing',r.score==='23/23',r.score);
+  r=await grade(p,'E',`${T}/E_plus_extra_forms.pdf`); console.log('E+consent pages+Schedule A', r.score); expect('extra pages in a Step E printout are ignored',r.score==='29/29',r.score);
+  r=await grade(p,'E',`${U}/Quinn_Sec_B.pdf`); console.log('B graded as E', r.score, '|', r.rows.filter(x=>!/Correct|Confirmed/.test(x)).join(', ')); expect('the B file graded as E fails exactly the 5 MWP lines',r.score==='24/29'&&r.rows.filter(x=>/=Check/.test(x)).length===5,r.score);
   // N1 negative unit test using the page's own functions
   const neg=await p.evaluate(()=>{ const fake=[{form:'fed',items:[{x:100,y:500,s:'X'},{x:110,y:500,s:'Single'},{x:349,y:480,s:'Head of household (HOH)'}]}];
     return {fs:filingStatus(fake), dep:dependentInfo(fake,'JAMES')}; });

@@ -19,14 +19,13 @@ Items that must be settled before the next release. Each one says what is known,
 * **Waiting on:** the case producer (the email Carter sent).
 * **Then:** re-import the sheet, replace the Step G printout, remove the entries from `cases/graham/case.json` "awaiting" (the tests say when), and release 0.17.0. Hold all other Graham changes until then (Carter's instruction, November 17).
 
-## Decisions open
+## Built, ships with the next release
 
-### 3. Check answer key notes again at later steps
+### 3. Notes checked again at later steps (decided November 17)
 
-* **Question (Carter, November 17):** a student's final Baylor printout (Step R) passed although it had no Preparer Note. Notes are checked only at the step the answer sheet places them on. Should notes read from the PDF be checked again at every later step?
-* **Tested on every correct printout:** Baylor NP, N1, and N2 and Quinn N1 pass at every later step, so carrying them forward causes no false failures. Baylor N4 (the Betts W-2 address) fails on every printout from Step C on, so it must not be carried forward without a closer look. Graham N1 fails only on Iris's Step H printout (it has half the usual Form 1040 pages); look at it when Graham resumes.
-* **Proposed:** carry forward only notes Audit Pup reads from the PDF (Baylor NP, N1, N2; Quinn N1), as one row on later steps, "Notes from earlier steps", that fails (red, counted in the score) when any is missing and names it with its hint. TS Note boxes are not carried forward: the student ticks each one once at its own step, the tick is saved, and it is never asked again (TaxSlayer does not print TS Notes, so a later step could not check them anyway).
-* **Waiting on:** Carter's go-ahead.
+* Carter chose: notes Audit Pup reads from the PDF and that stay in the return are checked again at every later step, in one row, "Notes from earlier steps", that fails when one is missing. TS Note boxes and worksheets are one-time checks and are never asked again. Every note in every case now says which it is (`carry`), and the tests enforce it.
+* Continuous today: Quinn N1; Baylor N1, N2, NP. One-time: everything the student ticks or enters, Baylor N4 (later printouts do not show that W-2 address), and Graham N1 until its files arrive (Iris's Step H printout).
+* With this, the beta tester's final Baylor printout (Step R, no Preparer Note) would show the row failing and naming NP.
 
 ## Also pending (not blocking a release)
 

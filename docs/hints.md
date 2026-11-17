@@ -70,18 +70,22 @@ Steps: A, B, D, E, F.
 
 * Answer key: Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).
 * Hint: Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.
+* Checked: at this step and again at every later step
 
 **N2: Both refunds match the option you chose** (Steps E, F)
 
 * Hint: Both refunds should equal the results of the option you circled on your MWP Worksheet. If they do not, the W-2 screen in TaxSlayer is probably still set up for another option you tested. Re-check the Medicaid Waiver Payment field, the include in earned income box, and Box 16.
+* Checked: at this step only
 
 **N3: MWP Worksheet scenarios** (Steps E, F)
 
 * Hint: For any option that does not match, set the W-2 screen back to that option's three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.
+* Checked: at this step only
 
 **NN: TS Note added for this step** (Steps E, F)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step E in TaxSlayer
 * Example: STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.
 
@@ -200,40 +204,48 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 
 * Answer key: Filing status = QSS. Using the 'Qualifying Child or Relative Resource Tool', Willie = Box 35, CTC.
 * Hint: Joan died in 2023 and Michael supports his son, so check the qualifying surviving spouse rules. Walk Willie through the Resource Tool and the handout 'CTC ODC Chart' to decide his dependent status and the child tax credit box. Then check the filing status and dependent screens in TaxSlayer.
+* Checked: at this step and again at every later step
 
 **N2: Identity Protection PIN entered** (Step A)
 
 * Hint: Michael's IP PIN is in the Interview Notes. Enter it in TaxSlayer where the taxpayer's Identity Protection PIN is asked for, and add a TS Note about it (the next item).
+* Checked: at this step and again at every later step
 
 **NN_A: TS Note added for Step A** (Step A)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step A (the IP PIN) in TaxSlayer
 * Example: STEP A - IP PIN: TP HAS AN IP PIN
 
 **N4: Betts W-2 address matches the form** (Step B)
 
 * Hint: The Betts Technology W-2 shows Michael's address as PO Box 540. Enter the address on the W-2 screen in TaxSlayer exactly as it is printed on the form.
+* Checked: at this step only
 
 **NP: Preparer Note added** (Step I)
 
 * Hint: Pub 4012, 'Election Worker Income', says to add a Preparer Note when election worker pay is entered. Add one in TaxSlayer and print a new PDF.
+* Checked: at this step and again at every later step
 
 **NN_E: TS Note added for Step E** (Step E)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step E (the wage difference) in TaxSlayer
 * Example: STEP E - FED/STATE WAGE DIFFERENCE: ESKATON PROPERTIES W-2 HAD A FED/STATE WAGE DIFFERENCE. A MANUAL ADJUSTMENT WAS MADE TO THE CA STATE RETURN.
 
 **NN_I: TS Note added for Step I** (Step I)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step I (election worker pay) in TaxSlayer
 * Example: STEP I - ELECTION WORKER PAY: ELECTION WORKER PAY ENTERED AS HOUSEHOLD EMPLOYEE INCOME.
 
 **NN_N: TS Note added for Step N** (Step N)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step N (the HSA interest) in TaxSlayer
 * Example: STEP N - HSA INTEREST: INTEREST AMOUNT OF $10 MUST BE REPORTED AS TAXABLE FOR CA. ENTERED ON 1099-INT, FED TAX EXEMPT MADE TAXABLE FOR CA.
 
@@ -364,52 +376,61 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 
 * Answer key: Filing status = MFJ. Stacey should be listed as the Taxpayer. Using the QC/QR Resource Tool, Joshua = Box 35, CTC. Jeremy = Box 35, ODC. Gail = Chart 2 Box 25, ODC, No EIC.
 * Hint: Walk each dependent through the 'Qualifying Child or Relative Resource Tool' and the handout 'CTC ODC Chart': Joshua is a qualifying child for the child tax credit; Jeremy and Gail qualify only for the credit for other dependents. List Stacey as the taxpayer, then check the filing status and each dependent's credit on the dependent screens.
+* Checked: at this step only
 
 **NN_C: TS Note added for Step C** (Step C)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step C (the IRA rollover) in TaxSlayer
 * Example: STEP C - IRA ROLLOVER: TP ROLLED ENTIRE IRA DISTRIBUTION BACK INTO AN IRA ACCOUNT WITHIN 60 DAYS SO THERE WAS NO EARLY WITHDRAWAL PENALTY.
 
 **NN_E: TS Note added for Step E** (Step E)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step E (the early IRA distribution) in TaxSlayer
 * Example: STEP E - EARLY IRA DIST: $1,825 EARLY WITHDRAWAL FROM WELLS FARGO WAS USED FOR CAR REPAIRS NEEDED TO COMMUTE TO WORK. $825 WAS EXEMPT FROM THE EARLY WITHDRAWAL PENALTY UNDER 'PERSONAL EMERGENCY EXPENSE'.
 
 **NN_F: TS Note added for Step F** (Step F)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step F (the QCD) in TaxSlayer
 * Example: STEP F - QCD: $20,000 OF THE $20,838 RMD FOR SEAN FROM WELLS FARGO WAS A QCD TO THEIR CHURCH AND EXCLUDED FROM TAXABLE INCOME.
 
 **NN_G: TS Note added for Step G** (Step G)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step G (the PSO exclusion) in TaxSlayer
 * Example: STEP G - PSO: EDC SHERIFF 1099-R FOR SEAN - BOX 2 TAXABLE AMOUNT WAS REDUCED BY $3K FOR PUBLIC SAFETY OFFICER HEALTH INSURANCE. ADDN'L $700 ENTERED ON SCH A ITEMIZED DEDUCTIONS.
 
 **NN_K: TS Note added for Step K** (Step K)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step K (the Simplified Method) in TaxSlayer
 * Example: STEP K - SIMPLIFIED METHOD: NATHANS HAMBURGER 1099-R IS A JOINT SURVIVOR ANNUITY, USED SIMPLIFIED METHOD. ANNUITY START DATE 9/1/2019. ANNUAL EXCLUSION $1,771. FINAL YEAR 2053 WITH AN EXCLUSION OF $1,466.
 
 **NN_L: TS Note added for Step L** (Step L)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step L (the Simplified Method) in TaxSlayer
 * Example: STEP L - SIMPLIFIED METHOD: NORTHERN TRUST 1099-R WAS NOT A JOINT SURVIVOR ANNUITY. ANNUITY START DATE 1/1/2017. ANNUAL EXCLUSION $271. THIS WAS THE LAST YEAR, THE UNRECOVERED $3,425 WAS ENTERED ON SCH A AS 'OTHER DEDUCTIONS'.
 
 **NN_M: TS Note added for Step M** (Step M)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step M (the disability pension) in TaxSlayer
 * Example: STEP M - DISABILITY PENSION: STACEY WENT ON DISABILITY AT AGE 45. NORMAL RETIREMENT AGE AT THE COMPANY IS 65. MUST CHECK THE DISABILITY BOX AT THE BOTTOM OF THE INPUT PAGE SO THE AMOUNT IS REPORTED AS WAGES.
 
 **NN_P: TS Note added for Step P** (Step P)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
 * Box the student ticks: I added a TS Note for Step P (the CA military retirement exclusion) in TaxSlayer
 * Example: STEP P - CA EXCLUSION FOR MILITARY RETIREMENT: SINCE SEAN WAS IN UNIFORMED SERVICE, $20,000 OF THE TAXABLE AMOUNT WAS EXCLUDED FOR CA.
 

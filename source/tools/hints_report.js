@@ -33,6 +33,7 @@ function report(){
       md+=`**${id}: ${one(n.name)}** (Step${steps.length>1?'s':''} ${steps.join(', ')})\n\n`;
       if(n.key) md+=`* Answer key: ${one(n.key)}\n`;
       if(n.coach) md+=`* Hint: ${one(n.coach)}\n`;
+      md+=`* Checked: ${n.carry===true?'at this step and again at every later step':'at this step only'}\n`;
       if(n.confirm) md+=`* Box the student ticks: ${one(n.confirm)}\n`;
       if(n.example) md+=`* Example: ${one(n.example)}\n`;
       md+='\n';

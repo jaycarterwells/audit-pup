@@ -41,11 +41,16 @@ const { loadCases } = require('./cases');
     // every checked line can be read and taught: a reader, a name, and one hint (rule 7)
     const bare=Object.keys(K.lines).filter(k=>{ const L=K.lines[k]; return !Array.isArray(L.read) || !L.name || !(L.hint && L.hint.length>20); });
     expect(`${c.id}: every line names its reader and has a name and a teaching hint`, !bare.length, bare.join(', '));
+    // every note decides: a one-time check (carry:false) or checked again at every later step (carry:true)
+    const undecided=Object.keys(K.notes).filter(id=>typeof K.notes[id].carry!=='boolean');
+    expect(`${c.id}: every answer key note says whether it is checked again at later steps (carry: true or false)`, !undecided.length, undecided.join(', '));
+    const manual=Object.keys(K.notes).filter(id=>K.notes[id].carry===true && E.noteOk(K.notes[id],[])===null);
+    expect(`${c.id}: notes the student enters or ticks (TS Note boxes, worksheets) are one-time checks`, !manual.length, manual.join(', '));
     // 2. case.json against the page
     if(!expect(`${c.id}: case.json lists the page's steps in order`, K.steps.map(s=>s.id).join('')===c.steps.join(''), `page ${K.steps.map(s=>s.id).join('')}, case.json ${c.steps.join('')}`)) continue;
     // 3 and 4. every printout against every step
     const results={}; let cells=0;
-    for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]=check(E,pages); }
+    for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]={...check(E,pages), pages}; }
     for(const f of c.files) for(const s of K.steps){
       const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;
@@ -60,6 +65,12 @@ const { loadCases } = require('./cases');
       if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.awaiting[x])) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
         alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
-    console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s`);
+    // 5. a note checked again at later steps must be met by the correct printout of every later step (no false failures)
+    let carriedChecks=0;
+    for(const s of K.steps){ const carried=E.carriedNotes(K.steps,K.notes,s); if(!carried.length) continue;
+      const {pages}=results[c.pdf[s.id]];
+      for(const n of carried){ carriedChecks++;
+        expect(`${c.id} Step ${s.id}: note ${n.id} from Step ${n.from} is still met by the correct printout (${c.pdf[s.id]})`, E.noteOk(K.notes[n.id],pages)===true, 'set carry:false for this note, or find out why the printout lacks it'); } }
+    console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s, ${carriedChecks} later-step note checks`);
   }
 })().catch(e=>{console.error(e);process.exit(1);});
