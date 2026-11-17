@@ -82,6 +82,7 @@ open tax-aide-quinn-checker.html          # to look at the built page locally
 
 ## Current state
 
+* Open items that must be settled before the next release are tracked in `docs/open-issues.md` (Baylor Step I Preparer Note, Graham answer key and printouts, and the decision on checking notes again at later steps). Keep it current.
 * 0.17.0 (unreleased, held until Graham's awaited files arrive): the Graham case, checkbox and Schedule CA lines, and the newer-version check (above). The update box says checking is off until the update (Carter's wording request). Pages from 0.16.0 and earlier have no check: anyone still on one sees the new version only after a reload.
 * 0.16.0 (November 9, 2026): blank lines shown as one row, and the "Did you pick the right step?" box for a failing check whose PDF matches another step (both Carter's requests).
 * 0.15.0 (November 9, 2026): Quinn's answer key is imported from its sheet and its blank cells are checked as blank or $0, like Baylor (Carter's choice), adding 9 lines (1040 lines 15, 16, 24, 37; CA 540 lines 14, 16, 35, 64, 111), so Quinn's scores grew (Step A 34 checks, B and D 33, E and F 36). Also the New tag color and the screen reader and keyboard fixes. The hints for every case are listed in `docs/hints.md` (made by `source/tools/hints_report.js`; the tests fail if it is stale) for expert review; Quinn's 9 new hints were written by Claude and are awaiting that review. The test work through bucket E is done; what is left is in `docs/test-plan.md`, Part 6 "Moving forward".
