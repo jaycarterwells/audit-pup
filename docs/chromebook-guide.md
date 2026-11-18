@@ -2,6 +2,8 @@
 
 Audit Pup checks the TaxSlayer Practice Lab PDF for one step of a training case against the answer key. It runs entirely in Chrome. Nothing is uploaded.
 
+You can open this guide at any time with the **Guide** button at the top of Audit Pup. Click **Close** (or press Esc) to go back.
+
 **Open it here:** https://jaycarterwells.github.io/audit-pup/ (tip: press **Ctrl + D** to bookmark it)
 
 ## Before you start
@@ -29,9 +31,10 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 ## 2. Check the step
 
-1. Open Audit Pup and pick your **case** in the first box. Audit Pup remembers the case you used last and opens on the first step you have not finished. Make sure the **case** and the **step** match the step you just finished in TaxSlayer.
-2. Click the box that names your step, for example **Drop your Step A PDF here**. The Files app opens. Go to **Downloads**, pick your PDF, and click **Open**. (You can also drag the file from the Files app anywhere onto the page.) The file name appears in bold after **Selected:**.
-3. Click the button that names your step, for example **Check Step A**.
+1. Open Audit Pup. The box at the top names the step Audit Pup expects, for example **Drop your Step A PDF here**. Click **Choose PDF**. The Files app opens. Go to **Downloads**, pick your PDF, and click **Open**. (You can also drag the file from the Files app onto the box, or anywhere on the page.) The file name appears in bold after **Selected:**.
+2. Audit Pup reads the name on the Form 1040 and picks the **case** for you. If the PDF is for a different case than the one showing, it switches to that case, and Zeke tells you, for example: "This PDF is from the Graham case, so I switched from Quinn." Each case keeps its own progress.
+3. Under the box, check that the **step** is the step you just finished in TaxSlayer. Audit Pup opens on the first step you have not finished. To pick another step, use the step box or tap a paw in your progress.
+4. Click the button that names your step, for example **Check Step A**.
 
 When a step is done, Audit Pup selects the **next step** for you and clears the old file. Zeke names the next step at the top of the page. When every step of the case is done, Zeke says so.
 
@@ -65,7 +68,7 @@ To fix something: go back to TaxSlayer, correct it, print a new PDF, and check a
 
 ## Your progress
 
-The paw-print trail under the step picker shows each step as **Done**, **Fix**, **To finish**, or **Not checked**. The selected step has a gold ring. Cases with many steps wrap onto two or three rows. Tap a step to select it.
+The paw-print trail under the Check button shows each step by its letter, with its status under the paw: **Done**, **Fix**, or **To finish**. A step with nothing under its letter is not checked yet. The selected step has a gold ring. Cases with many steps wrap onto two rows. Tap a step to select it. Point at a paw (or listen with a screen reader) for its full status and when it was checked.
 
 Each case keeps its own progress, so you can switch cases and come back. Progress is saved **only in Chrome on this Chromebook**. It does not follow you to another computer, and clearing your browsing history erases it. **Start over** (above the trail, on the right) erases the progress for the case you have picked, on purpose. Audit Pup asks first.
 
@@ -78,7 +81,7 @@ Each case keeps its own progress, so you can switch cases and come back. Progres
 | Open the Files app | **Alt + Shift + M** |
 | Reload the page | **Ctrl + R** |
 
-The **Theme** button switches between light and dark. The **Version** button shows what changed in each version. It has a **New** tag the first time you open a new version.
+The **Guide** button opens this guide. The **Theme** button switches between light and dark. The **Version** button shows what changed in each version. It has a **New** tag the first time you open a new version.
 
 ## If something goes wrong
 
@@ -91,3 +94,31 @@ The **Theme** button switches between light and dark. The **Version** button sho
 * **"Audit Pup did not start"**: you are seeing a preview. Open the link above in Chrome instead.
 * **"This browser is not saving progress"**: your browser is blocking saved data. Use a normal Chrome window, signed in to your own account.
 * **No dog photo**: the reward photo needs internet. Checking still works without it.
+
+## For beta testers
+
+Audit Pup is in beta until version 1.0, so everyone using it is a beta tester. Thank you. Use it the way you would in class, and tell us whenever something is confusing, wrong, or slow.
+
+Please try as many of these as you can:
+
+* Check a step with your own PDF, and a step you know has a mistake. Does the hint help you find it?
+* Check a step with the PDF from the step before. Does the yellow box name the right step?
+* Drop a PDF from a different case than the one showing. Does Audit Pup switch to the right case?
+* Close Chrome, reopen Audit Pup, and confirm your progress is still there.
+* Zoom in with **Ctrl +** to 125% or 150%. Is everything still readable?
+
+**How to report a problem:** tell your class instructor. Include:
+
+1. The version (on the **Version** button, top right) and your device, for example "Chromebook, Chrome".
+2. The case and step, and the name of the PDF you checked.
+3. What you expected, and what Audit Pup showed (the line, its status, and the score).
+4. A screenshot (on a Chromebook, **Ctrl + Show windows**), and if you can, the PDF itself. The practice cases use made-up data, so the PDF is safe to share.
+
+**Most important to report:** any line Audit Pup marks **Correct** when you know it is wrong. Audit Pup is built so that this never happens.
+
+Known limits:
+
+* Audit Pup checks only the lines and notes on the answer key. A mistake that changes no checked line will not be caught.
+* TaxSlayer does not print TS Notes, so TS Note boxes and worksheet entries rely on you.
+* Some steps have the same answers by design, so their PDFs cannot be told apart. The same-file note covers the usual mix-up.
+* Some hints are new and still being reviewed by instructors. If a hint seems wrong or unclear, please report that too.

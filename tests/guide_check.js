@@ -13,6 +13,7 @@ const guide=fs.readFileSync(path.join(ROOT,'docs','chromebook-guide.md'),'utf8')
 // What's new list keeps old wording on purpose, so a renamed button must not be found there).
 const page=fs.readFileSync(path.join(ROOT,'source','tax-aide-quinn-checker.html'),'utf8')
   .replace(/<script id="pdfjs[\s\S]*?<\/script>/g,'')
+  .replace(/<div class="wn-body gd-body" id="gdbody"[\s\S]*?<!-- end of guide -->/,'')   // the guide itself is built into the page: it does not count
   .replace(/<!--[\s\S]*?-->/g,'')
   .replace(/\/\*[\s\S]*?\*\//g,'')
   .replace(/^\s*\/\/.*$/gm,'')
@@ -22,10 +23,11 @@ if(/version:'\d+\.\d+\.\d+'/.test(page)) throw new Error('the release notes were
 const lines=page.split('\n');
 const NOT_PAGE_TEXT={
   'Chrome or TaxSlayer': ['Downloads','Download','Destination','Save as PDF','Save','Open'],
-  'keyboard keys': ['Ctrl + R','Ctrl + D','Ctrl + Tab','Ctrl +','Ctrl -','Ctrl 0','Alt + Shift + M'],
+  'keyboard keys': ['Ctrl + R','Ctrl + D','Ctrl + Tab','Ctrl +','Ctrl -','Ctrl 0','Alt + Shift + M','Ctrl + Show windows'],
   'colors the guide names': ['red','yellow','green'],
   "the guide's headings and labels": ['Open it here:','Worksheet entries:','Items you confirm yourself:','Notes Audit Pup checks for you:',
-    'Lines that should be blank:','Notes from earlier steps:','No-change steps:','Your reward:','No dog photo'],
+    'Lines that should be blank:','Notes from earlier steps:','No-change steps:','Your reward:','No dog photo',
+    'How to report a problem:','Most important to report:'],
   "the guide's emphasis": ['case','step','new','next step','no change','only in Chrome on this Chromebook',
     'In Guest mode or an Incognito window, your progress is erased when you close the window'],
 };

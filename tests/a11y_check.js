@@ -32,6 +32,7 @@ const TAGS=['wcag2a','wcag2aa','wcag21a','wcag21aa'];
       await scan(`${c.id} finished step with the reward`);
     }
     await p.click('#verbtn'); await scan('What\'s new panel');
+    await p.keyboard.press('Escape'); await p.click('#guidebtn'); await scan('Guide window');
     await ctx.close();
   }
   expect('no accessibility problems', found===0, `${found} finding(s) on ${screens} screens`);

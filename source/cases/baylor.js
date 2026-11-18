@@ -157,5 +157,5 @@ var B_NOTES = {
     example:'STEP N - HSA INTEREST: INTEREST AMOUNT OF $10 MUST BE REPORTED AS TAXABLE FOR CA. ENTERED ON 1099-INT, FED TAX EXEMPT MADE TAXABLE FOR CA.', coach:B_TSNOTE_COACH}
 };
 
-CASES.push({id:'baylor', label:'Case: Baylor (Michael Baylor, 2025)',
+CASES.push({id:'baylor', label:'Case: Baylor (Michael Baylor, 2025)', short:'Baylor', lastName:'BAYLOR',
   lines:B_LINES, steps:B_STEPS, order:B_ORDER, notes:B_NOTES, worksheet:null, extract:function(pages){ return extractByLines(B_LINES,pages); }});

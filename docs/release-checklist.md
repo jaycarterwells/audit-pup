@@ -39,7 +39,7 @@ npm test                          # the full suite, tests/run_all.sh, about 5 mi
 2a. **Each step and case switching.** `cases_steps.js`: every step of every case passes with its own PDF, with only the student's own items left, and the longest PDF checks in time on a slowed processor. `cases_switch.js`: progress is kept per case, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked.
 3. **Added and removed forms.** `verify3.js` with the fixture PDFs, in a viewer that blocks background workers. Extra forms are ignored; a missing checked form shows "Form missing."
 4. **Notes and manual items.** `verify3.js` (exact Quinn scores, N1, N2, N3 entries, NN checkbox) and `verify4.js` (bar colors, reward online and offline, pinned frame).
-5. **Look and dogs.** `verify11.js`: drop box and button name the step, Zeke's guide messages, Zion, Bailey, and Zeke (with titles) match red, yellow, and green, the Approved! reward, built-in fonts load, a 19-step trail wraps onto 3 rows with no sideways scroll, and no paw burst when reduced motion is on.
+5. **Look and dogs.** `verify11.js`: drop box and button name the step, Zeke's guide messages, Zion, Bailey, and Zeke (with titles) match red, yellow, and green, the Approved! reward, built-in fonts load, a 19-step trail wraps onto 2 rows (11 or more paws a row) with no sideways scroll, and no paw burst when reduced motion is on.
 6. **Startup and damaged copies.** `repro2.js`: scripts blocked, file cut off in three places (made fresh from the current build), file dropped outside the box, older Safari file reading.
 7. **Same file reused, and the wrong-step warning.** `verify7.js`: a file that passed one step and is checked again for a later step shows the same-file warning; retries, corrections, and earlier steps do not. The wrong-step warning names the right steps and its button checks against the step it names.
 8. **What's new panel.** `verify8.js`: Version button, "New" tag, panel opens and closes, fits a Chromebook screen.
@@ -53,7 +53,7 @@ npm test                          # the full suite, tests/run_all.sh, about 5 mi
 16. **Publish.** Commit the version, release notes, guide, and any source, test, or case changes together on a branch and open a pull request. When the "tests" check is green, merge it (the ruleset on `main` blocks the merge until it is). The release workflow then tags `v<version>`, publishes the GitHub Release with the notes from the Version panel, builds the page from the tag, deploys it, and checks the live site: the new version number and one step of every case. Do not tag by hand. If the live check fails, read its log under Actions, release.
 17. **Deploy an older release again (only if needed).** Actions, release, Run workflow, and enter the tag (for example `v0.14.0`).
 18. **Keep a record of the new version's saved progress.** After the release is live, run `git show v<version>:index.html > /tmp/page.html` (or save the live page) and `node tests/make_storage_fixture.js /tmp/page.html <version>`, and commit `tests/fixtures/storage/<version>.json` in the next pull request. Every later release must then load it (`storage_upgrade.js`).
-19. **Guide PDFs.** After the release, run `node source/tools/guide/make_guide.js v<version>` for the counselor guide PDF, and add `--beta --contact "name, email, phone"` for the beta tester guide. Both are built from that release's `docs/chromebook-guide.md` with screenshots of that release's page, so they always match it; they land in `source/dist/guides/` and are not committed. Contact details are typed when building and never stored in the repository (it is public).
+19. **The guide is in the page.** There is no separate guide document: the build puts `docs/chromebook-guide.md` into the page's Guide window (`source/guide_html.js`), so every release carries its own guide. Its "For beta testers" section is removed at version 1.0. The guide is public with the page, so it names no personal contact details.
 
 ## Adding a new case
 
@@ -73,7 +73,7 @@ npm test                          # the full suite, tests/run_all.sh, about 5 mi
 * **MAJOR** (1.x to 2.0.0): changes that break how people use it, such as dropping a supported browser or removing a case.
 * Versions starting with 0 mean beta. Version 1.0.0 is the first general release, once beta testing is complete.
 * Each part counts up on its own, so 0.10.0 ("zero point ten") comes after 0.9.0.
-* Changes to the counselor guide or README alone do not need a new Audit Pup version.
+* Changes to the README alone do not need a new Audit Pup version. The counselor guide is built into the page, so a guide change reaches counselors only with a new version (a PATCH).
 
 ## Saved progress: how it works
 

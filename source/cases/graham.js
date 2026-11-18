@@ -192,5 +192,5 @@ var G_NOTES = {
   NN_P:gNN('P','the CA military retirement exclusion',"STEP P - CA EXCLUSION FOR MILITARY RETIREMENT: SINCE SEAN WAS IN UNIFORMED SERVICE, $20,000 OF THE TAXABLE AMOUNT WAS EXCLUDED FOR CA.")
 };
 
-CASES.push({id:'graham', label:'Case: Graham (Stacey and Sean Graham, 2025)',
+CASES.push({id:'graham', label:'Case: Graham (Stacey and Sean Graham, 2025)', short:'Graham', lastName:'GRAHAM',
   lines:G_LINES, steps:G_STEPS, order:G_ORDER, notes:G_NOTES, worksheet:null, extract:function(pages){ return extractByLines(G_LINES,pages); }});

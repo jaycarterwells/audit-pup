@@ -53,6 +53,9 @@ const { loadCases } = require('./cases');
     // 3 and 4. every printout against every step
     const results={}; let cells=0;
     for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]={...check(E,pages), pages}; }
+    // every printout names its own case by the 1040's last name, so dropping it switches the page to the right case
+    const wrongCase=c.files.filter(f=>E.caseOfPages(E.CASES,results[f].pages)!==c.id);
+    expect(`${c.id}: every printout names its own case (the 1040's last name, ${K.lastName})`, !wrongCase.length, wrongCase.map(f=>f+' names '+E.caseOfPages(E.CASES,results[f].pages)).join(', '));
     for(const f of c.files) for(const s of K.steps){
       const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;

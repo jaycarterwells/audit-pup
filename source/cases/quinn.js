@@ -114,5 +114,5 @@ var Q_NOTES = {
     example:'STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.',
     coach:'Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year\'s counselor should know.'}
 };
-CASES.push({id:'quinn', label:'Case: Quinn (Raymond Quinn, 2025)',
+CASES.push({id:'quinn', label:'Case: Quinn (Raymond Quinn, 2025)', short:'Quinn', lastName:'QUINN',
   lines:Q_LINES, steps:Q_STEPS, order:Q_ORDER, notes:Q_NOTES, worksheet:Q_WORKSHEET, extract:function(pages){ return extractByLines(Q_LINES,pages); }});

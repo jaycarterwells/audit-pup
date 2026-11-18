@@ -98,26 +98,27 @@
   .field{flex:1 1 240px; min-width:200px}
 
   /* paw-print step trail: wraps onto more rows for long cases */
-  .progress{margin-top:16px}
+  .progress{margin-top:20px; padding-top:14px; border-top:1.5px solid var(--border)}
   .ptop{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:4px}
   .plabel{font-size:14px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-ink); font-weight:700}
   .pend{font-size:15px; color:var(--muted); display:flex; gap:12px; align-items:center; flex-wrap:wrap}
   .nosave{display:block; font-size:15px; color:var(--warn); margin:4px 0}
-  .trail{display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); row-gap:6px}
+  .trail{display:grid; grid-template-columns:repeat(auto-fill,minmax(66px,1fr)); row-gap:4px}
   .pchip{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none;
-    color:var(--muted); padding:6px 2px 8px; border-radius:14px; cursor:pointer; font-size:15px; min-height:44px}
-  .pchip::after{content:""; position:absolute; top:31px; left:calc(50% + 30px); width:calc(100% - 60px);
+    color:var(--muted); padding:5px 2px 6px; border-radius:12px; cursor:pointer; font-size:14px; min-height:44px}
+  .pchip::after{content:""; position:absolute; top:25px; left:calc(50% + 24px); width:calc(100% - 48px);
     border-top:3px dotted var(--border)}
   .pchip:last-child::after,.pchip[data-end]::after{display:none}
   .pchip.done::after{border-top-color:var(--pass)}
-  .pchip .paw{position:relative; width:50px; height:50px; border-radius:50%; display:grid; place-items:center;
+  .pchip .paw{position:relative; width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
     background:var(--surface-2); border:2.5px solid var(--border)}
-  .pchip .paw svg{width:26px; height:26px; fill:var(--border)}
-  .pchip .pm{position:absolute; right:-5px; bottom:-3px; width:21px; height:21px; border-radius:50%; display:grid; place-items:center;
+  .pchip .paw svg{width:21px; height:21px; fill:var(--border)}
+  .pchip .pm{position:absolute; right:-6px; bottom:-4px; width:19px; height:19px; border-radius:50%; display:grid; place-items:center;
     font-size:12px; font-weight:700; color:#fff; border:2px solid var(--surface)}
   .pchip .pm:empty{display:none}
-  .pchip b{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:16.5px; color:var(--text); margin-top:3px}
-  .pchip .pst{font-size:14px; font-weight:700}
+  .pchip b{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:17px; line-height:1.1; color:var(--text); margin-top:2px}
+  .pchip .pst{font-size:13.5px; font-weight:700; line-height:1.15; white-space:nowrap}
+  .pchip .pst:empty{display:none}
   .pchip.done .paw{background:var(--pass-bg); border-color:var(--pass)} .pchip.done .paw svg{fill:var(--pass)} .pchip.done .pm{background:var(--pass)} .pchip.done .pst{color:var(--pass)}
   .pchip.fix .paw{background:var(--fail-bg); border-color:var(--fail)} .pchip.fix .paw svg{fill:var(--fail)} .pchip.fix .pm{background:var(--fail)} .pchip.fix .pst{color:var(--fail)}
   .pchip.todo .paw{background:var(--warn-bg); border-color:var(--todo)} .pchip.todo .paw svg{fill:var(--warn)} .pchip.todo .pm{background:var(--todo); color:#2a2e35} .pchip.todo .pst{color:var(--warn)}
@@ -126,19 +127,31 @@
   .pchip.sel .paw{box-shadow:0 0 0 4px var(--gold)}
   .pchip.sel.none .paw{background:var(--gold-lt); border-color:var(--gold)} .pchip.sel.none .paw svg{fill:var(--text)}
 
-  /* drop box that names the step */
-  .drop{margin-top:14px; display:flex; align-items:center; gap:18px; border:2px dashed var(--gold); border-radius:var(--radius);
-    background:var(--surface-2); padding:20px 22px; cursor:pointer; transition:border-color .15s,background .15s}
-  .drop:hover,.drop.over{border-style:solid; background:color-mix(in srgb,var(--gold) 10%,var(--surface-2))}
-  .pdfic{flex:none; width:54px; height:66px}
+  /* drop zone that names the step: a solid outlined panel, an upload icon, and a real "Choose PDF" button
+     (the pattern most upload pages use). Dragging a file over the page lights it up. */
+  .drop{margin:0 0 18px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px;
+    border:3px solid var(--gold); border-radius:var(--radius); background:color-mix(in srgb,var(--gold) 9%,var(--surface));
+    padding:20px 18px 18px; cursor:pointer; transition:border-color .15s,background .15s,box-shadow .15s}
+  .drop:hover{background:color-mix(in srgb,var(--gold) 15%,var(--surface))}
+  .drop.over{border-color:var(--text); background:color-mix(in srgb,var(--gold) 26%,var(--surface)); box-shadow:0 0 0 5px var(--gold-lt)}
+  .drop.has{border-color:var(--gold-ink)}
+  .upic{width:50px; height:50px; color:var(--gold-ink)}
   .drop .big{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:22px; line-height:1.2}
-  .drop .small{font-size:16px; color:var(--muted); margin-top:3px}
-  .filename{font-size:17.5px; color:var(--muted); margin-top:8px; overflow-wrap:anywhere}
+  .drop .small{font-size:16px; color:var(--muted)}
+  button.choose{font:inherit; font-size:17.5px; font-weight:700; background:var(--surface); color:var(--text); border:2px solid var(--text);
+    border-radius:12px; padding:9px 22px; min-height:46px; cursor:pointer}
+  button.choose:hover{background:var(--gold-lt)}
+  .filename{font-size:17.5px; color:var(--text); margin-top:4px; overflow-wrap:anywhere}
   .filename:empty{display:none}
   .filename b{color:var(--text)}
-  button.primary{margin-top:14px; width:100%; background:var(--accent); color:var(--accent-ink); border:none;
-    border-radius:14px; padding:15px 16px; font-size:19px; font-weight:700; cursor:pointer}
-  button.primary:disabled{opacity:.45; cursor:not-allowed}
+  /* the Check button: a solid, raised button sized to its words, not the full width of the card */
+  .gradewrap{display:flex; justify-content:center; margin-top:16px}
+  button.primary{min-width:260px; max-width:100%; background:var(--accent); color:var(--accent-ink); border:2px solid var(--accent);
+    border-radius:14px; padding:14px 34px; font-size:20px; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000), 0 6px 14px rgba(40,30,10,.18); transition:transform .08s, box-shadow .08s}
+  button.primary:hover:not(:disabled){filter:brightness(1.12)}
+  button.primary:active:not(:disabled){transform:translateY(3px); box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+  button.primary:disabled{background:var(--surface-2); color:var(--muted); border:2px dashed var(--border); box-shadow:none; cursor:not-allowed}
   .err{color:var(--fail); font-size:16px; margin-top:10px}
 
   /* results: pinned frame */
@@ -276,11 +289,21 @@
   .wn-rel h4{margin:10px 0 4px; font-size:14px; text-transform:uppercase; letter-spacing:.07em; color:var(--gold-ink)}
   .wn-rel ul{margin:0; padding-left:22px} .wn-rel li{margin:3px 0}
   .wn-note{font-size:15px; color:var(--muted); padding-top:12px}
+  /* the Guide window: the counselor guide, built in from docs/chromebook-guide.md */
+  .gd{width:min(860px,100%)}
+  .gd-body{font-size:17px; line-height:1.5}
+  .gd-body h3{margin:18px 0 6px; font-family:"Bitter",Georgia,serif; font-weight:800; font-size:20px}
+  .gd-body h4{margin:12px 0 4px; font-size:17px}
+  .gd-body p{margin:8px 0} .gd-body ul,.gd-body ol{margin:6px 0; padding-left:24px} .gd-body li{margin:4px 0}
+  .gd-body table{border-collapse:collapse; margin:8px 0; font-size:16px; width:100%}
+  .gd-body th,.gd-body td{border:1px solid var(--border); padding:6px 9px; text-align:left; vertical-align:top}
+  .gd-body th{background:var(--surface-2)}
+  .gd-body a{color:var(--gold-ink); overflow-wrap:anywhere}
 
   @media (max-width:560px){
     .brand .seal{width:64px; height:64px} h1{font-size:28px} .sub{font-size:15.5px}
     .avatar{width:64px; height:64px} .guide .say{font-size:17.5px}
-    .pdfic{display:none} .drop .big{font-size:19.5px}
+    .drop .big{font-size:19.5px} .upic{width:40px; height:40px}
   }
   /* Chromebook screens are short (about 650px of page at 100% zoom, about 440px at 150%),
      so the pinned score frame compacts itself to stay a modest share of the screen. */
@@ -298,7 +321,7 @@
     .wrap{padding-top:10px} header.app{margin-bottom:10px} .brand .seal{width:58px; height:58px} h1{font-size:26px} .sub{font-size:15px}
     .theme-btn{min-height:38px; padding:6px 13px} .card{padding:16px} .sticky{margin:-16px -16px 12px}
     .guide{margin-bottom:12px; gap:12px} .guide .avatar{width:56px; height:56px} .guide .say{font-size:17px} .guide .who{display:none}
-    .pchip .paw{width:42px; height:42px} .pchip .paw svg{width:22px; height:22px} .pchip::after{top:27px; left:calc(50% + 26px); width:calc(100% - 52px)}
+    .drop{padding:12px 14px} .upic{display:none}
     .tile .k{display:none} .tile .val{font-size:16px} .colbadge{width:26px; height:26px; font-size:15px}
     .mood .avatar{width:48px; height:48px; border-width:3px} .mood .mname{display:none}
     .score{font-size:34px} .score small{font-size:17px} .verdict .v{font-size:17px} .verdict .d{display:none}
@@ -332,6 +355,7 @@
       </div>
     </div>
     <div class="hdr-btns">
+      <button type="button" class="theme-btn" id="guidebtn" title="How to use Audit Pup" aria-haspopup="dialog">Guide</button>
       <button type="button" class="theme-btn ver-btn" id="verbtn" title="See what changed in each version" aria-haspopup="dialog">Version __APP_VERSION__<span class="newtag" id="newtag">New</span></button>
       <button type="button" class="theme-btn" id="theme" title="Switch light or dark">Theme</button>
     </div>
@@ -347,7 +371,18 @@
       <span class="avatar dog-zeke" role="img" aria-label="Zeke"></span>
       <div class="bubble"><div class="say" id="guidesay" aria-live="polite">Hi, I'm Zeke. Pick your step below.</div><div class="who">Zeke, Audit Pup's chief inspector</div></div>
     </div>
-    <p class="label">Choose what you are checking</p>
+    <!-- the drop zone: a solid outlined panel with an upload icon and a real button, the pattern most upload pages use -->
+    <div class="drop" id="drop">
+      <svg class="upic" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 34h-2a9 9 0 0 1-1.4-17.9A12 12 0 0 1 34 13a8.5 8.5 0 0 1 2 16.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 42V22M16.5 29.5 24 22l7.5 7.5" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="big" id="dropbig">Drop your TaxSlayer PDF here</div>
+      <div class="small">Drag the PDF you saved onto this box, or</div>
+      <button type="button" class="choose" id="choose">Choose PDF</button>
+      <div class="filename" id="filename"></div>
+    </div>
+    <input type="file" id="file" accept="application/pdf,.pdf" class="hidden">
+
+    <p class="label">Check that the case and step are right</p>
     <div class="row">
       <div class="field">
         <select id="assignment" aria-label="Case"></select>
@@ -356,22 +391,9 @@
         <select id="step" aria-label="Step"></select>
       </div>
     </div>
-    <div class="progress" id="progress" aria-live="polite"></div>
-
-    <!-- [html-validate-disable-next prefer-native-element: the drop box holds text and takes dropped files; it has role="button", tabindex, and Enter/Space handling] -->
-    <div class="drop" id="drop" tabindex="0" role="button">
-      <svg class="pdfic" viewBox="0 0 54 66" aria-hidden="true"><path d="M3 3h34l14 14v46H3z" fill="var(--surface)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M37 3v14h14" fill="var(--text)" stroke="var(--text)" stroke-width="3" stroke-linejoin="round"/>
-        <text x="27" y="51" text-anchor="middle" font-family="Bitter,Georgia,serif" font-weight="800" font-size="15" fill="var(--fail)">PDF</text></svg>
-      <div>
-        <div class="big" id="dropbig">Drop your TaxSlayer PDF here</div>
-        <div class="small">or click to choose the PDF you saved for this step</div>
-        <div class="filename" id="filename"></div>
-      </div>
-    </div>
-    <input type="file" id="file" accept="application/pdf,.pdf" class="hidden">
-    <button type="button" class="primary" id="grade" data-state="ready" disabled>Check this step</button>
+    <div class="gradewrap"><button type="button" class="primary" id="grade" data-state="ready" disabled>Check this step</button></div>
     <div class="err hidden" id="error"></div>
+    <div class="progress" id="progress" aria-live="polite"></div>
   </div>
 
   <div class="card" id="results" style="display:none">
@@ -402,6 +424,14 @@
     <div id="groups"></div>
   </div>
 
+  <div class="wn-back hidden" id="gdback">
+    <div class="wn gd" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdtitle" tabindex="-1">
+      <div class="wn-head"><h2 id="gdtitle">How to use Audit Pup</h2><button type="button" class="theme-btn" id="gdclose">Close</button></div>
+      <div class="wn-body gd-body" id="gdbody" tabindex="0">
+__GUIDE_HTML__
+      </div><!-- end of guide -->
+    </div>
+  </div>
   <div class="wn-back hidden" id="wnback">
     <div class="wn" id="wn" role="dialog" aria-modal="true" aria-labelledby="wntitle" tabindex="-1">
       <div class="wn-head"><h2 id="wntitle">What's new in Audit Pup</h2><button type="button" class="theme-btn" id="wnclose">Close</button></div>
@@ -522,19 +552,45 @@ var fileInput=document.getElementById('file'), drop=document.getElementById('dro
     errEl=document.getElementById('error'), chosen=null;
 function setFile(f){
   if(f && f.type!=='application/pdf' && !/\.pdf$/i.test(f.name)){ showErr('That file is not a PDF. Save the step from TaxSlayer as a PDF and try again.'); return; }
-  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; gradeBtn.disabled=!f || updateBlocks(); errEl.classList.add('hidden');
+  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; drop.classList.toggle('has',!!f); gradeBtn.disabled=!f || updateBlocks(); errEl.classList.add('hidden');
   if(f) justDone=null;
-  freshFile=!!f;
+  freshFile=!!f; switchedCase=null;
+  reading=f?readChosen(f):null;
   updateGuide();
+}
+/* Read a chosen PDF right away, so the case can be picked from it before Check is clicked. The Check button waits
+   (busy) while it reads; any reading problem is reported when Check is clicked. */
+var reading=null, switchedCase=null;
+async function readChosen(f){
+  gradeBtn.disabled=true; gradeBtn.dataset.state='busy'; gradeBtn.textContent='Reading the PDF...';
+  var out;
+  try{ var buf=await readFile(f), fp=fingerprint(buf); out={fp:fp, pages:await loadPages(buf)}; }
+  catch(err){ out={err:err}; }
+  if(chosen===f){
+    if(out.pages) pickCaseFrom(out.pages);
+    gradeBtn.dataset.state='ready'; gradeBtn.disabled=updateBlocks(); setStepLabels();
+  }
+  return out;
+}
+/* The 1040's last name names the case. A PDF for another case switches to it (keeping the chosen file); a name
+   Audit Pup does not know leaves the case alone. The step letter is kept if the counselor picked it and the new
+   case has it; otherwise the new case opens on its first unfinished step. */
+function pickCaseFrom(pages){
+  var id=caseOfPages(CASES,pages); if(!id || id===CASE_ID) return;
+  var letter=stepSel.value, keep=stepPicked, from=CASE.short;
+  caseSel.value=id; changeCase(true);
+  if(keep && STEPS.some(function(s){return s.id===letter;})){ stepSel.value=letter; stepPicked=true; renderProgress(); }
+  switchedCase={from:from, to:CASE.short};
 }
 function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function showErr(m){ errEl.textContent=m; errEl.classList.remove('hidden'); }
+/* the whole zone is clickable with a mouse; the Choose PDF button inside it is the keyboard and screen reader way in */
 drop.addEventListener('click',function(){ fileInput.click(); });
-drop.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fileInput.click(); } });
+document.getElementById('choose').addEventListener('click',function(e){ e.stopPropagation(); fileInput.click(); });
 fileInput.addEventListener('change',function(e){ if(e.target.files[0]) setFile(e.target.files[0]); });
-['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add('over'); }); });
-['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
-window.addEventListener('dragover',function(e){ e.preventDefault(); });
+/* a file dragged anywhere over the page lights up the drop zone (a file can be dropped anywhere) */
+window.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('over'); });
+window.addEventListener('dragleave',function(e){ if(!e.relatedTarget) drop.classList.remove('over'); });
 window.addEventListener('drop',function(e){ e.preventDefault(); drop.classList.remove('over');
   if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
 
@@ -545,9 +601,9 @@ gradeBtn.addEventListener('click',async function(){
   await checkForUpdate(3000);
   if(updateBlocks()){ gradeBtn.dataset.state='ready'; setStepLabels(); gradeBtn.disabled=true; return; }
   try{
-    var buf=await readFile(chosen);
-    var fp=fingerprint(buf);
-    var pages=await loadPages(buf);
+    var got0=await reading;
+    if(got0.err) throw got0.err;
+    var fp=got0.fp, pages=got0.pages;
     var step=STEPS.filter(function(s){return s.id===stepSel.value;})[0];
     var present={};
     pages.forEach(function(pg){ present[pg.form]=true; });
@@ -831,7 +887,7 @@ function nextStepAfter(id){
   for(var k=1;k<n;k++){ var s=STEPS[(i+k)%n], r=STORE.steps[s.id]; if(!r || r.status!=='done') return s; }
   return null;
 }
-function clearChosenFile(){ chosen=null; try{ fileInput.value=''; }catch(e){} fnEl.innerHTML=''; gradeBtn.disabled=true; }
+function clearChosenFile(){ chosen=null; reading=null; try{ fileInput.value=''; }catch(e){} fnEl.innerHTML=''; drop.classList.remove('has'); gradeBtn.disabled=true; }
 function stepIndex(id){ for(var i=0;i<STEPS.length;i++) if(STEPS[i].id===id) return i; return -1; }
 function render(step, got, present, pages, alt, reuse){
   CTX=null;
@@ -1039,7 +1095,11 @@ var CHANGELOG=[
           'Some answer key notes, such as a Preparer Note or your filing status, are checked again at every later step, in one row, Notes from earlier steps. If one is missing from a later PDF, that row names it. Boxes you tick yourself, such as a TS Note, are not asked about again.',
           'Checkboxes on the return are checked too, such as the Rollover, QCD, and PSO boxes on Form 1040 lines 4c and 5c, and lines on California Schedule CA.',
           'Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
-          'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.'],
+          'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.',
+          'Audit Pup picks the case for you from the name on the Form 1040. If you drop a PDF for a different case than the one showing, it switches to that case and Zeke tells you.',
+          'A Guide button at the top opens the counselor guide inside Audit Pup, including a section for beta testers on what to try and how to report a problem.'],
+   changed:['The drop box is now at the top, with a solid outline and a Choose PDF button, and it lights up when you drag a file over the page. The case and step boxes and the Check button come next.',
+          'The Check button is easier to spot, and Your progress is now below it, with smaller paws (the step letter and its status), so long cases fit on two rows.'],
    fixed:['Baylor Step I: the Preparer Note hint now says plainly that a Preparer Note is not the same as a TS Note, and that Pub 4012 gives the steps for entering it for election worker pay.']},
   {version:'0.16.0', date:'2026-11-09',
    changed:['The lines that should still be blank at your step are now checked together in one row, Lines that should be blank, at the end of the list. If any of them has an amount, that row lists each one. The list of checks is much shorter.'],
@@ -1114,9 +1174,17 @@ document.getElementById('wnclose').addEventListener('click',closeWhatsNew);
 wnBack.addEventListener('click',function(e){ if(e.target===wnBack) closeWhatsNew(); });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !wnBack.classList.contains('hidden')) closeWhatsNew(); });
 try{ if(localStorage.getItem('auditpup-seen-version')!==APP_VERSION) verBtn.classList.add('isnew'); }catch(e){}
+/* the Guide window: the counselor guide, from docs/chromebook-guide.md */
+var gdBack=document.getElementById('gdback'), gdLastFocus=null;
+function openGuide(){ gdLastFocus=document.activeElement; gdBack.classList.remove('hidden'); document.getElementById('gdbody').scrollTop=0; document.getElementById('gd').focus(); }
+function closeGuide(){ gdBack.classList.add('hidden'); if(gdLastFocus && gdLastFocus.focus) gdLastFocus.focus(); }
+document.getElementById('guidebtn').addEventListener('click',openGuide);
+document.getElementById('gdclose').addEventListener('click',closeGuide);
+gdBack.addEventListener('click',function(e){ if(e.target===gdBack) closeGuide(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !gdBack.classList.contains('hidden')) closeGuide(); });
 
 /* ---------- Progress row ---------- */
-var PLABEL={done:'Done', fix:'Fix', todo:'To finish', none:'Not checked'}, PMARK={done:'\u2713', fix:'\u2717', todo:'\u2022', none:''};
+var PLABEL={done:'Done', fix:'Fix', todo:'To finish', none:'Not checked'}, PSHORT={done:'Done', fix:'Fix', todo:'To finish', none:''}, PMARK={done:'\u2713', fix:'\u2717', todo:'\u2022', none:''};
 var confirmReset=false;
 function whenText(ms){ var d=new Date(ms); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); }
 function renderProgress(){
@@ -1134,11 +1202,11 @@ function renderProgress(){
     var spoken='Step '+s.id+' '+PLABEL[st]+(sel?', selected':'')+detail;
     h+='<button type="button" class="pchip '+st+(sel?' sel':'')+'" data-step="'+s.id+'" title="'+esc(tip)+'" aria-label="'+esc(spoken)+'"'+(sel?' aria-current="step"':'')+'>'+
        '<span class="paw" aria-hidden="true"><svg><use href="#pawprint"/></svg><span class="pm">'+PMARK[st]+'</span></span>'+
-       '<b>Step '+s.id+'</b> <span class="pst">'+PLABEL[st]+'</span></button>';
+       '<b>'+s.id+'</b> <span class="pst">'+PSHORT[st]+'</span></button>';
   });
   box.innerHTML=h+'</div>';
   markRowEnds();
-  Array.prototype.forEach.call(box.querySelectorAll('.pchip'),function(b){ b.addEventListener('click',function(){ stepSel.value=b.getAttribute('data-step'); justDone=null; renderProgress(); }); });
+  Array.prototype.forEach.call(box.querySelectorAll('.pchip'),function(b){ b.addEventListener('click',function(){ stepSel.value=b.getAttribute('data-step'); justDone=null; stepPicked=true; renderProgress(); }); });
   var rb=document.getElementById('resetbtn'); if(rb) rb.addEventListener('click',function(){ confirmReset=true; renderProgress(); document.getElementById('resetno').focus(); });
   var ry=document.getElementById('resetyes'); if(ry) ry.addEventListener('click',function(){
     STORE=blankStore(); SEEN=STORE.seen; NSTATE.n3={v:['','','','',''], sel:''}; saveStore();
@@ -1167,7 +1235,8 @@ function updateGuide(){
   var anyChecked=STEPS.some(function(s){ return !!STORE.steps[s.id]; });
   if(updateBlocks()){ document.getElementById('guidesay').textContent='There is a new version of Audit Pup. You cannot check a PDF until you click Update in the yellow box above. Your progress is kept.'; return; }
   var shown=!!(CTX && CTX.step.id===id);   /* results for this step are on the page */
-  if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
+  if(chosen && freshFile && switchedCase) msg='This PDF is from the '+switchedCase.to+' case, so I switched from '+switchedCase.from+'. Make sure Step '+id+' is the step you printed, then click Check Step '+id+'.';
+  else if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
   else if(justDone && allDone) msg='Nice work on Step '+justDone+'! Every step of this case is done.';
   else if(justDone) msg='Nice work on Step '+justDone+'! Step '+id+' is up next. Finish it in TaxSlayer, print a new PDF, and drop it below.';
   else if(allDone) msg='Every step of this case is done. Pick any step to check it again.';
@@ -1180,16 +1249,18 @@ function updateGuide(){
   document.getElementById('guidesay').textContent=msg;
 }
 /* open on the first step that is not done yet */
-function pickNextStep(){ for(var i=0;i<STEPS.length;i++){ var r=STORE.steps[STEPS[i].id]; if(!r || r.status!=='done'){ stepSel.value=STEPS[i].id; return; } } stepSel.value=STEPS[STEPS.length-1].id; }
-stepSel.addEventListener('change',function(){ justDone=null; renderProgress(); });
+var stepPicked=false;   /* the counselor chose the step (menu or paw) since the case opened */
+function pickNextStep(){ stepPicked=false; for(var i=0;i<STEPS.length;i++){ var r=STORE.steps[STEPS[i].id]; if(!r || r.status!=='done'){ stepSel.value=STEPS[i].id; return; } } stepSel.value=STEPS[STEPS.length-1].id; }
+stepSel.addEventListener('change',function(){ justDone=null; stepPicked=true; renderProgress(); });
 /* changing the case: load its steps and saved progress, and clear anything shown for the old case */
-caseSel.addEventListener('change',function(){
+function changeCase(keepFile){
   try{ localStorage.setItem('auditpup.case',caseSel.value); }catch(e){}
   useCase(caseSel.value); fillSteps();
-  CTX=null; justDone=null; confirmReset=false; hideReward(); clearChosenFile(); freshFile=false; errEl.classList.add('hidden');
+  CTX=null; justDone=null; confirmReset=false; hideReward(); if(!keepFile){ clearChosenFile(); freshFile=false; switchedCase=null; } errEl.classList.add('hidden');
   document.getElementById('results').style.display='none';
   pickNextStep(); renderProgress();
-});
+}
+caseSel.addEventListener('change',function(){ changeCase(false); });
 pickNextStep(); renderProgress();
 
 document.getElementById('startup').classList.add('hidden');

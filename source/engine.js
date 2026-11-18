@@ -178,6 +178,24 @@ function taxpayerName(pages){
   return null;
 }
 
+/* The taxpayer's last name, as printed under the first "Last name" label of the Form 1040 (the spouse's comes below it) */
+function taxpayerLastName(pages){
+  for(var p=0;p<pages.length;p++){ if(pages[p].form!=='fed') continue;
+    var its=pages[p].items, labs=its.filter(function(i){ return /^Last name/.test(i.s); }).sort(function(a,b){return b.y-a.y;}), lab=labs[0];
+    if(!lab) continue;
+    var v=its.filter(function(i){ return i.y<lab.y && i.y>lab.y-20 && i.x>=lab.x-10 && i.x<lab.x+200; }).sort(function(a,b){return a.x-b.x;});
+    return v.length ? v.map(function(i){return i.s;}).join(' ') : null;
+  }
+  return null;
+}
+/* Which case a printout is for: the one case whose lastName is the 1040's last name, else null (the page keeps the
+   case the counselor picked). The tests prove every case printout names its own case. */
+function caseOfPages(cases,pages){
+  var ln=taxpayerLastName(pages); if(!ln) return null; ln=ln.toUpperCase().replace(/\s+/g,' ').trim();
+  var m=cases.filter(function(c){ return c.lastName===ln; });
+  return m.length===1 ? m[0].id : null;
+}
+
 /* Text of TaxSlayer's Preparer Notes page, if one was printed */
 function preparerNotes(pages){
   for(var p=0;p<pages.length;p++){ var its=pages[p].items;

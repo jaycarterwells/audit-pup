@@ -26,16 +26,16 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
   const bimg=await p.$eval('#moodimg',e=>getComputedStyle(e).backgroundImage.slice(0,30)); check('mood dog drawing is built into the file', bimg.startsWith('url("data:image/jpeg;base64'), bimg);
   const fonts=await p.evaluate(async()=>{ await document.fonts.ready; return ['400 17px Atkinson','700 17px Atkinson','800 20px Bitter'].map(f=>document.fonts.check(f)); });
   check('Atkinson Hyperlegible and Bitter load from inside the file', fonts.every(x=>x), fonts.join(','));
-  // a long case: 19 steps wrap onto 3 rows, the trail line stops at each row end
+  // a long case: 19 steps wrap onto 2 rows (at least 11 paws a row on a 1366 screen), the trail line stops at each row end
   const rows=await p.evaluate(()=>{ for(let i=0;i<14;i++) STEPS.push({id:String.fromCharCode(71+i),name:'x',type:'check',expected:{},notes:[]}); renderProgress();
     const cs=[...document.querySelectorAll('#progress .pchip')]; const tops=[...new Set(cs.map(c=>c.offsetTop))];
     const card=document.querySelector('.card').getBoundingClientRect();
-    return {n:cs.length, rows:tops.length, ends:cs.filter(c=>c.hasAttribute('data-end')).length, inside:cs.every(c=>{const r=c.getBoundingClientRect(); return r.right<=card.right && r.left>=card.left;})}; });
-  check('19 steps wrap onto 3 rows inside the card, line stops at each row end', rows.n===19 && rows.rows===3 && rows.ends===2 && rows.inside, JSON.stringify(rows));
+    return {n:cs.length, rows:tops.length, perRow:cs.filter(c=>c.offsetTop===tops[0]).length, ends:cs.filter(c=>c.hasAttribute('data-end')).length, inside:cs.every(c=>{const r=c.getBoundingClientRect(); return r.right<=card.right && r.left>=card.left;})}; });
+  check('19 steps wrap onto 2 rows inside the card (11 or more a row), line stops at each row end', rows.n===19 && rows.rows===2 && rows.perRow>=11 && rows.ends===1 && rows.inside, JSON.stringify(rows));
   await p.setViewportSize({width:911,height:438}); await settled(p);
   const rows2=await p.evaluate(()=>{ const cs=[...document.querySelectorAll('#progress .pchip')]; return {rows:new Set(cs.map(c=>c.offsetTop)).size, ends:cs.filter(c=>c.hasAttribute('data-end')).length,
     sideways:document.documentElement.scrollWidth>window.innerWidth}; });
-  check('150% zoom: 19 steps still wrap, no sideways scroll', rows2.rows>=3 && rows2.ends===rows2.rows-1 && !rows2.sideways, JSON.stringify(rows2));
+  check('150% zoom: 19 steps still wrap, no sideways scroll', rows2.rows>=2 && rows2.ends===rows2.rows-1 && !rows2.sideways, JSON.stringify(rows2));
  } else {
   await grade('B','B'); const burst=await p.$eval('#reward .burst',e=>getComputedStyle(e).display);
   check('reduced motion: no paw-print burst', burst==='none', burst);

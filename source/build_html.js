@@ -23,7 +23,10 @@ const engineAndCases=[fs.readFileSync('engine.js','utf8'),
   '/* answer keys made from each case\'s answer sheet by tools/import_answer_sheet.js */\nvar ANSWER_KEYS = '+JSON.stringify(keys)+';',
   ...caseFiles.map(f=>fs.readFileSync(path.join('cases',f),'utf8'))].join('\n');
 if(!tplA.includes('/*__ENGINE_AND_CASES__*/')) throw new Error('The template has no /*__ENGINE_AND_CASES__*/ marker');
-const tplB=tplA.replace(/\/\*__ENGINE_AND_CASES__\*\/[^\n]*/,()=>engineAndCases);
+const tplB0=tplA.replace(/\/\*__ENGINE_AND_CASES__\*\/[^\n]*/,()=>engineAndCases);
+// The counselor guide, shown by the Guide button: made from docs/chromebook-guide.md, so it always matches this version
+if(!tplB0.includes('__GUIDE_HTML__')) throw new Error('The template has no __GUIDE_HTML__ marker');
+const tplB=tplB0.replace('__GUIDE_HTML__',()=>require('./guide_html.js').guideHtml(fs.readFileSync(path.join('..','docs','chromebook-guide.md'),'utf8')));
 const out=tplB.split('__PDFJS_LIB__').join(lib).split('__PDFJS_WORKER__').join(wrk).split('__APP_VERSION__').join(version).split('__BUILD_DATE__').join(stamp);
 const name=`Audit Pup ${version} ${stamp}.html`;
 fs.mkdirSync('dist',{recursive:true});

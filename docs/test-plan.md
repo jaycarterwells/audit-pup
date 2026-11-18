@@ -59,6 +59,7 @@ Each case has `cases/<case>/case.json`: the PDF for each step, the items left fo
 | `cases_steps.js` | `case.json` lists the page's steps in order; each step's correct PDF passes every check on the page with only the student's items left; the case's longest PDF checks in time with the processor slowed 6 times. |
 | `cases_matrix.js` | A sample of printout and step pairs through the page (each printout against the steps it may pass and the next one it may not): no wrong pass, no on-screen error. The full every-pair check runs at engine level. |
 | `cases_switch.js` | Switching cases keeps each case's progress, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked. |
+| `case_pick.js` | Every case: its PDF dropped while another case shows switches to its case, keeps the file, and Zeke says so; a step letter picked by hand is kept when the new case has it; the check then grades the new case; a PDF for the case showing changes nothing. The Guide button opens the guide. (`engine_cases.js` proves every printout names its own case.) |
 
 ### Page behavior tests (using Quinn)
 
@@ -83,7 +84,7 @@ These test the page itself, so they use one case.
 
 | Test | What it proves |
 | --- | --- |
-| `a11y_check.js` | axe-core (WCAG 2.1 A and AA) on 14 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, and the What's new panel. Every finding fails. |
+| `a11y_check.js` | axe-core (WCAG 2.1 A and AA) on 22 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, the What's new panel, and the Guide window. Every finding fails. |
 | `webkit_check.js` | The main counselor paths in WebKit, Safari's engine: the page starts, each case's first step passes, a wrong PDF fails and its hint opens, progress survives a reload, and the What's new panel opens and closes. GitHub installs WebKit; elsewhere the test reports skip, and on GitHub a missing WebKit fails. |
 
 ### Release
