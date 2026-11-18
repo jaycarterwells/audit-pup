@@ -2,7 +2,9 @@
  "about": "Made by source/tools/import_answer_sheet.js from the answer sheet. Do not edit by hand: re-run the import.",
  "source": {
   "file": "answer_sheet.doc",
-  "sha256": "f937fde59085e3ebad6da701c7c80d8342874e07ae36a8610fc64de2e3aa2905"
+  "sha256": "f937fde59085e3ebad6da701c7c80d8342874e07ae36a8610fc64de2e3aa2905",
+  "corrections": "answer_sheet_corrections.json",
+  "corrections_sha256": "697275a1fbe6d8e79e2a3519e978cea29885145fd05f72ac4375852d6d95891d"
  },
  "steps": [
   "A",
@@ -476,8 +478,18 @@
   {
    "line": "schA_16",
    "sheet": "Sch A-16 Other itemized deductions",
-   "values": { "I": null, "J": null, "K": null, "L": 3425, "M": 3425, "N": 3475, "O": 3475 },
-   "notes": { "L": "N11" }
+   "values": { "I": null, "J": null, "K": null, "L": 3425, "M": 3425, "N": 3425, "O": 3425 },
+   "notes": { "L": "N11" },
+   "corrected": {
+    "N": {
+     "sheet": 3475,
+     "why": "Schedule A line 16 at Step N: the sheet's $3,475 is line 17, picked up by mistake. Confirmed by the case author, November 17, 2026. Every printout from Step L on shows $3,425, and the sheet's Step L TS Note example says $3,425."
+    },
+    "O": {
+     "sheet": 3475,
+     "why": "Schedule A line 16 at Step O: the same typo as Step N. Confirmed by the case author, November 17, 2026."
+    }
+   }
   },
   {
    "line": "ca540_14",

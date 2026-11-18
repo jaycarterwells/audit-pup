@@ -12,11 +12,14 @@ function loadCases(){
     m.pdfPath=s=>path.join(m.dir,m.pdf[s]);
     m.files=[...new Set(Object.values(m.pdf))];                       // each printout once (Baylor P and O share one)
     m.stepsOf=file=>m.steps.filter(s=>m.pdf[s]===file);
-    m.todo=m.todo||{}; m.sameReturn=m.sameReturn||[]; m.awaiting=m.awaiting||{};
+    m.todo=m.todo||{}; m.sameReturn=m.sameReturn||[]; m.awaiting=m.awaiting||{}; m.printoutErrors=m.printoutErrors||{};
     // a PDF may pass a step when it is that step's printout or a printout of a step with the same return
     m.mayPass=(file,step)=>m.stepsOf(file).some(s=>s===step||m.sameReturn.some(g=>g.includes(s)&&g.includes(step)));
-    // lines a printout is known to get wrong while a corrected file is awaited (case.json "awaiting"); every other line must pass
-    m.known=(file,step)=>{ const a=m.stepsOf(file).find(s=>m.awaiting[s]); return a && m.mayPass(file,step) ? m.awaiting[a].lines : []; };
+    // lines a printout is known to get wrong: while a corrected file is awaited (case.json "awaiting", blocks a release), or
+    // for good when the case author confirmed the printout is wrong and no corrected one will come ("printoutErrors").
+    // Every other line must pass.
+    m.excused=s=>m.awaiting[s]||m.printoutErrors[s];
+    m.known=(file,step)=>{ const a=m.stepsOf(file).find(s=>m.excused(s)); return a && m.mayPass(file,step) ? m.excused(a).lines : []; };
     return m;
   }).sort((a,b)=>(a.order||99)-(b.order||99));
 }

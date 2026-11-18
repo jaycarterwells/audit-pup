@@ -26,6 +26,8 @@ const { loadCases } = require('./cases');
       const sheet=path.join(c.dir,key.source.file);
       expect(`${c.id}: the answer sheet ${key.source.file} is the one answer_key.json was made from`,
         fs.existsSync(sheet) && crypto.createHash('sha256').update(fs.readFileSync(sheet)).digest('hex')===key.source.sha256, 'the sheet changed: re-run source/tools/import_answer_sheet.js');
+      const corr=path.join(c.dir,'answer_sheet_corrections.json'), corrSha=fs.existsSync(corr)?crypto.createHash('sha256').update(fs.readFileSync(corr)).digest('hex'):undefined;
+      expect(`${c.id}: answer_key.json includes the confirmed corrections in answer_sheet_corrections.json as they are now`, corrSha===key.source.corrections_sha256, 'the corrections changed: re-run source/tools/import_answer_sheet.js');
       const unknown=key.rows.filter(r=>!K.lines[r.line]).map(r=>r.line);
       expect(`${c.id}: every answer key row names a line the case reads`, !unknown.length, unknown.join(', '));
       const want=E.expectedFromKey(key);
@@ -59,10 +61,10 @@ const { loadCases } = require('./cases');
         const bad=off.filter(k=>!known.includes(k)), fixed=known.filter(k=>!off.includes(k));
         if(known.length){
           expect(`${c.id}: ${f} passes Step ${s.id} except the awaited fix (${known.join(', ')})`, !bad.length, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; '));
-          expect(`${c.id}: ${f} at Step ${s.id}: the awaited difference is still there (remove it from case.json "awaiting" once fixed)`, !fixed.length, fixed.join(', '));
+          expect(`${c.id}: ${f} at Step ${s.id}: the known difference is still there (remove it from case.json once the printout is fixed)`, !fixed.length, fixed.join(', '));
         } else expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
       } else expect(`${c.id}: ${f} does not pass Step ${s.id} silently`, !pass || warn, 'passes with no warning');
-      if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.awaiting[x])) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
+      if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.excused(x))) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
         alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
     // 5. a note checked again at later steps must be met by the correct printout of every later step (no false failures)

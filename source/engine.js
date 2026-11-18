@@ -159,7 +159,8 @@ function dependentCredits(pages){
     var its=pages[p].items, lab=its.filter(function(i){ return i.s==='First name'; })[0];
     if(!lab) continue;
     var names=its.filter(function(i){ return Math.abs(i.y-lab.y)<=3 && i.x>lab.x+20 && /^[A-Z][A-Z' -]*$/.test(i.s); }).sort(function(a,b){return a.x-b.x;});
-    var child=its.filter(function(i){ return i.s==='Child' && i.y<lab.y; }).sort(function(a,b){return a.x-b.x;});
+    /* "Child" and "tax" print as one item or two, depending on how the PDF was made */
+    var child=its.filter(function(i){ return (i.s==='Child' || i.s==='Child tax') && i.y<lab.y; }).sort(function(a,b){return a.x-b.x;});
     var other=its.filter(function(i){ return i.s==='Credit for' && i.y<lab.y; }).sort(function(a,b){return a.x-b.x;});
     var xed=function(l){ return !!l && its.some(function(i){ return /^[xX]$/.test(i.s) && Math.abs(i.y-l.y)<=8 && i.x<l.x && i.x>=l.x-16; }); };
     return names.map(function(n,k){ return {name:n.s, ctc:xed(child[k]), odc:xed(other[k])}; });

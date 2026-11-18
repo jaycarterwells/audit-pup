@@ -225,7 +225,7 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 
 **NP: Preparer Note added** (Step I)
 
-* Hint: Pub 4012, 'Election Worker Income', says to add a Preparer Note when election worker pay is entered. Add one in TaxSlayer and print a new PDF.
+* Hint: What is missing is a Preparer Note, not a TS Note: they are two different notes in TaxSlayer, and the TS Note for this step is its own item. Pub 4012, 'Election Worker Income', gives the specific steps for entering the Preparer Note for election worker pay. TaxSlayer prints Preparer Notes on their own page, so add it, then print a new PDF.
 * Checked: at this step and again at every later step
 
 **NN_E: TS Note added for Step E** (Step E)
@@ -376,7 +376,7 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 
 * Answer key: Filing status = MFJ. Stacey should be listed as the Taxpayer. Using the QC/QR Resource Tool, Joshua = Box 35, CTC. Jeremy = Box 35, ODC. Gail = Chart 2 Box 25, ODC, No EIC.
 * Hint: Walk each dependent through the 'Qualifying Child or Relative Resource Tool' and the handout 'CTC ODC Chart': Joshua is a qualifying child for the child tax credit; Jeremy and Gail qualify only for the credit for other dependents. List Stacey as the taxpayer, then check the filing status and each dependent's credit on the dependent screens.
-* Checked: at this step only
+* Checked: at this step and again at every later step
 
 **NN_C: TS Note added for Step C** (Step C)
 

@@ -17,6 +17,7 @@
 //   "Sch A" + "Line 1", "Sch 1 -15" (any spacing)      -> schA_1, sch1_15
 //   1040 line "27" is the 2025 form's line 27a          -> fed_27a
 // A row with "checked" cells is a checkbox (kind "mark"): "checked" is true, a blank cell means not checked.
+// Corrections confirmed by the case author go in cases/<case>/answer_sheet_corrections.json (see below), never in the key.
 // A blank cell means "blank or $0" at that step (stored as null). An amount in parentheses, "(15,679)", is negative. Notes such as "N7" after a value are kept
 // in "notes" and stripped from the value. Rows like "(additional notes)" and "Comments" are kept as notes only.
 const fs=require('fs'), path=require('path'), crypto=require('crypto');
@@ -68,9 +69,23 @@ tables.forEach((t,ti)=>{
     rows.push(row);
   });
 });
+// --- corrections the case author confirmed, when no corrected sheet will come (cases/<case>/answer_sheet_corrections.json).
+// Each one names the step, the line, what the sheet says, and the confirmed value. If the sheet no longer says that,
+// the import stops: the correction is stale and must be removed or updated.
+const corrFile=path.join(caseDir,'answer_sheet_corrections.json'), applied=[];
+if(fs.existsSync(corrFile)){
+  for(const c of JSON.parse(fs.readFileSync(corrFile,'utf8')).corrections||[]){
+    const row=rows.find(r=>r.line===c.line && Object.prototype.hasOwnProperty.call(r.values,c.step));
+    if(!row) throw new Error(`correction for ${c.line} at Step ${c.step}: the answer sheet has no such cell`);
+    if(row.values[c.step]!==c.sheet) throw new Error(`correction for ${c.line} at Step ${c.step}: the sheet now says ${row.values[c.step]}, not ${c.sheet}; remove or update the correction`);
+    row.values[c.step]=c.corrected; row.corrected=Object.assign(row.corrected||{},{[c.step]:{sheet:c.sheet, why:c.why}});
+    applied.push(c);
+  }
+}
 const sha=crypto.createHash('sha256').update(fs.readFileSync(path.join(caseDir,sheetDoc))).digest('hex');
 const key={ about:'Made by source/tools/import_answer_sheet.js from the answer sheet. Do not edit by hand: re-run the import.',
   source:{file:sheetDoc, sha256:sha}, steps, rows, notes };
+if(applied.length){ key.source.corrections='answer_sheet_corrections.json'; key.source.corrections_sha256=crypto.createHash('sha256').update(fs.readFileSync(corrFile)).digest('hex'); }
 const out=JSON.stringify(key,null,1).replace(/\{\n\s+("[A-Z]": [^\n]+,?\n\s*)+\}/g,m=>m.replace(/\n\s*/g,' '))+'\n';
 const target=path.join(caseDir,'answer_key.json');
 if(flag==='--check'){

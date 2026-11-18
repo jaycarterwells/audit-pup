@@ -148,7 +148,7 @@ var B_NOTES = {
   N4:{form:'fed', kind:'w2text', carry:false, name:'Betts W-2 address matches the form', employer:'BETTS', text:'PO BOX 540', shown:'PO Box 540',
     coach:"The Betts Technology W-2 shows Michael's address as PO Box 540. Enter the address on the W-2 screen in TaxSlayer exactly as it is printed on the form."},
   NP:{form:'fed', kind:'prepnote', carry:true, name:'Preparer Note added',
-    coach:"Pub 4012, 'Election Worker Income', says to add a Preparer Note when election worker pay is entered. Add one in TaxSlayer and print a new PDF."},
+    coach:"What is missing is a Preparer Note, not a TS Note: they are two different notes in TaxSlayer, and the TS Note for this step is its own item. Pub 4012, 'Election Worker Income', gives the specific steps for entering the Preparer Note for election worker pay. TaxSlayer prints Preparer Notes on their own page, so add it, then print a new PDF."},
   NN_E:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step E', mark:'nn_E', confirm:'I added a TS Note for Step E (the wage difference) in TaxSlayer',
     example:'STEP E - FED/STATE WAGE DIFFERENCE: ESKATON PROPERTIES W-2 HAD A FED/STATE WAGE DIFFERENCE. A MANUAL ADJUSTMENT WAS MADE TO THE CA STATE RETURN.', coach:B_TSNOTE_COACH},
   NN_I:{form:'fed', kind:'confirm', carry:false, chip:'NN', name:'TS Note added for Step I', mark:'nn_I', confirm:'I added a TS Note for Step I (election worker pay) in TaxSlayer',

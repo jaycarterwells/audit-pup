@@ -1,0 +1,9 @@
+{
+  "about": "Corrections to answer_sheet.doc confirmed by the case author when no corrected sheet will be sent. The import tool (source/tools/import_answer_sheet.js) applies each one and stops if the sheet no longer says what it expects. Every value here is a confirmed fix, not a guess.",
+  "corrections": [
+    { "step": "N", "line": "schA_16", "sheet": 3475, "corrected": 3425,
+      "why": "Schedule A line 16 at Step N: the sheet's $3,475 is line 17, picked up by mistake. Confirmed by the case author, November 17, 2026. Every printout from Step L on shows $3,425, and the sheet's Step L TS Note example says $3,425." },
+    { "step": "O", "line": "schA_16", "sheet": 3475, "corrected": 3425,
+      "why": "Schedule A line 16 at Step O: the same typo as Step N. Confirmed by the case author, November 17, 2026." }
+  ]
+}
