@@ -4,7 +4,7 @@ Items that must be settled before the next release. Each one says what is known,
 
 ## Must resolve before the next release
 
-Nothing open. 0.17.0 is ready for Carter's own test with the preview copy and the hint review, then release.
+Nothing open. 0.17.0 was released on November 18, 2026.
 
 ## Also pending (not blocking a release)
 
