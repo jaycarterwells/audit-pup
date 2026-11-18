@@ -2,7 +2,7 @@
 
 Audit Pup checks the TaxSlayer Practice Lab PDF for one step of a training case against the answer key. It runs entirely in Chrome. Nothing is uploaded.
 
-You can open this guide at any time with the **Guide** button at the top of Audit Pup. Click **Close** (or press Esc) to go back.
+You can open this guide at any time with the **Users Guide** button at the top of Audit Pup. Click **Close** (or press Esc) to go back.
 
 **Open it here:** https://jaycarterwells.github.io/audit-pup/ (tip: press **Ctrl + D** to bookmark it)
 
@@ -31,10 +31,10 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 
 ## 2. Check the step
 
-1. Open Audit Pup. The box at the top names the step Audit Pup expects, for example **Drop your Step A PDF here**. Click **Choose PDF**. The Files app opens. Go to **Downloads**, pick your PDF, and click **Open**. (You can also drag the file from the Files app onto the box, or anywhere on the page.) The file name appears in bold after **Selected:**.
+1. Open Audit Pup. The box at the top names the step Audit Pup expects, for example **Drop your Step A PDF here**. Click **Choose PDF**. The Files app opens. Go to **Downloads**, pick your PDF, and click **Open**. (You can also drag the file from the Files app onto the box, or anywhere on the page.) The box then shrinks to one gray bar with your file name in bold after **Selected:**. To use another file, click **Choose a different PDF**.
 2. Audit Pup reads the name on the Form 1040 and picks the **case** for you. If the PDF is for a different case than the one showing, it switches to that case, and Zeke tells you, for example: "This PDF is from the Graham case, so I switched from Quinn." Each case keeps its own progress.
 3. Under the box, check that the **step** is the step you just finished in TaxSlayer. Audit Pup opens on the first step you have not finished. To pick another step, use the step box or tap a paw in your progress.
-4. Click the button that names your step, for example **Check Step A**.
+4. Click the button that names your step, for example **Check Step A**. It is gray and says **Choose a PDF first** until you choose a PDF, then it turns gold with an arrow.
 
 When a step is done, Audit Pup selects the **next step** for you and clears the old file. Zeke names the next step at the top of the page. When every step of the case is done, Zeke says so.
 
@@ -81,7 +81,7 @@ Each case keeps its own progress, so you can switch cases and come back. Progres
 | Open the Files app | **Alt + Shift + M** |
 | Reload the page | **Ctrl + R** |
 
-The **Guide** button opens this guide. The **Theme** button switches between light and dark. The **Version** button shows what changed in each version. It has a **New** tag the first time you open a new version.
+The **Users Guide** button opens this guide. The **Theme** button switches between light and dark. The **Version** button shows what changed in each version. It has a **New** tag the first time you open a new version.
 
 ## If something goes wrong
 
@@ -107,7 +107,7 @@ Please try as many of these as you can:
 * Close Chrome, reopen Audit Pup, and confirm your progress is still there.
 * Zoom in with **Ctrl +** to 125% or 150%. Is everything still readable?
 
-**How to report a problem:** tell your class instructor. Include:
+**How to report a problem:** tell Carter, who looks after Audit Pup. Carter's contact information is on your class instructor contact list. Include:
 
 1. The version (on the **Version** button, top right) and your device, for example "Chromebook, Chrome".
 2. The case and step, and the name of the PDF you checked.

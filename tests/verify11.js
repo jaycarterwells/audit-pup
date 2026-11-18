@@ -15,10 +15,14 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
  const mood=()=>p.evaluate(()=>({mood:document.getElementById('mood').className, dog:document.getElementById('moodname').textContent, label:document.getElementById('moodimg').getAttribute('aria-label'),
    bar:getComputedStyle(document.getElementById('barfill')).backgroundColor}));
  if(motion==='no-preference'){
-  check('opens with Zeke greeting and step-named drop box and button', (await p.textContent('#guidesay')).startsWith("Hi, I'm Zeke!") &&
-    (await p.textContent('#dropbig'))==='Drop your Step A PDF here' && (await p.textContent('#grade'))==='Check Step A');
-  await p.selectOption('#step','E'); check('changing the step renames the drop box and button', (await p.textContent('#dropbig'))==='Drop your Step E PDF here' && (await p.textContent('#grade'))==='Check Step E');
+  const gold=()=>p.$eval('#grade',e=>e.classList.contains('go'));
+  check('opens with Zeke greeting, a step-named drop box, and a gray Choose a PDF first button', (await p.textContent('#guidesay')).startsWith("Hi, I'm Zeke!") &&
+    (await p.textContent('#dropbig'))==='Drop your Step A PDF here' && (await p.textContent('#grade'))==='Choose a PDF first' && !(await gold()));
+  await p.selectOption('#step','E'); check('changing the step renames the drop box', (await p.textContent('#dropbig'))==='Drop your Step E PDF here');
   await p.setInputFiles('#file',`${U}/${F.E}.pdf`); check('choosing a file: Zeke says to click Check', (await p.textContent('#guidesay'))==='Got it. Click Check Step E when you are ready.');
+  await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready');
+  check('choosing a file: the drop box becomes a file bar and the button turns gold, naming the step', await p.$eval('#drop',e=>e.classList.contains('has')) && await p.isHidden('#dropbig') &&
+    (await p.textContent('#choose'))==='Choose a different PDF' && (await p.textContent('#grade'))==='Check Step E' && await gold());
   await grade('E','B'); let m=await mood(); check('failing check: Zion, the corrections officer, with a red ring, red bar', m.mood==='mood red' && m.dog==='Zion corrections officer' && m.label==="Zion, Audit Pup's corrections officer" && m.bar==='rgb(180, 35, 24)', JSON.stringify(m));
   await grade('E','E'); m=await mood(); check('items to finish: Bailey, the follow-up clerk, with a yellow ring, yellow bar', m.mood==='mood yellow' && m.dog==='Bailey follow-up clerk' && m.label==="Bailey, Audit Pup's follow-up clerk" && m.bar==='rgb(222, 164, 20)', JSON.stringify(m));
   await grade('B','B'); m=await mood(); check('step done: Zeke with a green ring, green bar, Approved snapshot', m.mood==='mood green' && m.dog==='Zeke chief inspector' && m.label==="Zeke, Audit Pup's chief inspector" && m.bar==='rgb(27, 122, 61)' &&

@@ -14,8 +14,8 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quin
    next:await p.$eval('#guidesay',e=>e.textContent.trim()), btn:await p.$eval('#grade',e=>e.textContent.trim()), drop:await p.$eval('#dropbig',e=>e.textContent.trim())});
  let ok=true; const check=(l,c,d)=>{ ok=ok&&c; console.log(`${c?'OK  ':'FAIL'} ${l}${d?'  ['+d+']':''}`); };
  await grade('A','A'); let s=await state();
- check('Step A done: moves to Step B, clears the file, button waits for a new file', s.step==='B' && s.file==='' && s.btnDisabled && s.next.startsWith('Nice work on Step A! Step B is up next') && s.btn==='Check Step B' && s.drop==='Drop your Step B PDF here', JSON.stringify(s));
- await grade('B','B'); s=await state(); check('Step B done: moves to Step D (no Step C in the key)', s.step==='D' && s.next.includes('Step D is up next') && s.btn==='Check Step D', s.next);
+ check('Step A done: moves to Step B, clears the file, button waits for a new file', s.step==='B' && s.file==='' && s.btnDisabled && s.next.startsWith('Nice work on Step A! Step B is up next') && s.btn==='Choose a PDF first' && s.drop==='Drop your Step B PDF here', JSON.stringify(s));
+ await grade('B','B'); s=await state(); check('Step B done: moves to Step D (no Step C in the key)', s.step==='D' && s.next.includes('Step D is up next') && s.btn==='Choose a PDF first', s.next);
  check('results no longer hold a next-step button', !(await p.$('#nextbtn')) && !(await p.$('#nextline')));
  await grade('D','B'); s=await state(); check('reused Step B file for D (warning): stays on D, no advance', s.step==='D' && !s.next.startsWith('Nice work'), JSON.stringify(s));
  await grade('D','D'); s=await state(); check('Step D done with its own file: moves to Step E', s.step==='E', s.step);

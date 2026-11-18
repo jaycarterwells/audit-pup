@@ -134,7 +134,14 @@
     padding:20px 18px 18px; cursor:pointer; transition:border-color .15s,background .15s,box-shadow .15s}
   .drop:hover{background:color-mix(in srgb,var(--gold) 15%,var(--surface))}
   .drop.over{border-color:var(--text); background:color-mix(in srgb,var(--gold) 26%,var(--surface)); box-shadow:0 0 0 5px var(--gold-lt)}
-  .drop.has{border-color:var(--gold-ink)}
+  /* a PDF is chosen: the zone shrinks to one gray file bar, so the gold Check button below is clearly next */
+  .drop.has{flex-direction:row; flex-wrap:wrap; justify-content:space-between; text-align:left; gap:8px 14px; padding:10px 14px;
+    border:2px solid var(--border); background:var(--surface-2)}
+  .drop.has:hover{background:var(--surface-2)}
+  .drop.has .upic,.drop.has .big,.drop.has .small{display:none}
+  .drop.has .filename{order:-1; margin:0; display:flex; align-items:center; gap:10px; font-size:18px}
+  .drop.has button.choose{font-size:16px; padding:6px 14px; min-height:44px; border-width:1.5px}
+  .fileic{flex:none; width:26px; height:32px}
   .upic{width:50px; height:50px; color:var(--gold-ink)}
   .drop .big{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:22px; line-height:1.2}
   .drop .small{font-size:16px; color:var(--muted)}
@@ -150,6 +157,14 @@
     border-radius:14px; padding:14px 34px; font-size:20px; font-weight:700; cursor:pointer;
     box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000), 0 6px 14px rgba(40,30,10,.18); transition:transform .08s, box-shadow .08s}
   button.primary:hover:not(:disabled){filter:brightness(1.12)}
+  /* ready to check: bright El Dorado gold, a little bigger, with an arrow; it pulses once when a PDF is chosen */
+  button.primary.go{background:var(--gold); border-color:var(--gold); color:#1d1f24; font-size:21px; padding:15px 40px;
+    box-shadow:0 4px 0 var(--gold-ink), 0 8px 18px rgba(134,97,15,.35)}
+  button.primary.go::after{content:" \2192"}
+  button.primary.go:active{box-shadow:0 1px 0 var(--gold-ink)}
+  button.primary.pulse{animation:gopulse .9s ease-out 1}
+  @keyframes gopulse{0%{transform:scale(1)} 35%{transform:scale(1.07)} 100%{transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){ button.primary.pulse{animation:none} }
   button.primary:active:not(:disabled){transform:translateY(3px); box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
   button.primary:disabled{background:var(--surface-2); color:var(--muted); border:2px dashed var(--border); box-shadow:none; cursor:not-allowed}
   .err{color:var(--fail); font-size:16px; margin-top:10px}
@@ -355,7 +370,7 @@
       </div>
     </div>
     <div class="hdr-btns">
-      <button type="button" class="theme-btn" id="guidebtn" title="How to use Audit Pup" aria-haspopup="dialog">Guide</button>
+      <button type="button" class="theme-btn" id="guidebtn" title="How to use Audit Pup" aria-haspopup="dialog">Users Guide</button>
       <button type="button" class="theme-btn ver-btn" id="verbtn" title="See what changed in each version" aria-haspopup="dialog">Version __APP_VERSION__<span class="newtag" id="newtag">New</span></button>
       <button type="button" class="theme-btn" id="theme" title="Switch light or dark">Theme</button>
     </div>
@@ -426,7 +441,7 @@
 
   <div class="wn-back hidden" id="gdback">
     <div class="wn gd" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdtitle" tabindex="-1">
-      <div class="wn-head"><h2 id="gdtitle">How to use Audit Pup</h2><button type="button" class="theme-btn" id="gdclose">Close</button></div>
+      <div class="wn-head"><h2 id="gdtitle">Audit Pup Users Guide</h2><button type="button" class="theme-btn" id="gdclose">Close</button></div>
       <div class="wn-body gd-body" id="gdbody" tabindex="0">
 __GUIDE_HTML__
       </div><!-- end of guide -->
@@ -552,12 +567,13 @@ var fileInput=document.getElementById('file'), drop=document.getElementById('dro
     errEl=document.getElementById('error'), chosen=null;
 function setFile(f){
   if(f && f.type!=='application/pdf' && !/\.pdf$/i.test(f.name)){ showErr('That file is not a PDF. Save the step from TaxSlayer as a PDF and try again.'); return; }
-  chosen=f; fnEl.innerHTML=f?('Selected: <b>'+esc(f.name)+'</b>'):''; drop.classList.toggle('has',!!f); gradeBtn.disabled=!f || updateBlocks(); errEl.classList.add('hidden');
+  chosen=f; fnEl.innerHTML=f?(PDF_ICON+'<span>Selected: <b>'+esc(f.name)+'</b></span>'):''; document.getElementById('choose').textContent=f?'Choose a different PDF':'Choose PDF'; drop.classList.toggle('has',!!f); gradeBtn.disabled=!f || updateBlocks(); errEl.classList.add('hidden');
   if(f) justDone=null;
   freshFile=!!f; switchedCase=null;
   reading=f?readChosen(f):null;
   updateGuide();
 }
+var PDF_ICON='<svg class="fileic" viewBox="0 0 54 66" aria-hidden="true"><path d="M3 3h34l14 14v46H3z" fill="var(--surface)" stroke="var(--text)" stroke-width="4" stroke-linejoin="round"/><path d="M37 3v14h14" fill="var(--text)" stroke="var(--text)" stroke-width="4" stroke-linejoin="round"/><text x="27" y="51" text-anchor="middle" font-family="Bitter,Georgia,serif" font-weight="800" font-size="17" fill="var(--fail)">PDF</text></svg>';
 /* Read a chosen PDF right away, so the case can be picked from it before Check is clicked. The Check button waits
    (busy) while it reads; any reading problem is reported when Check is clicked. */
 var reading=null, switchedCase=null;
@@ -887,7 +903,7 @@ function nextStepAfter(id){
   for(var k=1;k<n;k++){ var s=STEPS[(i+k)%n], r=STORE.steps[s.id]; if(!r || r.status!=='done') return s; }
   return null;
 }
-function clearChosenFile(){ chosen=null; reading=null; try{ fileInput.value=''; }catch(e){} fnEl.innerHTML=''; drop.classList.remove('has'); gradeBtn.disabled=true; }
+function clearChosenFile(){ chosen=null; reading=null; try{ fileInput.value=''; }catch(e){} fnEl.innerHTML=''; drop.classList.remove('has'); document.getElementById('choose').textContent='Choose PDF'; gradeBtn.disabled=true; setStepLabels(); }
 function stepIndex(id){ for(var i=0;i<STEPS.length;i++) if(STEPS[i].id===id) return i; return -1; }
 function render(step, got, present, pages, alt, reuse){
   CTX=null;
@@ -1097,9 +1113,9 @@ var CHANGELOG=[
           'Audit Pup checks for a newer version when you open it, when you come back to its tab, and before every check. If there is one, a yellow box asks you to click Update, and Check stays off until you do, so you never check against an old answer key. Your progress is kept.',
           'A downloaded copy of Audit Pup tells you when it is out of date and opens the website for you.',
           'Audit Pup picks the case for you from the name on the Form 1040. If you drop a PDF for a different case than the one showing, it switches to that case and Zeke tells you.',
-          'A Guide button at the top opens the counselor guide inside Audit Pup, including a section for beta testers on what to try and how to report a problem.'],
+          'A Users Guide button at the top opens the counselor guide inside Audit Pup, including a section for beta testers on what to try and how to report a problem.'],
    changed:['The drop box is now at the top, with a solid outline and a Choose PDF button, and it lights up when you drag a file over the page. The case and step boxes and the Check button come next.',
-          'The Check button is easier to spot, and Your progress is now below it, with smaller paws (the step letter and its status), so long cases fit on two rows.'],
+          'After you choose a PDF, the drop box shrinks to one gray bar with your file name, and the Check button turns gold with an arrow, so the next click is clear. Until then it says Choose a PDF first. Your progress is now below it, with smaller paws (the step letter and its status), so long cases fit on two rows.'],
    fixed:['Baylor Step I: the Preparer Note hint now says plainly that a Preparer Note is not the same as a TS Note, and that Pub 4012 gives the steps for entering it for election worker pay.']},
   {version:'0.16.0', date:'2026-11-09',
    changed:['The lines that should still be blank at your step are now checked together in one row, Lines that should be blank, at the end of the list. If any of them has an amount, that row lists each one. The list of checks is much shorter.'],
@@ -1226,7 +1242,10 @@ var freshFile=false; /* a file was chosen and not checked yet */
 function setStepLabels(){
   var id=stepSel.value;
   document.getElementById('dropbig').textContent='Drop your Step '+id+' PDF here';
-  if(gradeBtn.dataset.state!=='busy') gradeBtn.textContent='Check Step '+id;
+  if(gradeBtn.dataset.state!=='busy') gradeBtn.textContent=chosen?'Check Step '+id:'Choose a PDF first';
+  var go=!!chosen && gradeBtn.dataset.state!=='busy' && !gradeBtn.disabled;
+  if(go && !gradeBtn.classList.contains('go')){ gradeBtn.classList.remove('pulse'); void gradeBtn.offsetWidth; gradeBtn.classList.add('pulse'); }
+  gradeBtn.classList.toggle('go',go);
   updateGuide();
 }
 function updateGuide(){
