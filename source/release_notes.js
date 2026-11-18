@@ -13,5 +13,5 @@ if(!r) throw new Error('No CHANGELOG entry for version '+version);
 const out=[];
 [['added','Added'],['fixed','Fixed'],['changed','Changed'],['includes','What this version includes']].forEach(([k,t])=>{
   if(r[k]&&r[k].length){ out.push('### '+t,''); r[k].forEach(s=>out.push('* '+s)); out.push(''); } });
-out.push('The live site is https://jaycarterwells.github.io/audit-pup/. The counselor guide is in docs/chromebook-guide.md.');
+out.push('The live site is https://jaycarterwells.github.io/audit-pup/. The counselor guide opens from the Users Guide button in Audit Pup (source: docs/chromebook-guide.md).');
 console.log(out.join('\n'));

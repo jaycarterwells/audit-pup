@@ -73,7 +73,7 @@ npm test                          # tests/run_all.sh: the full suite GitHub runs
 open tax-aide-quinn-checker.html          # to look at the built page locally
 ```
 
-## Look and feel (0.13.0)
+## Look and feel (0.13.0, page order and guide 0.17.0)
 
 * Logo: the "Seal of Approval" (Zeke's drawing in a gold and graphite ring, "AUDIT PUP" on top, "EL DORADO TAX-AIDE" below, small gold dog bones at left and right). No green check in the logo: green checks are kept for good results.
 * Three dogs (drawings made with Google Gemini; no credit line needed): Zeke, chief inspector, is the guide (speech bubble at the top) and the green result; Zion, corrections officer, is the red result; Bailey, follow-up clerk, is the yellow result. The result dog, with its title under its name, always matches the bar color. Original drawings are in `source/art/`.
@@ -89,7 +89,7 @@ open tax-aide-quinn-checker.html          # to look at the built page locally
 ## Current state
 
 * Open items that must be settled before the next release are tracked in `docs/open-issues.md` Keep it current. Next case expected: Kent (the author warns of printout problems like Graham's).
-* 0.17.0 (unreleased, ready for Carter's test and the hint review, November 18): the Graham case with the author's confirmed exceptions, checkbox and Schedule CA lines, notes checked again at later steps, the newer-version check, the clearer Baylor Preparer Note hint, and Carter's layout requests (drop zone first, case picked from the PDF, smaller paws below Check, the guide in a Guide window). The update box says checking is off until the update. Pages from 0.16.0 and earlier have no check: anyone still on one sees the new version only after a reload.
+* 0.17.0 (released November 18, 2026): the Graham case with the author's confirmed exceptions, checkbox and Schedule CA lines, notes checked again at later steps, the newer-version check, the clearer Baylor Preparer Note hint, and Carter's layout requests (drop zone first, case picked from the PDF, smaller paws below Check, the guide in a Guide window). The update box says checking is off until the update. Pages from 0.16.0 and earlier have no check: anyone still on one sees the new version only after a reload. Still open: the expert hint review (`docs/hints.md`) and real Chromebook and Mac checks. The GitHub release notes for v0.17.0 were written before the Graham entry's wording was fixed ("Pick it in the first box"); the page's What's new list has the fix from the next release on.
 * 0.16.0 (November 9, 2026): blank lines shown as one row, and the "Did you pick the right step?" box for a failing check whose PDF matches another step (both Carter's requests).
 * 0.15.0 (November 9, 2026): Quinn's answer key is imported from its sheet and its blank cells are checked as blank or $0, like Baylor (Carter's choice), adding 9 lines (1040 lines 15, 16, 24, 37; CA 540 lines 14, 16, 35, 64, 111), so Quinn's scores grew (Step A 34 checks, B and D 33, E and F 36). Also the New tag color and the screen reader and keyboard fixes. The hints for every case are listed in `docs/hints.md` (made by `source/tools/hints_report.js`; the tests fail if it is stale) for expert review; Quinn's 9 new hints were written by Claude and are awaiting that review. The test work through bucket E is done; what is left is in `docs/test-plan.md`, Part 6 "Moving forward".
 * 0.14.0 added the Baylor case (15 steps) and checks on GitHub Actions.
