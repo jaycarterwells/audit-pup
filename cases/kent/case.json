@@ -7,12 +7,13 @@
            "N": "Kent_Sec_N.pdf", "O": "Kent_Sec_O.pdf", "P": "Kent_Sec_P.pdf", "Q": "Kent_Sec_Q.pdf", "R": "Kent_Sec_R.pdf",
            "S": "Kent_Sec_S.pdf", "T": "Kent_Sec_T.pdf" },
   "pdfWhy": "The problem has no Steps F, I, or M. The Drive printouts are numbered in order ('sec A' to 'sec q'), not by step letter, so they are renamed to the step they print: sec F is Step G, sec G is H, sec H is J, sec I is K, sec J is L, sec K is N, sec L is O, sec M is P, sec N is Q, sec O is R, sec P is S, and sec q is T (sec p and sec q are the same file). 'JA Kent GOLDEN.pdf' is kept as Kent_Golden.pdf; it matches Step R.",
-  "awaiting": {
+  "printoutErrors": {
     "B": { "lines": ["fed_1a","fed_2b","fed_9","fed_11a","fed_15","fed_16","fed_19","fed_21","fed_35a","schA_5a","ca540_17","ca540_19","ca540_31","ca540_76","ca540_115"],
-           "why": "The 'sec b' printout has no W-2 and already has the Step C seller-financed interest ($2,182): it was made before the W-2 became Step B. Waiting for a Step B printout, or for Carter's decision." },
+           "why": "The 'sec b' printout has no W-2 and already has the Step C seller-financed interest ($2,182): it was made before the W-2 became Step B. No Step B printout will come: Carter confirmed the answer sheet's Step B values (November 18, 2026); the W-2 itself is proven by the Step D printout." },
     "C": { "lines": ["fed_1a","fed_2a","fed_2b","fed_9","fed_10","fed_11a","fed_15","fed_16","fed_19","fed_20","fed_21","fed_24","fed_25d","fed_35a","fed_37","sch1_18","sch3_1","schA_5a","ca540_14","ca540_16","ca540_17","ca540_19","ca540_31","ca540_35","ca540_111"],
-           "why": "The 'sec c' printout has no W-2 and already has the Step D 1099-INT: it was made before the W-2 became Step B. Waiting for a Step C printout, or for Carter's decision." }
+           "why": "The 'sec c' printout has no W-2 and already has the Step D 1099-INT: it was made before the W-2 became Step B. No Step C printout will come: Carter confirmed the answer sheet's Step C values (November 18, 2026); the W-2 itself is proven by the Step D printout." }
   },
+  "printoutErrorsWhy": "Printouts known to be wrong, with the lines they get wrong, when no corrected printout will come. Every test allows exactly those lines and fails if they ever match or if any other line differs. Unlike \"awaiting\", these do not hold back a release.",
   "todo": { "N": 1, "Q": 1 },
   "todoWhy": "Steps N and Q each leave one TS Note box for the student to tick (the answer sheet marks NN at N and Q, and its TS Note examples are for those steps).",
   "ownTsNoteBox": ["N", "Q"],
