@@ -50,7 +50,7 @@ const { loadCases } = require('./cases');
           if(!pg) out.plant=E.OPTIONAL_FORMS[f]?'form not printed':'missing';
           else { const tok=pg.items.filter(isTok).sort((a,b)=>b.x-a.x)[0];   // the box beside the amount column, not the line number at the left edge
             if(!tok) out.plant='no box found';
-            else { pg.items.push({x:R[0]==='box'?tok.x+60:Math.max(R[2],tok.x)+40, y:tok.y, s:'5'});
+            else { pg.items.push({x:R[0]==='box'?(R[5]!=null?(R[5]+R[6])/2:tok.x+60):Math.max(R[2],tok.x)+40, y:tok.y, s:'5'});   // a column reader (Schedule CA column B): inside that column
               out.plant=E.matches(extract()[k],0,true,f); out.where=`page ${pg.page} (${f}) box "${tok.s}", $5 planted`; pg.items.pop(); } } }
         const miss=out.blankAnswer ? !(out.plant==='fail'||out.plant==='form not printed')
           : (out.readers!==1 || out.plus1!=='fail' || (out.blank==='pass' && step.expected[k]!==0));
