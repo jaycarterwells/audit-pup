@@ -26,6 +26,8 @@ const { loadCases } = require('./cases');
       const sheet=path.join(c.dir,key.source.file);
       expect(`${c.id}: the answer sheet ${key.source.file} is the one answer_key.json was made from`,
         fs.existsSync(sheet) && crypto.createHash('sha256').update(fs.readFileSync(sheet)).digest('hex')===key.source.sha256, 'the sheet changed: re-run source/tools/import_answer_sheet.js');
+      const corr=path.join(c.dir,'answer_sheet_corrections.json'), corrSha=fs.existsSync(corr)?crypto.createHash('sha256').update(fs.readFileSync(corr)).digest('hex'):undefined;
+      expect(`${c.id}: answer_key.json includes the confirmed corrections in answer_sheet_corrections.json as they are now`, corrSha===key.source.corrections_sha256, 'the corrections changed: re-run source/tools/import_answer_sheet.js');
       const unknown=key.rows.filter(r=>!K.lines[r.line]).map(r=>r.line);
       expect(`${c.id}: every answer key row names a line the case reads`, !unknown.length, unknown.join(', '));
       const want=E.expectedFromKey(key);
@@ -41,21 +43,39 @@ const { loadCases } = require('./cases');
     // every checked line can be read and taught: a reader, a name, and one hint (rule 7)
     const bare=Object.keys(K.lines).filter(k=>{ const L=K.lines[k]; return !Array.isArray(L.read) || !L.name || !(L.hint && L.hint.length>20); });
     expect(`${c.id}: every line names its reader and has a name and a teaching hint`, !bare.length, bare.join(', '));
+    // every note decides: a one-time check (carry:false) or checked again at every later step (carry:true)
+    const undecided=Object.keys(K.notes).filter(id=>typeof K.notes[id].carry!=='boolean');
+    expect(`${c.id}: every answer key note says whether it is checked again at later steps (carry: true or false)`, !undecided.length, undecided.join(', '));
+    const manual=Object.keys(K.notes).filter(id=>K.notes[id].carry===true && E.noteOk(K.notes[id],[])===null);
+    expect(`${c.id}: notes the student enters or ticks (TS Note boxes, worksheets) are one-time checks`, !manual.length, manual.join(', '));
     // 2. case.json against the page
     if(!expect(`${c.id}: case.json lists the page's steps in order`, K.steps.map(s=>s.id).join('')===c.steps.join(''), `page ${K.steps.map(s=>s.id).join('')}, case.json ${c.steps.join('')}`)) continue;
     // 3 and 4. every printout against every step
     const results={}; let cells=0;
-    for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]=check(E,pages); }
+    for(const f of c.files){ const pages=await readPdf(path.join(c.dir,f),E); results[f]={...check(E,pages), pages}; }
+    // every printout names its own case by the 1040's last name, so dropping it switches the page to the right case
+    const wrongCase=c.files.filter(f=>E.caseOfPages(E.CASES,results[f].pages)!==c.id);
+    expect(`${c.id}: every printout names its own case (the 1040's last name, ${K.lastName})`, !wrongCase.length, wrongCase.map(f=>f+' names '+E.caseOfPages(E.CASES,results[f].pages)).join(', '));
     for(const f of c.files) for(const s of K.steps){
       const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;
       if(c.mayPass(f,s.id)){
-        const bad=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
-        expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
+        const known=c.known(f,s.id), off=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
+        const bad=off.filter(k=>!known.includes(k)), fixed=known.filter(k=>!off.includes(k));
+        if(known.length){
+          expect(`${c.id}: ${f} passes Step ${s.id} except the awaited fix (${known.join(', ')})`, !bad.length, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; '));
+          expect(`${c.id}: ${f} at Step ${s.id}: the known difference is still there (remove it from case.json once the printout is fixed)`, !fixed.length, fixed.join(', '));
+        } else expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
       } else expect(`${c.id}: ${f} does not pass Step ${s.id} silently`, !pass || warn, 'passes with no warning');
-      if(!c.mayPass(f,s.id)) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
+      if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.excused(x))) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
         alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
-    console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s`);
+    // 5. a note checked again at later steps must be met by the correct printout of every later step (no false failures)
+    let carriedChecks=0;
+    for(const s of K.steps){ const carried=E.carriedNotes(K.steps,K.notes,s); if(!carried.length) continue;
+      const {pages}=results[c.pdf[s.id]];
+      for(const n of carried){ carriedChecks++;
+        expect(`${c.id} Step ${s.id}: note ${n.id} from Step ${n.from} is still met by the correct printout (${c.pdf[s.id]})`, E.noteOk(K.notes[n.id],pages)===true, 'set carry:false for this note, or find out why the printout lacks it'); } }
+    console.log(`${c.id}: ${K.steps.length} steps, ${c.files.length} printouts, ${cells} printout-step pairs checked in ${((Date.now()-t0)/1000).toFixed(1)} s, ${carriedChecks} later-step note checks`);
   }
 })().catch(e=>{console.error(e);process.exit(1);});

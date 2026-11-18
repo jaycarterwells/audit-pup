@@ -24,7 +24,7 @@ var Q_LINES = {
     hint:'Total tax is the tax minus credits plus other taxes. If line 16 is right, look for a credit or an extra tax entered in TaxSlayer that is not in the problem.'},
   fed_25d: {form:'fed', line:'Line 25d', name:'Federal tax withheld', read:['box','fed','25d'],
     hint:'Line 25d is federal withholding from your W-2 entries. Re-open the W-2 and compare box 2 to the source document.'},
-  fed_27:  {form:'fed', line:'Line 27',  name:'Earned income credit (EIC)', read:['box','fed','27a'],
+  fed_27a: {form:'fed', line:'Line 27a', name:'Earned income credit (EIC)', read:['box','fed','27a'],
     hint:'The EIC depends on earned income and the qualifying person. Re-check the dependent entry and whether earned income was entered as the problem intends.'},
   fed_33:  {form:'fed', line:'Line 33',  name:'Total payments', read:['box','fed','33'],
     hint:'Line 33 totals your payments and refundable credits. If it is off, the mistake is in a withholding or credit line above it.'},
@@ -85,7 +85,7 @@ var Q_STEPS = [
 ];
 
 /* Output order follows the answer key, top to bottom. Notes sit where the key places them. */
-var Q_ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_24','fed_25d','fed_27','fed_33','fed_35a','fed_37','N2','N1','NN',
+var Q_ORDER = ['fed_1a','fed_1d','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_24','fed_25d','fed_27a','fed_33','fed_35a','fed_37','N2','N1','NN',
   'ca540_12','ca540_14','ca540_16','ca540_17','ca540_18','ca540_19','ca540_31','ca540_32','ca540_35','ca540_64','ca540_71','ca540_75','ca540_78','ca540_111','ca540_115',
   'ca3514_2','ca3514_13','ca3514_14','ca3514_19','N3'];
 
@@ -100,17 +100,19 @@ var Q_WORKSHEET = {
          [5,'YYY',30679,0,1592,21,771,30679,2363] ]
 };
 
+/* carry: true = checked at its own step and again at every later step (read from the PDF, stays once added);
+   false = checked at its own step only (entered or ticked by the student, or not printed at later steps). */
 var Q_NOTES = {
-  N1:{form:'fed', kind:'filing', name:'Filing status and dependent', status:/head of household/i, dependent:'JAMES', dependentName:'James', minMonths:7,
+  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/head of household/i, dependent:'JAMES', dependentName:'James', minMonths:7,
     key:'Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).',
     coach:'Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.'},
-  N2:{form:'fed', kind:'mwpRefunds', name:'Both refunds match the option you chose',
+  N2:{form:'fed', kind:'mwpRefunds', carry:false, name:'Both refunds match the option you chose',
     coach:'Both refunds should equal the results of the option you circled on your MWP Worksheet. If they do not, the W-2 screen in TaxSlayer is probably still set up for another option you tested. Re-check the Medicaid Waiver Payment field, the include in earned income box, and Box 16.'},
-  N3:{form:'ca3514', kind:'mwpWorksheet', name:'MWP Worksheet scenarios',
+  N3:{form:'ca3514', kind:'mwpWorksheet', carry:false, name:'MWP Worksheet scenarios',
     coach:'For any option that does not match, set the W-2 screen back to that option\'s three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.'},
-  NN:{form:'fed', kind:'confirm', name:'TS Note added for this step', mark:'nn', confirm:'I added a TS Note for Step E in TaxSlayer',
+  NN:{form:'fed', kind:'confirm', carry:false, name:'TS Note added for this step', mark:'nn', confirm:'I added a TS Note for Step E in TaxSlayer',
     example:'STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.',
     coach:'Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year\'s counselor should know.'}
 };
-CASES.push({id:'quinn', label:'Case: Quinn (Raymond Quinn, 2025)',
+CASES.push({id:'quinn', label:'Case: Quinn (Raymond Quinn, 2025)', short:'Quinn', lastName:'QUINN',
   lines:Q_LINES, steps:Q_STEPS, order:Q_ORDER, notes:Q_NOTES, worksheet:Q_WORKSHEET, extract:function(pages){ return extractByLines(Q_LINES,pages); }});

@@ -5,13 +5,15 @@
 //   node tests/make_storage_fixture.js /tmp/v0.14.0.html 0.14.0
 // What it does: Quinn Steps A and B checked (done), Step E checked with the MWP Worksheet entries and the TS Note
 // box (done), Step D checked with the Step B file (same-file warning, so To finish), and, where the page has
-// Baylor, Baylor Step A with its TS Note box ticked and Step B checked with the Step A file (Fix).
+// Baylor, Baylor Step A with its TS Note box ticked and Step B checked with the Step A file (Fix), and, where the page
+// has Graham, Graham Steps A, C (TS Note box ticked), Q, and R2 (Step Q's file again: same return, so To finish).
 const fs=require('fs'), path=require('path');
 const { chromium } = require('playwright');
+const { offline } = require('./page');
 const [page, version]=process.argv.slice(2);
 if(!page||!version){ console.error('usage: node make_storage_fixture.js <released page.html> <version>'); process.exit(2); }
 const Q=path.join(__dirname,'..','cases','quinn'), B=path.join(__dirname,'..','cases','baylor');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+path.resolve(page));
   await p.waitForFunction(()=>document.getElementById('step').options.length>0,null,{timeout:30000});
@@ -32,6 +34,12 @@ const Q=path.join(__dirname,'..','cases','quinn'), B=path.join(__dirname,'..','c
     await pick('baylor'); await grade('A',`${B}/Baylor_Sec_A.pdf`); await p.check('.confirm input');
     await grade('B',`${B}/Baylor_Sec_A.pdf`);
     shown.baylor=await chips(); await pick('quinn');
+  }
+  if(hasCases && await p.$('#assignment option[value="graham"]')){
+    const G=path.join(__dirname,'..','cases','graham');
+    await pick('graham'); await grade('A',`${G}/Graham_Sec_A.pdf`); await grade('C',`${G}/Graham_Sec_C.pdf`); await p.check('.confirm input');
+    await grade('Q',`${G}/Graham_Sec_Q.pdf`); await grade('R2',`${G}/Graham_Sec_Q.pdf`);
+    shown.graham=await chips(); await pick('quinn');
   }
   const storage=await p.evaluate(()=>{ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(/^auditpup\./.test(k)) o[k]=localStorage.getItem(k); } return o; });
   if(errs.length) throw new Error('page errors: '+errs.join('; '));

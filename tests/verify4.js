@@ -2,14 +2,14 @@ const { expect } = require('./expect');
 const { chromium } = require('playwright'); const path=require('path'); const fs=require('fs');
 const PAGE=path.join(__dirname,'..','source','tax-aide-quinn-checker.html'), OUT=path.join(__dirname,'output'); require('fs').mkdirSync(OUT,{recursive:true});
 const U=path.join(__dirname,'..','cases','quinn');
-const { open, ready, settled, dogShown } = require('./page');
+const { open, ready, settled, dogShown, noUpdateCheck } = require('./page');
 async function grade(p,step,file){ await p.selectOption('#step',step); await p.setInputFiles('#file',file); await p.click('#grade');
   await ready(p); }
 const barColor=p=>p.$eval('#barfill',e=>getComputedStyle(e).backgroundColor);
 const rewardState=p=>p.$eval('#reward',e=>e.classList.contains('hidden')?'hidden':(e.classList.contains('hasdog')?'dog: '+document.getElementById('dogcap').textContent:'check mark only'));
 (async()=>{ const b=await chromium.launch();
   for (const mode of ['online','offline']){
-    const ctx=await b.newContext({viewport:{width:820,height:900},deviceScaleFactor:1.5});
+    const ctx=await b.newContext({viewport:{width:820,height:900},deviceScaleFactor:1.5}); await noUpdateCheck(ctx);
     await ctx.addInitScript(()=>{ window.Worker=function(){throw new Error('blocked');}; });
     if(mode==='online'){
       await ctx.route('https://dog.ceo/**',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({message:'https://images.dog.ceo/breeds/retriever-golden/n02099601_1.jpg',status:'success'})}));
@@ -28,7 +28,7 @@ const rewardState=p=>p.$eval('#reward',e=>e.classList.contains('hidden')?'hidden
     await settled(p); { const c=await barColor(p), r=await rewardState(p); console.log('E, wrong worksheet   :', c, '|', r); expect(mode+': wrong worksheet is red, no reward',c==='rgb(180, 35, 24)'&&r==='hidden',c+' '+r); }
     await ins[2].fill('2715'); await p.check('.confirm input'); if(mode==='online') await dogShown(p); else await settled(p);
     { const c=await barColor(p), r=await rewardState(p), s=(await p.textContent('#score')).replace(/\s/g,''); console.log('E, all done          :', c, '|', r, '|', s);
-      expect(mode+': all done is green with the reward, 28/28',c==='rgb(27, 122, 61)'&&s==='28/28'&&(mode==='online'?/^dog:/.test(r):r==='check mark only'),c+' '+r+' '+s); }
+      expect(mode+': all done is green with the reward, 29/29',c==='rgb(27, 122, 61)'&&s==='29/29'&&(mode==='online'?/^dog:/.test(r):r==='check mark only'),c+' '+r+' '+s); }
     await p.uncheck('.confirm input'); await settled(p); { const c=await barColor(p), r=await rewardState(p); console.log('E, note unticked     :', c, '|', r); expect(mode+': unticking a note goes back to yellow, reward hidden',c==='rgb(222, 164, 20)'&&r==='hidden',c+' '+r); }
     await p.check('.confirm input'); if(mode==='online') await dogShown(p); else await settled(p);
     // frozen frame: scroll to the very bottom, is the score frame still at the top of the viewport?

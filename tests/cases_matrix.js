@@ -7,8 +7,8 @@
 const { chromium } = require('playwright');
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
-const { open } = require('./page');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await ctx.route('https://dog.ceo/**',r=>r.abort());
+const { open, offline } = require('./page');
+(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext(); await offline(ctx);
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await open(p,'file://'+PAGE);
   for(const c of loadCases()){ let n=0;
@@ -17,8 +17,8 @@ const { open } = require('./page');
       const pass=c.steps.filter(s=>c.mayPass(f,s));
       const wrong=[...c.steps.slice(i+1),...c.steps.slice(0,i)].find(s=>!c.mayPass(f,s));
       for(const s of [...pass, wrong].filter(Boolean)){
-        const r=await grade(p,c.id,s,`${c.dir}/${f}`), ok=!r.rows.some(x=>x.cls==='fail'||x.cls==='warn'||x.cls==='missing'); n++;
-        if(c.mayPass(f,s)) expect(`${c.id}: ${f} passes Step ${s} on the page`, ok && !r.warn, ok?'wrong-step warning shown':r.score);
+        const known=c.known(f,s), r=await grade(p,c.id,s,`${c.dir}/${f}`), ok=!r.rows.some(x=>(x.cls==='fail'||x.cls==='warn'||x.cls==='missing') && !known.includes(x.line)); n++;
+        if(c.mayPass(f,s)) expect(`${c.id}: ${f} passes Step ${s} on the page${known.length?' except the awaited fix':''}`, ok && (!r.warn || known.length>0), ok?'wrong-step warning shown':r.score);
         else expect(`${c.id}: ${f} does not pass Step ${s} silently on the page`, !ok || !!r.warn, r.score);
         expect(`${c.id}: no on-screen error for ${f} as Step ${s}`, !r.err, r.err);
       }

@@ -61,6 +61,13 @@ jobs:
             { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # a case still waiting for a corrected printout or answer sheet (case.json "awaiting") is not ready for counselors
+          waiting=$(node -e "const fs=require('fs');for(const d of fs.readdirSync('cases')){const f='cases/'+d+'/case.json';if(!fs.existsSync(f))continue;const a=JSON.parse(fs.readFileSync(f,'utf8')).awaiting||{};if(Object.keys(a).length)console.log(d+': Step '+Object.keys(a).join(', Step '))}")
+          if [ -n "$waiting" ]; then
+            echo "::warning::v$version is not released: these cases still wait for corrected files: $waiting"
+            { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           { echo "tag=v$version"; echo "version=$version"; echo "deploy=true"; echo "new=true"; } >> "$GITHUB_OUTPUT"
 
       - name: Write the release notes from the page's What's new list
@@ -102,12 +109,14 @@ jobs:
           cache: npm
           cache-dependency-path: site/source/package-lock.json
 
-      - name: Build the page as index.html, dated with the release commit's date
+      - name: Build the page as index.html, dated with the release commit's date, and version.json
         working-directory: site/source
         run: |
           npm ci
           BUILD_DATE=$(git log -1 --format=%cs) node build_html.js
           cp tax-aide-quinn-checker.html ../index.html
+          # the version the page asks for to know whether it is out of date (see LIVE_URL in the template)
+          printf '{"version":"%s"}\n' "$(tr -d '[:space:]' < VERSION)" > ../version.json
           rm -rf node_modules dist tax-aide-quinn-checker.html
 
       - uses: actions/configure-pages@v6

@@ -62,4 +62,13 @@ t('matches: a missing FTB 3514 passes only for a $0 answer (it is printed only w
   t('otherMatches: names nothing when the PDF matches no step', E.otherMatches(full[1],{fed_1a:15000,fed_9:1},present).length===0);
   [E.LINES,E.STEPS]=saved; }
 
+// notes checked again at later steps: only carry:true notes from earlier steps, once each, never the step's own
+{ const notes={N1:{carry:true}, NN:{carry:false}, NP:{carry:true}};
+  const steps=[{id:'A',notes:['N1','NN']},{id:'B',notes:[]},{id:'I',notes:['NP','NN']},{id:'R',notes:[]}];
+  const ids=st=>E.carriedNotes(steps,notes,st).map(x=>x.id+'@'+x.from).join();
+  t('carriedNotes: nothing at the first step', ids(steps[0])==='');
+  t('carriedNotes: a carry:true note from an earlier step is checked again, a TS Note box is not', ids(steps[1])==='N1@A');
+  t('carriedNotes: each carried note once, with the step it belongs to', ids(steps[3])==='N1@A,NP@I');
+  t('noteOk: a TS Note box or worksheet cannot be read from a printout (null)', E.noteOk({kind:'confirm'},[])===null && E.noteOk({kind:'mwpWorksheet'},[])===null);
+  t('noteOk: no Preparer Notes page means the Preparer Note is missing', E.noteOk({kind:'prepnote'},[{form:'fed',items:[{x:1,y:1,s:'Form'}]}])===false); }
 console.log(`${n} engine unit tests run`);

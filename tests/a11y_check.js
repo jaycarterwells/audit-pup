@@ -6,11 +6,11 @@ const { chromium } = require('playwright');
 const { default: AxeBuilder } = require(path.join(__dirname,'..','source','node_modules','@axe-core','playwright'));
 const { expect } = require('./expect');
 const { loadCases, grade, PAGE } = require('./cases');
-const { open, settled } = require('./page');
+const { open, settled, offline } = require('./page');
 const TAGS=['wcag2a','wcag2aa','wcag21a','wcag21aa'];
 (async()=>{ const b=await chromium.launch(); let screens=0, found=0;
   for(const theme of ['light','dark']){
-    const ctx=await b.newContext({viewport:{width:1366,height:657}, colorScheme:theme}); await ctx.route('https://dog.ceo/**',r=>r.abort());
+    const ctx=await b.newContext({viewport:{width:1366,height:657}, colorScheme:theme}); await offline(ctx);
     const p=await ctx.newPage();
     await open(p,'file://'+PAGE);
     const scan=async name=>{ screens++; await settled(p);   // colors are checked after every transition ends
@@ -32,6 +32,7 @@ const TAGS=['wcag2a','wcag2aa','wcag21a','wcag21aa'];
       await scan(`${c.id} finished step with the reward`);
     }
     await p.click('#verbtn'); await scan('What\'s new panel');
+    await p.keyboard.press('Escape'); await p.click('#guidebtn'); await scan('Guide window');
     await ctx.close();
   }
   expect('no accessibility problems', found===0, `${found} finding(s) on ${screens} screens`);
