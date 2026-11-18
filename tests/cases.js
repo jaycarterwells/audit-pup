@@ -32,7 +32,7 @@ async function grade(p,caseId,step,file){
   await ready(p,{settle:false});   // the results are drawn before the button says ready; motion does not matter here
   return p.evaluate(()=>({
     score:document.getElementById('score').textContent.replace(/\s/g,''),
-    rows:[...document.querySelectorAll('#groups li.check')].map(l=>({line:l.getAttribute('data-line'), cls:l.className.replace('check','').trim(), name:l.querySelector('.name').textContent, st:l.querySelector('.state').textContent, yours:(l.querySelector('.yours')||{}).textContent||''})),
+    rows:[...document.querySelectorAll('#groups li.check')].map(l=>({line:l.getAttribute('data-line'), off:(l.getAttribute('data-off')||'').split(' ').filter(Boolean), cls:l.className.replace('check','').trim(), name:l.querySelector('.name').textContent, st:l.querySelector('.state').textContent, yours:(l.querySelector('.yours')||{}).textContent||''})),
     warn:document.getElementById('stepwarn').classList.contains('hidden')?'':document.getElementById('stepwarn').textContent,
     err:document.getElementById('error').classList.contains('hidden')?'':document.getElementById('error').textContent }));
 }

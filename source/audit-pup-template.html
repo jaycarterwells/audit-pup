@@ -711,6 +711,7 @@ function blankRow(step,keys,got,present){
     if(st==='fail'||st==='missing') bad.push({k:k,st:st}); else if(st==='warn') unread.push(k); });
   var where=function(k){ return FORM_TITLES[LINES[k].form]+', '+LINES[k].line; };
   setStatus(r, bad.length?'fail':(unread.length?'warn':'pass'), {nochange:nochange});
+  if(bad.length||unread.length) r.li.setAttribute('data-off', bad.map(function(b){return b.k;}).concat(unread).join(' '));   /* for the tests: which lines */
   if(!bad.length && !unread.length) return r;
   var ul=el('ul','blanklist');
   bad.forEach(function(b){ ul.appendChild(el('li',null, b.st==='missing' ? '<b>'+esc(where(b.k))+'</b>: this form is not in your PDF.'

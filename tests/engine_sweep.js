@@ -52,6 +52,9 @@ const { loadCases } = require('./cases');
             if(!tok) out.plant='no box found';
             else { pg.items.push({x:R[0]==='box'?(R[5]!=null?(R[5]+R[6])/2:tok.x+60):Math.max(R[2],tok.x)+40, y:tok.y, s:'5'});   // a column reader (Schedule CA column B): inside that column
               out.plant=E.matches(extract()[k],0,true,f); out.where=`page ${pg.page} (${f}) box "${tok.s}", $5 planted`; pg.items.pop(); } } }
+        // a line the case lists as wrong on this printout (case.json "awaiting" or "printoutErrors") with nothing printed: there is no
+        // correct amount to change here, so it is not counted (its reader is proven at the other steps)
+        if(rd.length===0 && c.known(c.pdf[step.id],step.id).includes(k)){ rep[k]={...out, known:true}; return; }
         const miss=out.blankAnswer ? !(out.plant==='fail'||out.plant==='form not printed')
           : (out.readers!==1 || out.plus1!=='fail' || (out.blank==='pass' && step.expected[k]!==0));
         if(miss){ missed.push(`${c.id} ${step.id}:${k}`); console.log(`FAIL ${c.id} Step ${step.id} ${k}: readers=${out.readers} +$1->${out.plus1||'-'} blanked->${out.blank||'-'} $5 in empty box->${out.plant||'-'} ${out.where||''}`); }

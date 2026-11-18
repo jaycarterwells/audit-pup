@@ -1,0 +1,22 @@
+{
+  "id": "kent",
+  "order": 4,
+  "about": "Test description of the Kent case. The answer key is answer_key.json (made from answer_sheet.doc); the lines, steps, and notes are in source/cases/kent.js. This file tells the tests which PDF goes with each step.",
+  "pdf": { "A": "Kent_Sec_A.pdf", "B": "Kent_Sec_B.pdf", "C": "Kent_Sec_C.pdf", "D": "Kent_Sec_D.pdf", "E": "Kent_Sec_E.pdf",
+           "G": "Kent_Sec_G.pdf", "H": "Kent_Sec_H.pdf", "J": "Kent_Sec_J.pdf", "K": "Kent_Sec_K.pdf", "L": "Kent_Sec_L.pdf",
+           "N": "Kent_Sec_N.pdf", "O": "Kent_Sec_O.pdf", "P": "Kent_Sec_P.pdf", "Q": "Kent_Sec_Q.pdf", "R": "Kent_Sec_R.pdf",
+           "S": "Kent_Sec_S.pdf", "T": "Kent_Sec_T.pdf" },
+  "pdfWhy": "The problem has no Steps F, I, or M. The Drive printouts are numbered in order ('sec A' to 'sec q'), not by step letter, so they are renamed to the step they print: sec F is Step G, sec G is H, sec H is J, sec I is K, sec J is L, sec K is N, sec L is O, sec M is P, sec N is Q, sec O is R, sec P is S, and sec q is T (sec p and sec q are the same file). 'JA Kent GOLDEN.pdf' is kept as Kent_Golden.pdf; it matches Step R.",
+  "awaiting": {
+    "B": { "lines": ["fed_1a","fed_2b","fed_9","fed_11a","fed_15","fed_16","fed_19","fed_21","fed_35a","schA_5a","ca540_17","ca540_19","ca540_31","ca540_76","ca540_115"],
+           "why": "The 'sec b' printout has no W-2 and already has the Step C seller-financed interest ($2,182): it was made before the W-2 became Step B. Waiting for a Step B printout, or for Carter's decision." },
+    "C": { "lines": ["fed_1a","fed_2a","fed_2b","fed_9","fed_10","fed_11a","fed_15","fed_16","fed_19","fed_20","fed_21","fed_24","fed_25d","fed_35a","fed_37","sch1_18","sch3_1","schA_5a","ca540_14","ca540_16","ca540_17","ca540_19","ca540_31","ca540_35","ca540_111"],
+           "why": "The 'sec c' printout has no W-2 and already has the Step D 1099-INT: it was made before the W-2 became Step B. Waiting for a Step C printout, or for Carter's decision." }
+  },
+  "todo": { "N": 1, "Q": 1 },
+  "todoWhy": "Steps N and Q each leave one TS Note box for the student to tick (the answer sheet marks NN at N and Q, and its TS Note examples are for those steps).",
+  "ownTsNoteBox": ["N", "Q"],
+  "ownTsNoteBoxWhy": "Each of these steps keeps its own TS Note box: ticking one must not tick another.",
+  "sameReturn": [["H", "J"], ["R", "S", "T"]],
+  "speed": { "step": "T", "maxSeconds": 20 }
+}
