@@ -1,0 +1,363 @@
+{
+ "about": "Made by source/tools/import_answer_sheet.js from the answer sheet. Do not edit by hand: re-run the import.",
+ "source": {
+  "file": "answer_sheet.doc",
+  "sha256": "790297be7d1cbac7238de0b9c193896ff5619ea3a17e35549d93ab18a45849b4"
+ },
+ "steps": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M"
+ ],
+ "rows": [
+  {
+   "line": "fed_6a",
+   "sheet": "6a SSA",
+   "values": { "A": null, "B": null, "C": 10000, "D": 10000, "E": 10000, "F": 10000 }
+  },
+  {
+   "line": "fed_6b",
+   "sheet": "6b Taxable SSA",
+   "values": { "A": null, "B": null, "C": 0, "D": null, "E": null, "F": 315 }
+  },
+  {
+   "line": "fed_8",
+   "sheet": "8 Sch 1 line 10",
+   "values": { "A": null, "B": 400, "C": 400, "D": 430, "E": 480, "F": 20630 },
+   "notes": { "D": "N4" }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "A": null, "B": 400, "C": 400, "D": 430, "E": 480, "F": 20945 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "A": null, "B": 400, "C": 400, "D": 430, "E": 480, "F": 20945 }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/itemized deduct",
+   "values": { "A": 15750, "B": 15750, "C": 15750, "D": 15750, "E": 15750, "F": 15750 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": 5195 }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": 518 }
+  },
+  {
+   "line": "fed_19",
+   "sheet": "19 CTC + ODC",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": 500 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": 18 }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 Owe",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": 18 }
+  },
+  {
+   "line": "sch1_1",
+   "sheet": "Sch 1-1 Taxable refund",
+   "values": { "A": null, "B": 400, "C": 400, "D": 400, "E": 400, "F": 400 }
+  },
+  {
+   "line": "sch1_5",
+   "sheet": "Sch 1-5 Rental",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": 50, "F": 20200 }
+  },
+  {
+   "line": "ca540_11",
+   "sheet": "11 Exemption Amt",
+   "values": { "A": 628, "B": 628, "C": 628, "D": 628, "E": 628, "F": 628 }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "A": null, "B": 400, "C": 400, "D": 400, "E": 400, "F": 715 }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "A": null, "B": null, "C": 10000, "D": 10000, "E": 10000, "F": 10000 },
+   "notes": { "C": "N3b" }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "A": 5706, "B": 5706, "C": 5706, "D": 5706, "E": 5706, "F": 5706 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "A": null, "B": null, "C": 4294, "D": 4324, "E": 4374, "F": 24524 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "A": null, "B": null, "C": 43, "D": 43, "E": 44, "F": 379 }
+  },
+  {
+   "line": "ca540_46",
+   "sheet": "46 Renter’s Cr",
+   "values": { "A": 60, "B": 60, "C": 60, "D": 60, "E": 60, "F": 60 },
+   "notes": { "A": "N2" }
+  },
+  {
+   "line": "ca540_78",
+   "sheet": "78 Total payments",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "A": null, "B": null, "C": null, "D": null, "E": null, "F": null }
+  },
+  {
+   "line": "fed_4a",
+   "sheet": "4a IRA Distribution",
+   "values": { "G": null, "H": null, "I": null, "J": null, "K": 15000 }
+  },
+  {
+   "line": "fed_4b",
+   "sheet": "4b IRA taxable dist",
+   "values": { "G": null, "H": null, "I": null, "J": null, "K": 12315 },
+   "notes": { "K": "N6" }
+  },
+  {
+   "line": "fed_8",
+   "sheet": "8 Sch 1 line 10",
+   "values": { "G": 40918, "H": 41468, "I": 41568, "J": 42768, "K": 42768 }
+  },
+  {
+   "line": "fed_9",
+   "sheet": "9 Total income",
+   "values": { "G": 49418, "H": 49968, "I": 50068, "J": 51268, "K": 63583 }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "G": 49418, "H": 49968, "I": 50068, "J": 51268, "K": 63583 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "G": 33668, "H": 34218, "I": 34318, "J": 35518, "K": 47833 }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "G": 3803, "H": 3869, "I": 3881, "J": 4025, "K": 5501 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "G": 3303, "H": 3369, "I": 3381, "J": 3525, "K": 5001 }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 Owe",
+   "values": { "G": 3303, "H": 3369, "I": 3381, "J": 3525, "K": 5001 }
+  },
+  {
+   "line": "sch1_2a",
+   "sheet": "Sch 1-2a Alimony received",
+   "values": { "G": null, "H": null, "I": null, "J": 1200, "K": 1200 }
+  },
+  {
+   "line": "sch1_8b",
+   "sheet": "Sch 1-8b Gambling",
+   "values": { "G": 20288, "H": 20838, "I": 20838, "J": 20838, "K": 20838 }
+  },
+  {
+   "line": "sch1_8z",
+   "sheet": "Sch 1-8z Other income",
+   "values": { "G": 30, "H": 30, "I": 130, "J": 130, "K": 130 }
+  },
+  {
+   "line": "schA_16",
+   "sheet": "Sch A-16 Gambling losses",
+   "values": { "G": 500, "H": 1050, "I": 1050, "J": 1050, "K": 1050 }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "G": 8900, "H": 9450, "I": 9450, "J": 9450, "K": 9450 }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "G": 10000, "H": 10000, "I": 10000, "J": 10000, "K": 10000 }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "G": 5706, "H": 5706, "I": 5706, "J": 5706, "K": 5706 }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "G": 44812, "H": 44812, "I": 44912, "J": 46112, "K": 58427 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "G": 1223, "H": 1223, "I": 1229, "J": 1301, "K": 2056 }
+  },
+  {
+   "line": "ca540_48",
+   "sheet": "48 Tax after non refn cr",
+   "values": { "G": 535, "H": 535, "I": 541, "J": 613, "K": 1428 }
+  },
+  {
+   "line": "ca540_111",
+   "sheet": "111 Owe",
+   "values": { "G": 535, "H": 535, "I": 541, "J": 613, "K": 1428 }
+  },
+  {
+   "line": "ca540_115",
+   "sheet": "115 Refund",
+   "values": { "G": null, "H": null, "I": null, "J": null, "K": null }
+  },
+  {
+   "line": "schCA_8b_B",
+   "sheet": "CA Adj side 2 Section B Line 8b,Col B subtractions",
+   "values": { "G": null, "H": 550, "I": 550, "J": 550, "K": 550 },
+   "notes": { "H": "N5" }
+  },
+  {
+   "line": "schCA_9a_B",
+   "sheet": "CA Adj side 3 Line 9a, Col B, subtractions",
+   "values": { "G": null, "H": 550, "I": 550, "J": 550, "K": 550 },
+   "notes": { "H": "N5" }
+  },
+  {
+   "line": "schCA_16_B",
+   "sheet": "CA Adj side 6 Line 16 – other item deductions, Col B",
+   "values": { "G": null, "H": 550, "I": 550, "J": 550, "K": 550 },
+   "notes": { "H": "N5" }
+  },
+  {
+   "line": "fed_11a",
+   "sheet": "11a AGI",
+   "values": { "L": 63583, "M": 63583 }
+  },
+  {
+   "line": "fed_12e",
+   "sheet": "12e Std/itemized deductions",
+   "values": { "L": 15750, "M": 15750 }
+  },
+  {
+   "line": "fed_15",
+   "sheet": "15 Taxable income",
+   "values": { "L": 47833, "M": 47833 }
+  },
+  {
+   "line": "fed_16",
+   "sheet": "16 Tax",
+   "values": { "L": 5501, "M": 5501 }
+  },
+  {
+   "line": "fed_19",
+   "sheet": "19 CTC + ODC",
+   "values": { "L": 500, "M": 500 }
+  },
+  {
+   "line": "fed_24",
+   "sheet": "24 Total tax",
+   "values": { "L": 5001, "M": 5001 }
+  },
+  {
+   "line": "fed_37",
+   "sheet": "37 Owe",
+   "values": { "L": 5001, "M": 5001 }
+  },
+  {
+   "line": "ca540_14",
+   "sheet": "14 CA subtractions",
+   "values": { "L": 9450, "M": 9450 }
+  },
+  {
+   "line": "ca540_16",
+   "sheet": "16 CA additions",
+   "values": { "L": 10000, "M": 10000 }
+  },
+  {
+   "line": "ca540_18",
+   "sheet": "18 deductions",
+   "values": { "L": 9500, "M": 9500 },
+   "notes": { "L": "N7" }
+  },
+  {
+   "line": "ca540_19",
+   "sheet": "19 Taxable income",
+   "values": { "L": 54633, "M": 54633 }
+  },
+  {
+   "line": "ca540_31",
+   "sheet": "31 Tax",
+   "values": { "L": 1811, "M": 1811 }
+  },
+  {
+   "line": "ca540_48",
+   "sheet": "48 Tax after non refn cr",
+   "values": { "L": 1183, "M": 1183 }
+  },
+  {
+   "line": "ca540_96",
+   "sheet": "96 Shared Resp Penalty",
+   "values": { "L": null, "M": 950 }
+  },
+  {
+   "line": "ca540_111",
+   "sheet": "111 Owe",
+   "values": { "L": 1183, "M": 2133 }
+  }
+ ],
+ "notes": [
+  {
+   "step": "A",
+   "notes": "N1"
+  },
+  {
+   "step": "B",
+   "notes": "N3"
+  },
+  {
+   "step": "C",
+   "notes": "NN"
+  },
+  {
+   "step": "D",
+   "notes": "NN"
+  },
+  {
+   "step": "K",
+   "notes": "NN"
+  },
+  {
+   "step": "L",
+   "notes": "N7"
+  }
+ ]
+}

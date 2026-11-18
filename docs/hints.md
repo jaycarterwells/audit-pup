@@ -1,6 +1,6 @@
 # Audit Pup hints for review
 
-Every hint a counselor can see, for every case, as Audit Pup 0.17.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
+Every hint a counselor can see, for every case, as Audit Pup 0.18.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
 
 How hints work: when a line fails, the counselor opens one hint. It shows the answer key value ("Answer key: ...") and the text below, which says where to look in the problem. Lines that are blank on the answer sheet are checked together in one row, "Lines that should be blank"; when it fails, its hint lists each line that has an amount, with that line's hint below. A step can replace a line's hint with an answer sheet note for that step only. Answer key notes have their own text.
 
@@ -9,6 +9,7 @@ Reviewers: please check that each hint teaches without giving more away than the
 * [Quinn (Raymond Quinn, 2025)](#quinn)
 * [Baylor (Michael Baylor, 2025)](#baylor)
 * [Graham (Stacey and Sean Graham, 2025)](#graham)
+* [Parks (Mary Parks, 2025)](#parks)
 
 <a id="quinn"></a>
 
@@ -433,4 +434,123 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Checked: at this step only
 * Box the student ticks: I added a TS Note for Step P (the CA military retirement exclusion) in TaxSlayer
 * Example: STEP P - CA EXCLUSION FOR MILITARY RETIREMENT: SINCE SEAN WAS IN UNIFORMED SERVICE, $20,000 OF THE TAXABLE AMOUNT WAS EXCLUDED FOR CA.
+
+
+<a id="parks"></a>
+
+## Parks (Mary Parks, 2025)
+
+Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O.
+
+### Federal Form 1040
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 4a | IRA distributions | Line 4a is box 1 of Mary's Wells Fargo 1099-R (Step K). Compare the 1099-R you entered with the form in the problem. |
+| Line 4b | Taxable IRA distributions | Only part of Mary's IRA distribution is taxable, because she has basis from nondeductible contributions (Step K). The taxable amount comes from Form 8606, using last year's Form 8606 and the total value of her IRAs given in the step. |
+| Line 6a | Social Security benefits | Line 6a holds Mary's Canada Pension Plan benefits (Step C), which are treated like U.S. Social Security for the federal return. Check how the Canadian pension was entered and the amount from the problem. |
+| Line 6b | Taxable Social Security benefits | TaxSlayer works out the taxable part of the benefits from Mary's other income. If line 6a and the income lines above are right, this follows. |
+| Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10: last year's state refund, the board member pay, the cell tower rent and royalties, the gambling winnings, the prize, and the alimony, each added in its own step. Check the Schedule 1 lines in this list first. |
+| Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
+| Line 11a | Adjusted gross income | Mary has no adjustments to income, so line 11a equals total income. If line 9 is right, this follows. |
+| Line 12e | Standard or itemized deduction | The standard deduction follows from the filing status (single) and Mary's age. Re-check the filing status and her birth date from Step A. |
+| Line 15 | Taxable income | Taxable income is AGI minus the deduction, never below zero. If lines 11a and 12e are right, this follows. |
+| Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income (line 15) is right, this follows. |
+| Line 19 | Child tax credit and credit for other dependents | Line 19 is the credit for other dependents for Sue (note N1). It shows once Mary has tax to apply it against. Re-check Sue's dependent screen from Step A. |
+| Line 24 | Total tax | Total tax is the tax minus the credits. Check lines 16 and 19 first; this follows from them. |
+| Line 37 | Amount you owe | Mary has no withholding or payments, so the amount she owes equals the total tax. If line 24 is right, this follows. |
+
+### Schedule 1
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 1 | Taxable state refund | Mary itemized last year, so her California refund from the 1099-G is taxable (Step B). Use last year's sales tax deduction worksheet to work out how much of the refund is taxable. |
+| Line 2a | Alimony received | The alimony Mary receives (Step J) is taxable because the divorce was final before 2019. Enter it as alimony received, with the date of the divorce from the problem. |
+| Line 5 | Rental real estate and royalties (Schedule E) | Line 5 comes from Schedule E: the cell tower rent (Step E) and the oil and gas royalties (Step F), each from a 1099-MISC. Check the property type and the amounts on each Schedule E entry. |
+| Line 8b | Gambling winnings | Line 8b adds box 1 of every W-2G entered so far: the casino (Step G) and the California Lottery (Step H). Compare each W-2G you entered with the forms in the problem. |
+| Line 8z | Other income | Line 8z holds the board member pay that was moved from the 1099-NEC to other income (Step D) and the prize from the 1099-MISC (Step I). Check that both went to other income, not to a business. |
+
+### Schedule A
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 16 | Other itemized deductions (gambling losses) | Gambling losses go on Schedule A line 16, up to the gambling winnings: the casino losses (Step G) and the California Lottery losses (Step H). Check the losses entered with each W-2G. |
+
+### California Form 540
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 11 | California exemption amount | The exemption amount follows from Mary's personal exemption and Sue as a dependent. Re-check the dependent entries from Step A, as note N1 describes. |
+| Line 14 | California subtractions | California subtractions come from Schedule CA, column B: last year's state refund, the nontaxable part of the Canadian pension, and the California Lottery winnings. Check the Schedule CA lines for the step you are on. |
+| Line 16 | California additions | California taxes the Canada Pension Plan benefits that the federal return treats like Social Security (note N3b), so the $10,000 is added back on Schedule CA. Enter it as a manual California adjustment. |
+| Line 18 | California deduction | California uses the larger of its standard deduction and its own itemized deductions. Once Mary's itemized deductions are entered (Step L), California itemizes even though the federal return does not. Check the Schedule A entries. |
+| Line 19 | California taxable income | California taxable income is the California AGI minus the deduction on line 18. Check the subtractions, additions, and line 18 first. |
+| Line 31 | California tax | California tax comes from taxable income (line 19). If line 19 is right, this follows. |
+| Line 46 | Nonrefundable renter’s credit | Mary rents, so she may qualify for the California renter's credit. Read the Interview Notes about her home, and the renter's credit questions in TaxSlayer's state section. |
+| Line 48 | California tax after credits | Line 48 is the California tax minus the exemption and renter's credits. Check lines 31 and 46 first. |
+| Line 78 | Total payments | Mary has no California withholding or estimated payments, so this line should be blank. Check that nothing was entered as California tax withheld on any form. |
+| Line 96 | Individual shared responsibility penalty | Sue had no health insurance during the year, so California charges a shared responsibility penalty (Step M). Answer the California health coverage questions for each person, month by month, as the problem describes. |
+| Line 111 | California amount you owe | The California amount owed is the tax after credits plus any penalty, minus payments. Check lines 48 and 96 first. |
+| Line 115 | California refund | Mary owes California tax and has no payments, so there should be no refund. Check the California tax lines above. |
+
+### schCA
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Section B, line 8b, column B | California Lottery winnings subtracted | California does not tax California Lottery winnings (note N5), so the lottery winnings from Step H are subtracted on Schedule CA. Enter it as a manual California adjustment. |
+| Section B, line 9a, column B | Total additional income subtractions | Line 9a totals the column B subtractions in Section B. If the lottery subtraction on line 8b is right, this follows. |
+| Part II, line 16, column B | California Lottery losses subtracted | California Lottery losses are not deductible for California (note N5), so they are subtracted from the itemized deductions on Schedule CA Part II. Enter it under the state section's itemized deduction adjustments. |
+
+### Notes for one step only
+
+At these steps the line's hint above is replaced by the answer sheet note, or the step shows a tip.
+
+| Step | Line | Text |
+| --- | --- | --- |
+| A | California Form 540, Line 46 | Note N2: answer incorrect? The exercise said Mary rented a large townhouse. |
+| B | Schedule 1, Line 1 | Note N3: did you use the State and Local General Sales Tax Deduction worksheet that was included in last year's tax return, beginning on page 10? |
+| B | Federal Form 1040, Line 8 | Note N3: did you use the State and Local General Sales Tax Deduction worksheet that was included in last year's tax return, beginning on page 10? |
+| C | California Form 540, Line 16 | Note N3b: see the Duck Book or the 'CA CA' handouts. You need to manually increase California income for the Canada Pension Plan benefits of $10,000. |
+| D | Federal Form 1040, Line 8 | Note N4: if your answer is incorrect, see Pub 4012 or the Duck Book for 'Form 1099-NEC'. |
+| H | undefined, Section B, line 8b, column B | Note N5: California Lottery winnings are not taxable to California, and California Lottery losses are not deductible. Manually decrease the income for the lottery winnings, and manually decrease (subtract) the California itemized deductions by $550. See the handout 'CA CA Instructions' or the Duck Book under 'Gambling Winnings'. |
+| H | undefined, Section B, line 9a, column B | Note N5: California Lottery winnings are not taxable to California, and California Lottery losses are not deductible. Manually decrease the income for the lottery winnings, and manually decrease (subtract) the California itemized deductions by $550. See the handout 'CA CA Instructions' or the Duck Book under 'Gambling Winnings'. |
+| H | undefined, Part II, line 16, column B | Note N5: California Lottery winnings are not taxable to California, and California Lottery losses are not deductible. Manually decrease the income for the lottery winnings, and manually decrease (subtract) the California itemized deductions by $550. See the handout 'CA CA Instructions' or the Duck Book under 'Gambling Winnings'. |
+| K | Federal Form 1040, Line 4b | Note N6: enter the 1099-R and blank out box 2a. Then enter Form 8606: total basis in traditional IRAs from the 2024 Form 8606 line 14 ($22,343), total value of all traditional IRAs from the step ($110,000), and the distribution from 1099-R box 1 ($15,000). TaxSlayer shows the taxable amount after Continue. Go back to the 1099-R and put that amount in box 2a (it is also on the 2025 Form 8606 line 15c, $12,315). |
+| L | California Form 540, Line 18 | Note N7: itemized deductions should be entered, because even though the federal return uses the standard deduction, California itemizes. Check Schedule A: line 1 = $2,617; line 4 = $0; line 7 = $921; line 14 = $9,000; line 16 = $1,050; line 17 = $10,971. |
+
+### Answer key notes
+
+**N1: Filing status and dependents** (Step A)
+
+* Answer key: Filing status = Single. Using the 'Qualifying Child or Relative Resource Tool', Devon = Chart 1 Box 36, so he is NOT a dependent but is eligible for EIC. Pam = Chart 2 Box 2, is NOT a dependent and should NOT be listed on the tax return. Sue = Chart 2 Box 24, ODC, but no EIC. Her relationship = NONE.
+* Hint: Walk Devon, Pam, and Sue through the 'Qualifying Child or Relative Resource Tool'. Only Sue is a dependent, for the credit for other dependents, with relationship None. Devon is listed for the EIC only, not as a dependent, and Pam is not listed at all. Check the filing status and each person's screen.
+* Checked: at this step and again at every later step
+
+**NN_C: TS Note added for Step C** (Step C)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step C (the Canadian pension) in TaxSlayer
+* Example: STEP C - CANADIAN PENSION: MARY RECEIVES MONIES FROM A CANADIAN PENSION. BE SURE TO ASK HER FOR IT EACH YEAR IF SHE DOESN'T OFFER THE INFORMATION.
+
+**NN_D: TS Note added for Step D** (Step D)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step D (the 1099-NEC) in TaxSlayer
+* Example: STEP D - 1099-NEC: MARY IS A VOLUNTEER FOR EDAC. THE $30 THAT WAS REPORTED IN 1099-NEC BOX 1 IS NOT BUSINESS INCOME AND WAS MOVED TO 1099-MISC BOX 3 OTHER INCOME.
+
+**NN_K: TS Note added for Step K** (Step K)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step K (the IRA basis) in TaxSlayer
+* Example: STEP K - IRA BASIS: 2024 TAX RETURN HAD FORM 8606. ENTERED INFO FROM THAT, THE WELLS FARGO 1099-R, AND TOTAL VALUE OF IRAS TO GET TAXABLE AMOUNT SHOWN IN BOX 2A.
+
+**NN_O: TS Note added for Step O** (Step O)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step O (the estimated tax vouchers) in TaxSlayer
+* Example: STEP O - EST VOUCHERS: CREATED EST. TAX VOUCHERS, FED ONLY, $803 A QTR.
 

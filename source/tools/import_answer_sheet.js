@@ -15,6 +15,9 @@
 //   rows after the "CA 3514" row ("Line 2" ...)         -> ca3514_<line>
 //   "CA Adj, side N" + "... Line 5b column B"           -> schCA_5b_B (Schedule CA (540); no column: schCA_<line>)
 //   "Sch A" + "Line 1", "Sch 1 -15" (any spacing)      -> schA_1, sch1_15
+//   "Sch1-L5", "Sch 1 – L1", "Sch A-L16" (an L, a dash)  -> sch1_5, sch1_1, schA_16
+//   "CA 540 14" (heading and line in one cell)          -> ca540_14, and the rows after it are CA 540 lines
+//   a table whose first cell is not "line #" is a side table and is skipped
 //   1040 line "27" is the 2025 form's line 27a          -> fed_27a
 // A row with "checked" cells is a checkbox (kind "mark"): "checked" is true, a blank cell means not checked.
 // Corrections confirmed by the case author go in cases/<case>/answer_sheet_corrections.json (see below), never in the key.
@@ -39,17 +42,21 @@ if(!tables.length) throw new Error('no tables found in '+htmlFile);
 // --- turn each table row into a line of the page
 const rows=[], notes=[], steps=[];
 tables.forEach((t,ti)=>{
+  if(!/^line\s*#?$/i.test((t[0][0]||'').trim())) return;   // a side table, such as Parks' Form 8606 "where each entry comes from"
   const cols=t[0].slice(2).map(h=>{ const m=h.match(/['‘’]([A-Z]\d?)['‘’]/)||h.match(/^([A-Z]\d?)\b/); if(!m) throw new Error(`table ${ti+1}: cannot read step from header "${h}"`); return m[1]; });
   cols.forEach(s=>{ if(!steps.includes(s)) steps.push(s); });
   let ca=false, ftb3514=false;
   t.slice(1).forEach(r=>{
-    const code=(r[0]||'').trim().replace(/^(Sch\s*[123A])\s*-\s*/i,(m,a)=>a.replace(/\s+/g,' ')+'-'), label=(r[1]||'').trim(), cells=r.slice(2);
-    if(/^CA 540/i.test(code)){ ca=true; ftb3514=false; return; }
+    let code=(r[0]||'').trim().replace(/[\u2013\u2014]/g,'-').replace(/^Sch\s*([123A])\s*-\s*L?(?=\d)/i,(m,a)=>'Sch '+a.toUpperCase()+'-');
+    const label=(r[1]||'').trim(), cells=r.slice(2);
+    const ca540row=code.match(/^CA 540\s+(\d+[a-z]?)$/i);   // "CA 540 14": the CA 540 heading and its first line in one cell
+    if(ca540row){ ca=true; ftb3514=false; code=ca540row[1]; }
+    else if(/^CA 540/i.test(code)){ ca=true; ftb3514=false; return; }
     if(/^CA 3514/i.test(code)){ ftb3514=true; ca=false; return; }
-    if(!code){ if(/note/i.test(label)) cols.forEach((s,i)=>{ if(cells[i]) notes.push({step:s, notes:cells[i]}); }); return; }
+    if(!code){ if(/note|comment/i.test(label)) cols.forEach((s,i)=>{ if(cells[i]) notes.push({step:s, notes:cells[i]}); }); return; }
     if(/^comments?$/i.test(code)){ cols.forEach((s,i)=>{ if(cells[i]) notes.push({step:s, notes:cells[i]}); }); return; }
     let line;
-    if(/^CA Adj/i.test(code)){ const m=label.match(/Line (\d+[a-z]?)(?:.*?column ([ABC]))?/i); if(!m) throw new Error(`table ${ti+1}: cannot read the Schedule CA line in "${label}"`); line='schCA_'+m[1]+(m[2]?'_'+m[2].toUpperCase():''); }
+    if(/^CA Adj/i.test(code)){ const m=label.match(/Line (\d+[a-z]?)(?:.*?(?:column|col)\.?\s*([ABC])\b)?/i); if(!m) throw new Error(`table ${ti+1}: cannot read the Schedule CA line in "${label}"`); line='schCA_'+m[1]+(m[2]?'_'+m[2].toUpperCase():''); }
     else if(/^Sch A$/i.test(code) && /^Line \w+/i.test(label)) line='schA_'+label.match(/^Line (\w+)/i)[1];
     else if(ftb3514){ const m=code.match(/^(?:Line )?(\d+[a-z]?)$/i); if(!m) throw new Error(`table ${ti+1}: cannot read the 3514 line in "${code}"`); line='ca3514_'+m[1]; }
     else if(ca) line='ca540_'+code;

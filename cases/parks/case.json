@@ -1,0 +1,15 @@
+{
+  "id": "parks",
+  "order": 5,
+  "about": "Test description of the Parks case. The answer key is answer_key.json (made from answer_sheet.doc); the lines, steps, and notes are in source/cases/parks.js. This file tells the tests which PDF goes with each step.",
+  "pdf": { "A": "Parks_Sec_A.pdf", "B": "Parks_Sec_B.pdf", "C": "Parks_Sec_C.pdf", "D": "Parks_Sec_D.pdf", "E": "Parks_Sec_E.pdf",
+           "F": "Parks_Sec_F.pdf", "G": "Parks_Sec_G.pdf", "H": "Parks_Sec_H.pdf", "I": "Parks_Sec_I.pdf", "J": "Parks_Sec_J.pdf",
+           "K": "Parks_Sec_K.pdf", "L": "Parks_Sec_L.pdf", "M": "Parks_Sec_M.pdf", "N": "Parks_Golden.pdf", "O": "Parks_Golden.pdf" },
+  "pdfWhy": "Steps N and O (no change expected from Step M; O makes next year's estimate vouchers) have no step printouts, so they use Parks_Golden.pdf, the instructors' final Quality Review printout ('JA Parks GOLDEN.pdf'), whose values match Step M.",
+  "todo": { "C": 1, "D": 1, "K": 1, "O": 1 },
+  "todoWhy": "Steps C, D, K, and O each leave one TS Note box for the student to tick (the answer sheet marks NN at C, D, and K, and its TS Note examples include Step O).",
+  "ownTsNoteBox": ["C", "D", "K", "O"],
+  "ownTsNoteBoxWhy": "Each of these steps keeps its own TS Note box: ticking one must not tick another.",
+  "sameReturn": [["M", "N", "O"]],
+  "speed": { "step": "M", "maxSeconds": 20 }
+}
