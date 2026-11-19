@@ -711,6 +711,7 @@ function blankRow(step,keys,got,present){
     if(st==='fail'||st==='missing') bad.push({k:k,st:st}); else if(st==='warn') unread.push(k); });
   var where=function(k){ return FORM_TITLES[LINES[k].form]+', '+LINES[k].line; };
   setStatus(r, bad.length?'fail':(unread.length?'warn':'pass'), {nochange:nochange});
+  if(bad.length||unread.length) r.li.setAttribute('data-off', bad.map(function(b){return b.k;}).concat(unread).join(' '));   /* for the tests: which lines */
   if(!bad.length && !unread.length) return r;
   var ul=el('ul','blanklist');
   bad.forEach(function(b){ ul.appendChild(el('li',null, b.st==='missing' ? '<b>'+esc(where(b.k))+'</b>: this form is not in your PDF.'
@@ -1106,6 +1107,8 @@ function showUpdate(){
   updateGuide();
 }
 var CHANGELOG=[
+  {version:'0.19.0', date:'2026-11-19',
+   added:['A fifth case: Kent (Karl Kent, 2025), with 17 steps covering a W-2, seller-financed mortgage interest, interest and dividends from brokerage statements, last year\'s state refund, the sale of a home, brokerage sales, a partnership K-1, itemizing, estimated payments, dependent care, an IRA contribution, and the 1095-A. Drop a Kent PDF and Audit Pup picks the case for you, or choose it in the Case box.']},
   {version:'0.18.0', date:'2026-11-19',
    added:['A fourth case: Parks (Mary Parks, 2025), with 15 steps covering last year\'s state refund, a Canadian pension, 1099-NEC and 1099-MISC income, casino and California Lottery winnings, alimony, an IRA distribution with basis, itemizing for California, and the California health coverage penalty. Drop a Parks PDF and Audit Pup picks the case for you, or choose it in the Case box.']},
   {version:'0.17.0', date:'2026-11-18',

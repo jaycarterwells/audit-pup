@@ -1,6 +1,6 @@
 # Audit Pup hints for review
 
-Every hint a counselor can see, for every case, as Audit Pup 0.18.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
+Every hint a counselor can see, for every case, as Audit Pup 0.19.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
 
 How hints work: when a line fails, the counselor opens one hint. It shows the answer key value ("Answer key: ...") and the text below, which says where to look in the problem. Lines that are blank on the answer sheet are checked together in one row, "Lines that should be blank"; when it fails, its hint lists each line that has an amount, with that line's hint below. A step can replace a line's hint with an answer sheet note for that step only. Answer key notes have their own text.
 
@@ -9,6 +9,7 @@ Reviewers: please check that each hint teaches without giving more away than the
 * [Quinn (Raymond Quinn, 2025)](#quinn)
 * [Baylor (Michael Baylor, 2025)](#baylor)
 * [Graham (Stacey and Sean Graham, 2025)](#graham)
+* [Kent (Karl Kent, 2025)](#kent)
 * [Parks (Mary Parks, 2025)](#parks)
 
 <a id="quinn"></a>
@@ -434,6 +435,136 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Checked: at this step only
 * Box the student ticks: I added a TS Note for Step P (the CA military retirement exclusion) in TaxSlayer
 * Example: STEP P - CA EXCLUSION FOR MILITARY RETIREMENT: SINCE SEAN WAS IN UNIFORMED SERVICE, $20,000 OF THE TAXABLE AMOUNT WAS EXCLUDED FOR CA.
+
+
+<a id="kent"></a>
+
+## Kent (Karl Kent, 2025)
+
+Steps: A, B, C, D, E, G, H, J, K, L, N, O, P, Q, R, S, T.
+
+### Federal Form 1040
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 1a | Wages (W-2 box 1) | Line 1a is box 1 of Karl's W-2 (Step B). Compare the W-2 you entered with the form in the problem, box by box. |
+| Line 2a | Tax-exempt interest | Line 2a adds the tax-exempt interest from the ZYX 1099-INT (Step D), the exempt-interest dividends from the 1099-DIVs (Steps E and G), and the K-1's tax-exempt interest (Step L). Review the handout 'Tax Exempt Interest & Dividends Quick Guide' for where each one is entered. |
+| Line 2b | Taxable interest | Line 2b adds the seller-financed mortgage interest (Step C), the ZYX 1099-INT (Step D), and the K-1 interest (Step L). Check each amount you entered against the problem. |
+| Line 3a | Qualified dividends | Line 3a is the qualified dividends (box 1b) from the 1099-DIVs and the K-1. Compare box 1b of each form you entered with the problem. |
+| Line 3b | Ordinary dividends | Line 3b is the ordinary dividends (box 1a) from the 1099-DIVs and the K-1. Compare box 1a of each form you entered with the problem. |
+| Line 7a | Capital gain or loss | Line 7a comes from Schedule D: the capital gain distributions (Step E), the home sale (Step J), the Schwab 1099-B sales (Step K), and the K-1 (Step L). A net loss is limited to $3,000. Look at Schedule D in your PDF to find which part is off. |
+| Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10: last year's taxable state refund (Step H) and the K-1 partnership income on Schedule E (Step L). Check the Schedule 1 lines first. |
+| Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
+| Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26: the early withdrawal penalty from the 1099-INT (Step D) and, from Step Q, the IRA deduction. Check the Schedule 1 lines in this list. |
+| Line 11a | Adjusted gross income | Line 11a is total income minus the adjustments. If lines 9 and 10 are right, this follows. |
+| Line 12e | Standard or itemized deduction | Before Step N this is the standard deduction for head of household and Karl's age; from Step N, Karl itemizes. Re-check the filing status from Step A, or the Schedule A amounts the answer sheet lists for this step. |
+| Line 13a | Qualified business income deduction | Line 13a is the qualified business income deduction from the Section 199A dividends on a 1099-DIV (Step E). Check box 5 of the 1099-DIV you entered. |
+| Line 13b | Additional deductions (Schedule 1-A) | Line 13b comes from Schedule 1-A: the new deduction for a taxpayer age 65 or older, which phases out as income rises. Check Karl's birth date from Step A; if line 11a is right, this follows. |
+| Line 15 | Taxable income | Taxable income is AGI minus the deductions on lines 12e through 13b, never below zero. If those lines are right, this follows. |
+| Line 16 | Tax | Tax comes from taxable income, with qualified dividends and capital gains taxed at lower rates. If line 15 and the dividend and gain lines are right, this follows. |
+| Line 19 | Child tax credit and credit for other dependents | Line 19 is the child tax credit for Jane (note N1), limited to the tax. Kendra and Susan are not dependents and are not listed. Re-check the dependent screens from Step A. |
+| Line 20 | Credits from Schedule 3, line 8 | Line 20 comes from Schedule 3: the foreign tax credit from the 1099-DIVs and the K-1, and from Step P the child and dependent care credit. Check the Schedule 3 lines in this list. |
+| Line 21 | Total credits | Line 21 adds lines 19 and 20. If those are right, this follows. |
+| Line 22 | Tax after credits | Line 22 is the tax minus the credits. Check lines 16 and 21 first. |
+| Line 24 | Total tax | Total tax is the tax after credits plus any other taxes. Check lines 16 and 21 first; this follows from them. |
+| Line 25d | Federal tax withheld | Line 25d adds the federal tax withheld on every form entered so far: the 1099-INT (Step D) and the 1099-DIV (Step E). Compare box 4 of each form you entered with the problem. |
+| Line 26 | Estimated tax payments | Line 26 is the four federal estimated payments Karl made plus last year's refund applied to this year (Step O). Look at last year's return in the problem for the amount applied. |
+| Line 31 | Other payments (Schedule 3, line 15) | Line 31 is the net premium tax credit from Form 8962 (Step R). Check the 1095-A entries: totals only when every month is the same, otherwise month by month. |
+| Line 33 | Total payments | Line 33 adds withholding, estimated payments, and refundable credits. Check lines 25d, 26, and 31 first. |
+| Line 35a | Refund | The refund is the payments minus the total tax. Check the total tax and the payment lines first. |
+| Line 37 | Amount you owe | The amount owed is the total tax minus the payments. Check line 24 and the payment lines first. |
+
+### Schedule 1
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 5 | Rental real estate, partnerships (Schedule E) | Line 5 is the K-1 partnership income from Schedule E (Step L). Check that the K-1 was entered as a passive, publicly traded partnership with all investment at risk, as note N10 describes. |
+| Line 18 | Penalty on early withdrawal of savings | Line 18 is box 2 of the ZYX 1099-INT (Step D), the early withdrawal penalty. Compare the 1099-INT you entered with the brokerage statement. |
+| Line 20 | IRA deduction | Line 20 is Karl's traditional IRA contribution (Step Q): the maximum for his age, limited by his earned income. See the handout 'IRA Contributions'. |
+
+### Schedule 3
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 1 | Foreign tax credit | Line 1 adds the foreign tax paid on the 1099-DIVs (box 7) and on the K-1. Enter foreign tax on the federal interest or dividend screen, not on the state section. |
+| Line 2 | Child and dependent care credit | Line 2 is the credit for the care of Susan (Step P). Jane is a qualifying person with no expenses, and Melissa is not a qualifying person. See Pub 4012, 'Child & Dependent Care Expenses'. |
+| Line 9 | Net premium tax credit | Line 9 is the net premium tax credit from Form 8962 (Step R). Check the 1095-A entries month by month against the form in the problem. |
+
+### Schedule A
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 5a | State and local income or sales tax | Line 5a is the larger of the state income tax and the general sales tax. From Step N, use the sales tax worksheet in TaxSlayer, with the VA benefits added to the income for it (note N12). |
+
+### California Form 540
+
+| Line | What it is | Hint |
+| --- | --- | --- |
+| Line 11 | California exemption amount | The exemption amount follows from Karl's personal exemption and Jane as a dependent. Re-check the dependent entries from Step A, as note N1 describes. |
+| Line 14 | California subtractions | California subtractions come from Schedule CA, column B: the U.S. Savings Bond interest (Step D) and last year's state refund (Step H). Mark savings bond interest as California exempt on the 1099-INT screen. |
+| Line 16 | California additions | California taxes interest and exempt-interest dividends from other states' bonds, so they are added on Schedule CA, column C. Check the California taxable amounts on each 1099-INT, 1099-DIV, and K-1 entry, as the answer sheet notes describe. |
+| Line 17 | California AGI | California AGI is the federal AGI minus the subtractions plus the additions. Check lines 14 and 16 first. |
+| Line 18 | California deduction | California uses the larger of its standard deduction and its own itemized deductions. From Step N, the California itemized deductions start from Schedule A. Check the Schedule A entries. |
+| Line 19 | California taxable income | California taxable income is the California AGI minus line 18. Check lines 17 and 18 first. |
+| Line 31 | California tax | California tax comes from taxable income (line 19). If line 19 is right, this follows. |
+| Line 35 | California tax after exemption credits | Line 35 is the California tax minus the exemption credits. Check line 31 and the dependent entries from Step A. |
+| Line 46 | Nonrefundable renter’s credit | Karl rents his home on Rivermeade Drive. Read the Interview Notes and the Duck Book on the California renter's credit, including its income limit. |
+| Line 48 | California tax after credits | Line 48 is the California tax minus the nonrefundable credits. Check lines 31 and 35 first. |
+| Line 64 | California total tax | Line 64 is the California tax after credits plus any other taxes. Check line 48 first. |
+| Line 72 | California estimated payments | Line 72 adds Karl's California estimated payments for the year (Step O), including the one made in January, plus last year's California refund applied to this year. Look at last year's return in the problem. |
+| Line 76 | Young child tax credit | The young child tax credit depends on Jane being under 6 and on earned income. Once Karl has wages (Step B), check that Jane is entered as a qualifying child for the California EITC. |
+| Line 78 | California total payments | Line 78 adds the California payments and refundable credits. Check line 72 first. |
+| Line 111 | California amount you owe | The California amount owed is the total tax minus the payments. Check lines 64 and 78 first. |
+| Line 115 | California refund | A California refund comes from the refundable credits (such as the young child tax credit) and payments being more than the tax. Check the California credit and payment lines. |
+
+### Notes for one step only
+
+At these steps the line's hint above is replaced by the answer sheet note, or the step shows a tip.
+
+| Step | Line | Text |
+| --- | --- | --- |
+| A | California Form 540, Line 46 | Note N3: different answer? Go back and read the Interview Notes and the Duck Book on the California renter's credit. |
+| A | California Form 540, Line 76 | Note N2: did you enter the number of months Jane lived with Karl as 12, not 7? |
+| A | California Form 540, Line 115 | Note N2: did you enter the number of months Jane lived with Karl as 12, not 7? |
+| D | California Form 540, Line 14 | Note N4: Schedule CA, line 2 should be 147; 63,519; 500; 25. Not matching? Watch the video. |
+| D | California Form 540, Line 16 | Note N4: Schedule CA, line 2 should be 147; 63,519; 500; 25. Not matching? Watch the video. |
+| E | California Form 540, Line 16 | Note N5: incorrect amount? Read the Duck Book about box 12 under 'Line 3 - Dividends', including the 'Note for CA returns'. Schedule CA line 2 should be 38,147; 63,519; 500; 38,025, and line 3 should be 150; 232; 0; 0. |
+| G | California Form 540, Line 16 | Note N7: Schedule CA line 2 should be 38,933; 63,519; 500; 38,489, and line 3 should be 150; 232; 0; 0. |
+| J | Federal Form 1040, Line 7a | Note N8: look at Schedule D line 10. Did you enter the sale of the main home correctly? The line should read 470,000; 240,000; -230,000; 0. |
+| K | Federal Form 1040, Line 7a | Note N9: look at Schedule D. Line 1b = 6,203; 9,381; 200; -2,978. Line 7 = -2,978. Line 8a = 15,000; 12,000; 3,000. Line 9 = 27,403; 33,277; 0; -5,874. Line 10 stays 470,000; 240,000; -230,000; 0. On the Capital Loss Carryover Worksheet, line 8 = 0 and line 13 = 2,783. |
+| L | Schedule 1, Line 5 | Note N10: did you check the boxes for 'passive entity' and 'publicly traded partnership' on the K-1 form? Schedule D line 5 = -8 and line 12 = 13. |
+| L | Federal Form 1040, Line 8 | Note N10: did you check the boxes for 'passive entity' and 'publicly traded partnership' on the K-1 form? Schedule D line 5 = -8 and line 12 = 13. |
+| L | California Form 540, Line 16 | Note N11: Schedule CA line 2 should be 39,224; 63,564; 500; 38,780, and line 3 should be 175; 308; 0; 0. If not, tax-exempt interest and foreign taxes paid should be entered on the federal interest screen, not directly in the California state section. |
+| N | Federal Form 1040, Line 12e | Note N12: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box checked, $1,949; line 7 = $8,005; line 10 = $7,065; line 14 = $11,425; line 17 = $40,627. If line 5a is off, did you increase the MAGI by the VA benefits (Pub 4012, page F-11)? |
+| N | Schedule A, Line 5a | Note N12: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box checked, $1,949; line 7 = $8,005; line 10 = $7,065; line 14 = $11,425; line 17 = $40,627. If line 5a is off, did you increase the MAGI by the VA benefits (Pub 4012, page F-11)? |
+| O | Federal Form 1040, Line 12e | Note N13: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425. |
+| O | Federal Form 1040, Line 7a | Note N13b: on the Capital Loss Carryover Worksheet, line 8 = 786 and line 13 = 3,992. |
+| O | Federal Form 1040, Line 15 | Note N13b: on the Capital Loss Carryover Worksheet, line 8 = 786 and line 13 = 3,992. |
+| P | Schedule 3, Line 2 | Note N14: if you do not match, did you mark Jane as qualified but with no expenses? See Pub 4012, 'Child & Dependent Care Expenses', especially page G-15. |
+| P | Federal Form 1040, Line 21 | Note N14: if you do not match, did you mark Jane as qualified but with no expenses? See Pub 4012, 'Child & Dependent Care Expenses', especially page G-15. |
+| R | Federal Form 1040, Line 12e | Note N15: Schedule A line 1 = $21,058; line 4 = $12,520; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425. |
+
+### Answer key notes
+
+**N1: Filing status and dependents** (Step A)
+
+* Answer key: Filing status = HOH. Using the 'Qualifying Child or Relative Resource Tool', Jane = Box 35, CTC. Kendra and Susan = Chart 2 Box 12, not a dependent, no EIC, but medical and dependent care allowed. The CTC ODC Chart shows these two are not entered on the tax return in the dependents area.
+* Hint: Start the 'Qualifying Child or Relative Resource Tool' with Karl and Kendra, then Jane and Susan. Only Jane is listed, for the child tax credit, and she lived with Karl all 12 months. Kendra and Susan are not entered as dependents at all, even as 'not a dependent'. Check the filing status and the dependents area.
+* Checked: at this step and again at every later step
+
+**NN_N: TS Note added for Step N** (Step N)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step N (the VA benefits) in TaxSlayer
+* Example: STEP N - VA BENEFITS: ENTERED $30,000 OF NON-TAXABLE VA BENEFITS INTO THE SALES TAX MAGI.
+
+**NN_Q: TS Note added for Step Q** (Step Q)
+
+* Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
+* Checked: at this step only
+* Box the student ticks: I added a TS Note for Step Q (the IRA contribution) in TaxSlayer
+* Example: STEP Q - IRA CONTRIBUTION: KARL AGREED TO MAKE HIS 2025 IRA CONTRIBUTION OF $8,000 PRIOR TO 4/15.
 
 
 <a id="parks"></a>

@@ -18,7 +18,9 @@ const { open, offline } = require('./page');
     for(const s of c.steps){
       const r=await grade(p,c.id,s,c.pdfPath(s));
       const known=c.known(c.pdf[s],s), todo=r.rows.filter(x=>x.cls==='todo').length, off=r.rows.filter(x=>x.cls!=='pass'&&x.cls!=='todo');
-      const bad=off.filter(x=>!known.includes(x.line)), fixed=known.filter(k=>!off.some(x=>x.line===k));
+      // the "Lines that should be blank" row names its failing lines in data-off
+      const lines=x=>x.line==='blank'?x.off:[x.line], offLines=off.flatMap(lines);
+      const bad=off.filter(x=>!lines(x).every(k=>known.includes(k))), fixed=known.filter(k=>!offLines.includes(k));
       if(known.length){ console.log(`${c.awaiting[s]?'WAITING':'KNOWN PRINTOUT ERROR'} ${c.id} Step ${s}: ${known.join(', ')} (${(c.excused(s)||{}).why||'see case.json'})`);
         expect(`${c.id} Step ${s}: the known difference is still there (remove it from case.json once the printout is fixed)`, !fixed.length, fixed.join(', ')); }
       const ok=expect(`${c.id} Step ${s}: its own PDF passes every check${known.length?' except the awaited fix':''}`, !bad.length && !r.err, bad.map(x=>`${x.st}: ${x.name} | ${x.yours}`).join(' || ')||r.err)

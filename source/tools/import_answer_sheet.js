@@ -18,7 +18,7 @@
 //   "Sch1-L5", "Sch 1 – L1", "Sch A-L16" (an L, a dash)  -> sch1_5, sch1_1, schA_16
 //   "CA 540 14" (heading and line in one cell)          -> ca540_14, and the rows after it are CA 540 lines
 //   a table whose first cell is not "line #" is a side table and is skipped
-//   1040 line "27" is the 2025 form's line 27a          -> fed_27a
+//   1040 line "27" is the 2025 form's line 27a          -> fed_27a (and "7" is line 7a -> fed_7a)
 // A row with "checked" cells is a checkbox (kind "mark"): "checked" is true, a blank cell means not checked.
 // Corrections confirmed by the case author go in cases/<case>/answer_sheet_corrections.json (see below), never in the key.
 // A blank cell means "blank or $0" at that step (stored as null). An amount in parentheses, "(15,679)", is negative. Notes such as "N7" after a value are kept
@@ -62,7 +62,7 @@ tables.forEach((t,ti)=>{
     else if(ca) line='ca540_'+code;
     else if(/^Sch ([123A])-(\w+)$/i.test(code)){ const m=code.match(/^Sch ([123A])-(\w+)$/i); line='sch'+m[1].toUpperCase()+'_'+m[2]; }
     else if(/^\d{4}$/.test(code)){ const m=label.match(/\bL(\d+[a-z]?)\b/); if(!m) throw new Error(`table ${ti+1}: form ${code} row needs "L<line>" in its label: "${label}"`); line='f'+code+'_'+m[1]; }
-    else if(/^\d+[a-z]?\d?$/.test(code)) line='fed_'+(code==='27'?'27a':code);
+    else if(/^\d+[a-z]?\d?$/.test(code)) line='fed_'+(code==='27'?'27a':code==='7'?'7a':code);
     else throw new Error(`table ${ti+1}: cannot tell which line "${code} ${label}" is`);
     const values={}, rowNotes={}, mark=cells.some(c=>/\bchecked\b/i.test(c||''));
     cols.forEach((s,i)=>{ const c=(cells[i]||'').trim(); const n=c.match(/\b(N[0-9A-Z][0-9A-Za-z]*)\b/g);

@@ -8,9 +8,8 @@ Nothing open. 0.17.0 was released on November 18, 2026.
 
 ## Also pending (not blocking a release)
 
-* Expert review of every hint in `docs/hints.md` (all cases; the Parks hints are new in 0.18.0), which Carter is arranging.
+* Expert review of every hint in `docs/hints.md` (all cases; the Parks and Kent hints are new), which Carter is arranging.
 * Real Chromebook and Mac checks for 0.17.0.
-* **Next case, Kent:** the case author expects printout problems like Graham's (sections redone after the printouts were made). Compare every printout with every answer key column before writing code, as for Graham, and send the owner one list of questions.
 
 ## Resolved
 
