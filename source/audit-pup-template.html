@@ -1107,6 +1107,8 @@ function showUpdate(){
   updateGuide();
 }
 var CHANGELOG=[
+  {version:'0.19.1', date:'2026-11-19',
+   fixed:['After you finish the last step of a case, Zeke now congratulates you instead of telling you to start Step A. If some earlier steps were never checked in Audit Pup, he names the first one so you can check it.']},
   {version:'0.19.0', date:'2026-11-19',
    added:['A fifth case: Kent (Karl Kent, 2025), with 17 steps covering a W-2, seller-financed mortgage interest, interest and dividends from brokerage statements, last year\'s state refund, the sale of a home, brokerage sales, a partnership K-1, itemizing, estimated payments, dependent care, an IRA contribution, and the 1095-A. Drop a Kent PDF and Audit Pup picks the case for you, or choose it in the Case box.']},
   {version:'0.18.0', date:'2026-11-19',
@@ -1257,11 +1259,17 @@ function updateGuide(){
   var id=stepSel.value, r=STORE.steps[id], st=r?r.status:'none', msg;
   var allDone=STEPS.every(function(s){ var x=STORE.steps[s.id]; return x && x.status==='done'; });
   var anyChecked=STEPS.some(function(s){ return !!STORE.steps[s.id]; });
+  var left=STEPS.filter(function(s){ var x=STORE.steps[s.id]; return !x || x.status!=='done'; }).length;   /* steps not done yet */
   if(updateBlocks()){ document.getElementById('guidesay').textContent='There is a new version of Audit Pup. You cannot check a PDF until you click Update in the yellow box above. Your progress is kept.'; return; }
   var shown=!!(CTX && CTX.step.id===id);   /* results for this step are on the page */
   if(chosen && freshFile && switchedCase) msg='This PDF is from the '+switchedCase.to+' case, so I switched from '+switchedCase.from+'. Make sure Step '+id+' is the step you printed, then click Check Step '+id+'.';
   else if(chosen && freshFile) msg='Got it. Click Check Step '+id+' when you are ready.';
-  else if(justDone && allDone) msg='Nice work on Step '+justDone+'! Every step of this case is done.';
+  else if(justDone && allDone) msg='Congratulations! Every step of the '+CASE.short+' case is done.';
+  /* the case's last step, with earlier steps never checked here: congratulate, and do not say "finish it in TaxSlayer" */
+  else if(justDone && stepIndex(justDone)===STEPS.length-1) msg='Congratulations! You finished Step '+justDone+', the last step of the '+CASE.short+' case. '+
+    (left===1?'One step is':left+' steps are')+' not checked here yet, starting with Step '+id+'. To check it, drop its PDF below.';
+  /* the next unfinished step is an earlier one the student skipped here: it is already done in TaxSlayer */
+  else if(justDone && stepIndex(id)<stepIndex(justDone)) msg='Nice work on Step '+justDone+'! Step '+id+' is not checked here yet. To check it, drop its PDF below.';
   else if(justDone) msg='Nice work on Step '+justDone+'! Step '+id+' is up next. Finish it in TaxSlayer, print a new PDF, and drop it below.';
   else if(allDone) msg='Every step of this case is done. Pick any step to check it again.';
   else if(shown && CTX.reuse) msg='This is the same file you checked for Step '+CTX.reuse.stepId+'. Print a new PDF from TaxSlayer for Step '+id+' and drop it below.';

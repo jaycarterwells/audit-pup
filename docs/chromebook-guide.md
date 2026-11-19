@@ -36,7 +36,7 @@ Print a **new** PDF after every step. Audit Pup warns you if you reuse the same 
 3. Under the box, check that the **step** is the step you just finished in TaxSlayer. Audit Pup opens on the first step you have not finished. To pick another step, use the step box or tap a paw in your progress.
 4. Click the button that names your step, for example **Check Step A**. It is gray and says **Choose a PDF first** until you choose a PDF, then it turns gold with an arrow.
 
-When a step is done, Audit Pup selects the **next step** for you and clears the old file. Zeke names the next step at the top of the page. When every step of the case is done, Zeke says so.
+When a step is done, Audit Pup selects the **next step** for you and clears the old file. Zeke names the next step at the top of the page. When you finish the last step of a case, Zeke congratulates you. If some earlier steps were never checked in Audit Pup, he names the first of them, and you can check it whenever you like. When every step of the case is done, Zeke says so.
 
 ## 3. Read the results
 

@@ -24,12 +24,13 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',D:'Quinn_Sec_D',E:'Quinn_Sec_E',F:'Quin
  await p.selectOption('.ws-grid select','1'); await p.check('.confirm input');
  s=await state(); check('Step E manual items finished: moves to Step F', s.step==='F' && s.next.includes('Step F is up next'), s.next);
  await grade('F','B'); s=await state(); check('Step F fails: stays on F', s.step==='F' && !s.next.startsWith('Nice work'), s.step);
- await grade('F','F'); s=await state(); check('Step F done, all steps done: case-finished message', s.next==='Nice work on Step F! Every step of this case is done.', s.next);
+ await grade('F','F'); s=await state(); check('Step F done, all steps done: congratulations for the whole case', s.next==='Congratulations! Every step of the Quinn case is done.', s.next);
  await p.click('#resetbtn'); await p.click('#resetyes'); await grade('B','B'); s=await state();
  check('after Start over, finishing B first moves to the next unfinished step after B (D)', s.step==='D', s.step);
  await grade('F','F'); { const ins2=await p.$$('.ws-grid input'); for(const [i,v] of ['3027','2883','2715','2571','2363'].entries()) await ins2[i].fill(v);
    await p.selectOption('.ws-grid select','1'); await p.check('.confirm input'); }
  s=await state(); check('finishing F (with its manual items) while A is unfinished wraps back to Step A', s.step==='A', s.step);
+ check('finishing the last step congratulates and does not say to start Step A in TaxSlayer', s.next==='Congratulations! You finished Step F, the last step of the Quinn case. 3 steps are not checked here yet, starting with Step A. To check it, drop its PDF below.', s.next);
  await grade('A','F'); s=await state(); check('wrong-step warning: no advance', s.step==='A' && !s.next.startsWith('Nice work'), s.step);
  await p.setViewportSize({width:911,height:438}); await grade('A','A'); await settled(p);
  const vis=await p.$eval('#sticky',e=>{const r=e.getBoundingClientRect(); return r.height>0 && r.height<=window.innerHeight*0.62;});
