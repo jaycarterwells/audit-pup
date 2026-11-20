@@ -25,8 +25,10 @@ const chips=p=>p.$$eval('.pchip',e=>e.map(x=>x.getAttribute('data-step')+':'+x.c
     let r=await grade(p,'quinn','E',`${Q}/Quinn_Sec_E.pdf`);
     const ws=await p.$$eval('.ws-grid input',e=>e.map(x=>x.value).join(',')), sel=await p.$eval('.ws-grid select',e=>e.value), nn=await p.$eval('.confirm input',e=>e.checked);
     expect(`${v}: the MWP Worksheet entries and the TS Note box come back, so Step E is done right away`, ws==='3027,2883,2715,2571,2363'&&sel==='1'&&nn&&r.score==='29/29', `${ws} option ${sel} box ${nn} ${r.score}`);
-    // the saved fingerprint is of the Step B file as it was then: the author's original (cases/quinn/original/)
-    r=await grade(p,'quinn','D',`${Q}/original/Quinn_Sec_B.pdf`);
+    // the saved fingerprint is of the Step B file the record was made with: the author's original
+    // (cases/quinn/original/) for records made before the months fix (0.13.0 to 0.17.0), the corrected file after
+    const ORIGINAL=['0.13.0','0.14.0','0.15.0','0.16.0','0.17.0'];
+    r=await grade(p,'quinn','D',ORIGINAL.includes(v)?`${Q}/original/Quinn_Sec_B.pdf`:`${Q}/Quinn_Sec_B.pdf`);
     expect(`${v}: the same-file memory comes back (the Step B file checked for Step D warns)`, await p.$eval('#reusewarn',e=>!e.classList.contains('hidden')), r.score);
     if(fx.chips.baylor){
       await p.selectOption('#assignment','baylor');
