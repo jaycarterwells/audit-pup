@@ -24,11 +24,13 @@ run html_check node tests/html_check.js
 run guide_check node tests/guide_check.js
 run hints_doc node tests/hints_doc.js
 run unit_engine node tests/unit_engine.js
+run hint_steps node tests/hint_steps.js
+run note_facts node tests/note_facts.js $CASEARGS
 if command -v soffice >/dev/null; then
   for d in cases/*/; do c=$(basename "$d"); [ -n "$CASEARGS" ] && [[ " $* " != *" $c "* ]] && continue
     [ -f "$d/answer_key.json" ] || continue
     sheet=$(ls "$d"answer_sheet.* 2>/dev/null | head -1); out="tests/output/sheet-$c"; rm -rf "$out"; mkdir -p "$out"
-    run "answer_sheet_$c" bash -c "timeout 120 soffice --headless --convert-to html --outdir '$out' '$sheet' >/dev/null 2>&1 && node source/tools/import_answer_sheet.js '$c' '$out/answer_sheet.html' --check"
+    run "answer_sheet_$c" bash -c "timeout 120 soffice --headless --convert-to html --outdir '$out' '$sheet' >/dev/null 2>&1 && node source/tools/import_answer_sheet.js '$c' '$out/answer_sheet.html' --check && timeout 120 soffice --headless --convert-to txt:Text --outdir '$out' '$sheet' >/dev/null 2>&1 && node tests/sheet_notes.js '$c' '$out/answer_sheet.txt'"
   done
 fi
 run engine_cases node tests/engine_cases.js $CASEARGS

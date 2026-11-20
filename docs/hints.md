@@ -70,7 +70,7 @@ Steps: A, B, D, E, F.
 
 **N1: Filing status and dependent** (Step A)
 
-* Answer key: Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).
+* Answer key: Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25): 7 months, as the problem says.
 * Hint: Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.
 * Checked: at this step and again at every later step
 
@@ -81,7 +81,7 @@ Steps: A, B, D, E, F.
 
 **N3: MWP Worksheet scenarios** (Steps E, F)
 
-* Hint: For any option that does not match, set the W-2 screen back to that option's three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.
+* Hint: Compare your handout 2025 MWP Worksheet with the one attached to the answer sheet to see whether you did the scenarios correctly. For any option that does not match, set the W-2 screen back to that option's three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.
 * Checked: at this step only
 
 **NN: TS Note added for this step** (Steps E, F)
@@ -113,7 +113,7 @@ Steps: A, B, C, E, F, G, H, I, J, L, M, N, O, P, R.
 | Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income is right, this follows. |
 | Line 24 | Total tax | Total tax is tax minus credits plus other taxes. Check Willie's child tax credit, the Schedule 3 credits, and the Schedule 2 taxes in this list. |
 | Line 25d | Federal tax withheld | Line 25d adds federal withholding from every W-2 (box 2) and the unemployment Form 1099-G (box 4). Compare each one you entered with the problem. |
-| Line 27a | Earned income credit (EIC) | The EIC depends on earned income and on Willie as a qualifying child. Re-check his dependent entry from Step A and the W-2 amounts. |
+| Line 27a | Earned income credit (EIC) | The EIC depends on earned income and on Willie as a qualifying child. On the answer key it changes at Steps B and C, as the Betts and Supt of Schools W-2 wages are added. Re-check his dependent entry from Step A and the W-2 amounts. |
 | Line 28 | Additional child tax credit (ACTC) | The additional child tax credit depends on Willie qualifying for the child tax credit (note N1) and on earned income. Re-check his dependent screen. |
 | Line 33 | Total payments | Line 33 totals withholding and refundable credits. If it is off, the mistake is in a withholding or credit line above it. |
 | Line 35a | Refund | The refund is the end result. If it is wrong, one of the checked lines above it is wrong. Fix those first and this should follow. |
@@ -197,8 +197,8 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 | M | Federal Form 1040, Line 12e | Note N12: Michael did not need to itemize. Compare the itemized total with his standard deduction before entering Step M. |
 | M | Schedule A, Line 5a | Note N12: Michael did not need to itemize. Compare the itemized total with his standard deduction before entering Step M. |
 | M | Schedule A, Line 17 | Note N12: Michael did not need to itemize. Compare the itemized total with his standard deduction before entering Step M. |
-| N | California Form 540, Line 14 | Note N13: double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'. |
-| N | California Form 540, Line 16 | Note N13: double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'. |
+| N | California Form 540, Line 14 | Note N13: if the CA 540 numbers do not match, double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'. |
+| N | California Form 540, Line 16 | Note N13: if the CA 540 numbers do not match, double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'. |
 
 ### Answer key notes
 
@@ -264,17 +264,17 @@ Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, R2, S, U, V, W.
 | --- | --- | --- |
 | Line 1h | Other earned income | Line 1h is where Stacey's disability pension goes until she reaches the company's normal retirement age (Step M). Re-open that 1099-R in TaxSlayer and check the disability box at the bottom of the screen. |
 | Line 4a | IRA distributions | Line 4a adds box 1 of every IRA 1099-R entered so far (Steps C, D, E, and F), even the ones that were rolled over. Compare each IRA 1099-R you entered with box 1 of the forms in the problem. |
-| Line 4b | Taxable IRA distributions | Line 4b is only the taxable part of the IRA distributions. A rollover (Steps C and D) adds nothing here, and a qualified charitable distribution (Step F) is left out. Re-check box 2a and the rollover and QCD choices on each IRA 1099-R. |
+| Line 4b | Taxable IRA distributions | Line 4b is only the taxable part of the IRA distributions. It changes at Step E (the early distribution) and Step F (the RMD, less the qualified charitable distribution). The rollovers in Steps C and D add nothing here. Re-check box 2a and the rollover and QCD choices on each IRA 1099-R. |
 | Line 4c box 1 | Rollover box | The Rollover box on line 4c is checked when an IRA distribution was rolled over (Steps C and D). On the 1099-R screen, mark the distribution as a rollover rather than only changing the taxable amount. |
 | Line 4c box 2 | QCD box | The QCD box on line 4c is checked when part of an IRA distribution went straight to a charity (Step F). See 'Qualified Charitable Distributions' in Pub 4012 for where TaxSlayer asks about a QCD. |
 | Line 5a | Pensions and annuities | Line 5a adds box 1 of every pension 1099-R entered so far. Compare each pension 1099-R you entered with box 1 of the forms in the problem. |
-| Line 5b | Taxable pensions and annuities | Line 5b is the taxable part of the pensions. Look at the step's 1099-R: box 2a, the PSO health insurance exclusion (Step G), and the Simplified Method results (Steps K and L) all change it. |
+| Line 5b | Taxable pensions and annuities | Line 5b is the taxable part of the pensions. It changes at Steps G, H, I, K, L, O, and P: the PSO health insurance exclusion (G), OPM (H), Wells Fargo (I), the Simplified Method (K and L), railroad retirement (O), and military retirement (P). Compare box 2a and any exclusion on each pension 1099-R you entered for those steps. |
 | Line 5c box 2 | PSO box | The PSO box on line 5c is checked when a retired public safety officer's health insurance premiums reduce the taxable pension (Step G). Use the PSO option under box 2a on the 1099-R screen. |
 | Line 6a | Social Security benefits | Line 6a is the net benefits from Sean's SSA-1099 (Step N) and the tier 1 benefits from his RRB-1099 (Step O). Compare box 5 of each form with what you entered. |
 | Line 6b | Taxable Social Security benefits | TaxSlayer works out the taxable part of the benefits from the other income. If line 6a and the income lines above are right, this follows. |
 | Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10, which here is Stacey's tutoring business income from Schedule C (Step B). Check the Schedule C income and expenses first. |
 | Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
-| Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26: the deductible part of self-employment tax, the self-employed health insurance, and from Step Q the educator expenses, alimony paid, and student loan interest. Check the Schedule 1 lines in this list. |
+| Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26. It changes at Step B (the deductible part of self-employment tax and the self-employed health insurance) and Step Q (educator expenses, alimony paid, and student loan interest). Check the Schedule 1 lines in this list. |
 | Line 11a | Adjusted gross income | Line 11a is total income minus the adjustments. If lines 9 and 10 are right, this follows. |
 | Line 12e | Standard or itemized deduction | The standard deduction follows from the filing status (married filing jointly) and the ages of Stacey and Sean. Itemizing is right only when Schedule A is larger. Re-check the filing status and birth dates from Step A. |
 | Line 13b | Additional deductions (Schedule 1-A) | Line 13b comes from Schedule 1-A, the new additional deductions, such as the deduction for a taxpayer age 65 or older. Check the birth dates entered in Step A. |
@@ -286,7 +286,7 @@ Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, R2, S, U, V, W.
 | Line 23 | Other taxes (Schedule 2, line 21) | Line 23 comes from Schedule 2, line 21: here the self-employment tax and the additional tax on the early IRA distribution. Check the Schedule 2 lines in this list. |
 | Line 24 | Total tax | Total tax is the tax minus credits plus other taxes. Check lines 16, 21, and 23 first; this follows from them. |
 | Line 25d | Federal tax withheld | Line 25d adds federal withholding (box 4) from every 1099-R and the SSA and RRB forms entered so far. Compare each form you entered with the problem. |
-| Line 27a | Earned income credit (EIC) | The EIC depends on earned income (Stacey's business and disability pension) and on Joshua as a qualifying child. Gail does not qualify the family for the EIC. Re-check the dependent screens from Step A. |
+| Line 27a | Earned income credit (EIC) | The EIC depends on earned income (Stacey's business, Step B, and her disability pension, Step M) and on Joshua as a qualifying child; Gail does not qualify the family. The credit shrinks as income rises, so it also changes at Steps I, K, L, N, and O. Re-check the dependent screens from Step A and the income entries for those steps. |
 | Line 28 | Additional child tax credit (ACTC) | The additional child tax credit depends on Joshua qualifying for the child tax credit (note N1) and on earned income. Re-check his dependent screen. |
 | Line 29 | American opportunity credit (refundable part) | Line 29 is the refundable part of Jeremy's American opportunity credit (Step S). Re-check the 1098-T, the 1099-Q, and the expenses his parents paid. |
 | Line 33 | Total payments | Line 33 totals withholding and refundable credits. If it is off, the mistake is in a withholding or credit line above it. |
@@ -322,9 +322,9 @@ Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, R2, S, U, V, W.
 
 | Line | What it is | Hint |
 | --- | --- | --- |
-| Line 14 | California subtractions | Line 14 comes from Schedule CA, column B: California does not tax Social Security or railroad tier 1 benefits, and Step P adds the military retirement exclusion. Check the CA adjustments you entered. |
+| Line 14 | California subtractions | Line 14 comes from Schedule CA, column B. It changes at Step N (Social Security, which California does not tax), Step O (railroad tier 1 benefits), Step P (the military retirement exclusion), and Step Q (the adjustments to income). Check the CA adjustments you entered for those steps. |
 | Line 16 | California additions | Line 16 comes from Schedule CA, column C. Look for an amount entered on a California adjustment screen that does not belong on this return. |
-| Line 18 | California deduction | The California standard deduction follows from the filing status. Itemizing for California is right only when the California itemized total is larger (Step R2). |
+| Line 18 | California deduction | The California standard deduction follows from the filing status set in Step A. Itemizing for California is right only when the California itemized total is larger (Step R2). |
 | Line 19 | California taxable income | California taxable income is California AGI minus the deduction. If the federal income and the CA subtractions are right, this follows. |
 | Line 31 | California tax | California tax comes from taxable income (line 19) through the tax table. If line 19 is right, this follows. |
 | Line 32 | Exemption credits | The exemption credits follow from the filing status, the ages, and the number of dependents entered in Step A. Re-check those screens. |
@@ -457,13 +457,13 @@ Steps: A, B, C, D, E, G, H, J, K, L, N, O, P, Q, R, S, T.
 | Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
 | Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26: the early withdrawal penalty from the 1099-INT (Step D) and, from Step Q, the IRA deduction. Check the Schedule 1 lines in this list. |
 | Line 11a | Adjusted gross income | Line 11a is total income minus the adjustments. If lines 9 and 10 are right, this follows. |
-| Line 12e | Standard or itemized deduction | Before Step N this is the standard deduction for head of household and Karl's age; from Step N, Karl itemizes. Re-check the filing status from Step A, or the Schedule A amounts the answer sheet lists for this step. |
+| Line 12e | Standard or itemized deduction | Before Step N this is the standard deduction for head of household and Karl's age, set in Step A. From Step N, Karl itemizes, and the total changes again at Step O (last year's return and the sales tax), Step Q (the IRA deduction lowers AGI, which changes the medical floor), and Step R (the net premium tax credit reduces medical expenses). Re-check the Schedule A amounts the answer sheet lists for your step. |
 | Line 13a | Qualified business income deduction | Line 13a is the qualified business income deduction from the Section 199A dividends on a 1099-DIV (Step E). Check box 5 of the 1099-DIV you entered. |
-| Line 13b | Additional deductions (Schedule 1-A) | Line 13b comes from Schedule 1-A: the new deduction for a taxpayer age 65 or older, which phases out as income rises. Check Karl's birth date from Step A; if line 11a is right, this follows. |
+| Line 13b | Additional deductions (Schedule 1-A) | Line 13b comes from Schedule 1-A: the new deduction for a taxpayer age 65 or older, set by Karl's birth date in Step A. It phases out as income rises, so it shrinks at Steps D and E (the interest and dividends). If line 11a is right, this follows. |
 | Line 15 | Taxable income | Taxable income is AGI minus the deductions on lines 12e through 13b, never below zero. If those lines are right, this follows. |
 | Line 16 | Tax | Tax comes from taxable income, with qualified dividends and capital gains taxed at lower rates. If line 15 and the dividend and gain lines are right, this follows. |
-| Line 19 | Child tax credit and credit for other dependents | Line 19 is the child tax credit for Jane (note N1), limited to the tax. Kendra and Susan are not dependents and are not listed. Re-check the dependent screens from Step A. |
-| Line 20 | Credits from Schedule 3, line 8 | Line 20 comes from Schedule 3: the foreign tax credit from the 1099-DIVs and the K-1, and from Step P the child and dependent care credit. Check the Schedule 3 lines in this list. |
+| Line 19 | Child tax credit and credit for other dependents | Line 19 is the child tax credit for Jane (note N1), limited to the tax, so it grows at Steps B, C, and D as income and tax rise. Kendra and Susan are not dependents and are not listed. Re-check the dependent screens from Step A, then the income for those steps. |
+| Line 20 | Credits from Schedule 3, line 8 | Line 20 comes from Schedule 3: the foreign tax credit from the ZYX 1099-INT (Step D), the ZYX 1099-DIV (Step E), and the K-1 (Step L), and from Step P the child and dependent care credit. Check the Schedule 3 lines in this list. |
 | Line 21 | Total credits | Line 21 adds lines 19 and 20. If those are right, this follows. |
 | Line 22 | Tax after credits | Line 22 is the tax minus the credits. Check lines 16 and 21 first. |
 | Line 24 | Total tax | Total tax is the tax after credits plus any other taxes. Check lines 16 and 21 first; this follows from them. |
@@ -494,7 +494,7 @@ Steps: A, B, C, D, E, G, H, J, K, L, N, O, P, Q, R, S, T.
 
 | Line | What it is | Hint |
 | --- | --- | --- |
-| Line 5a | State and local income or sales tax | Line 5a is the larger of the state income tax and the general sales tax. From Step N, use the sales tax worksheet in TaxSlayer, with the VA benefits added to the income for it (note N12). |
+| Line 5a | State and local income or sales tax | Line 5a is the larger of the state and local income taxes and the general sales tax. From Step B it holds the CASDI from box 14 of Karl's W-2. From Step N, use the sales tax worksheet in TaxSlayer, with the VA benefits added to the income for it (note N12). |
 
 ### California Form 540
 
@@ -504,15 +504,15 @@ Steps: A, B, C, D, E, G, H, J, K, L, N, O, P, Q, R, S, T.
 | Line 14 | California subtractions | California subtractions come from Schedule CA, column B: the U.S. Savings Bond interest (Step D) and last year's state refund (Step H). Mark savings bond interest as California exempt on the 1099-INT screen. |
 | Line 16 | California additions | California taxes interest and exempt-interest dividends from other states' bonds, so they are added on Schedule CA, column C. Check the California taxable amounts on each 1099-INT, 1099-DIV, and K-1 entry, as the answer sheet notes describe. |
 | Line 17 | California AGI | California AGI is the federal AGI minus the subtractions plus the additions. Check lines 14 and 16 first. |
-| Line 18 | California deduction | California uses the larger of its standard deduction and its own itemized deductions. From Step N, the California itemized deductions start from Schedule A. Check the Schedule A entries. |
+| Line 18 | California deduction | California uses the larger of its standard deduction (set by the filing status in Step A) and its own itemized deductions. From Step N, the California itemized deductions start from Schedule A, and they change again at Step Q (the IRA deduction changes the medical floor) and Step R (the net premium tax credit). Check the Schedule A entries. |
 | Line 19 | California taxable income | California taxable income is the California AGI minus line 18. Check lines 17 and 18 first. |
 | Line 31 | California tax | California tax comes from taxable income (line 19). If line 19 is right, this follows. |
-| Line 35 | California tax after exemption credits | Line 35 is the California tax minus the exemption credits. Check line 31 and the dependent entries from Step A. |
+| Line 35 | California tax after exemption credits | Line 35 is the California tax minus the exemption credits. It stays $0 until the tax is larger than the credits, at Step D (the 1099-INT), and grows at Step E. Check line 31 and the dependent entries from Step A. |
 | Line 46 | Nonrefundable renter’s credit | Karl rents his home on Rivermeade Drive. Read the Interview Notes and the Duck Book on the California renter's credit, including its income limit. |
 | Line 48 | California tax after credits | Line 48 is the California tax minus the nonrefundable credits. Check lines 31 and 35 first. |
 | Line 64 | California total tax | Line 64 is the California tax after credits plus any other taxes. Check line 48 first. |
 | Line 72 | California estimated payments | Line 72 adds Karl's California estimated payments for the year (Step O), including the one made in January, plus last year's California refund applied to this year. Look at last year's return in the problem. |
-| Line 76 | Young child tax credit | The young child tax credit depends on Jane being under 6 and on earned income. Once Karl has wages (Step B), check that Jane is entered as a qualifying child for the California EITC. |
+| Line 76 | Young child tax credit | The young child tax credit depends on Jane being under 6 and on earned income. At Step A, with Jane entered and no income yet, it shows; once Karl has wages (Step B), it drops to $0. Check that Jane is entered as a qualifying child for the California EITC. |
 | Line 78 | California total payments | Line 78 adds the California payments and refundable credits. Check line 72 first. |
 | Line 111 | California amount you owe | The California amount owed is the total tax minus the payments. Check lines 64 and 78 first. |
 | Line 115 | California refund | A California refund comes from the refundable credits (such as the young child tax credit) and payments being more than the tax. Check the California credit and payment lines. |
@@ -531,18 +531,18 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 | E | California Form 540, Line 16 | Note N5: incorrect amount? Read the Duck Book about box 12 under 'Line 3 - Dividends', including the 'Note for CA returns'. Schedule CA line 2 should be 38,147; 63,519; 500; 38,025, and line 3 should be 150; 232; 0; 0. |
 | G | California Form 540, Line 16 | Note N7: Schedule CA line 2 should be 38,933; 63,519; 500; 38,489, and line 3 should be 150; 232; 0; 0. |
 | J | Federal Form 1040, Line 7a | Note N8: look at Schedule D line 10. Did you enter the sale of the main home correctly? The line should read 470,000; 240,000; -230,000; 0. |
-| K | Federal Form 1040, Line 7a | Note N9: look at Schedule D. Line 1b = 6,203; 9,381; 200; -2,978. Line 7 = -2,978. Line 8a = 15,000; 12,000; 3,000. Line 9 = 27,403; 33,277; 0; -5,874. Line 10 stays 470,000; 240,000; -230,000; 0. On the Capital Loss Carryover Worksheet, line 8 = 0 and line 13 = 2,783. |
+| K | Federal Form 1040, Line 7a | Note N9: look at Schedule D. Line 1b = 6,203; 9,381; 200; -2,978. Line 7 = -2,978. Line 8a = 15,000; 12,000; 3,000. Line 9 = 27,403; 33,277; 0; -5,874. Line 10 stays 470,000; 240,000; -230,000; 0. Line 13 = 69; line 15 = -2,805. On the Capital Loss Carryover Worksheet, line 8 = 0 and line 13 = 2,783. |
 | L | Schedule 1, Line 5 | Note N10: did you check the boxes for 'passive entity' and 'publicly traded partnership' on the K-1 form? Schedule D line 5 = -8 and line 12 = 13. |
 | L | Federal Form 1040, Line 8 | Note N10: did you check the boxes for 'passive entity' and 'publicly traded partnership' on the K-1 form? Schedule D line 5 = -8 and line 12 = 13. |
 | L | California Form 540, Line 16 | Note N11: Schedule CA line 2 should be 39,224; 63,564; 500; 38,780, and line 3 should be 175; 308; 0; 0. If not, tax-exempt interest and foreign taxes paid should be entered on the federal interest screen, not directly in the California state section. |
 | N | Federal Form 1040, Line 12e | Note N12: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box checked, $1,949; line 7 = $8,005; line 10 = $7,065; line 14 = $11,425; line 17 = $40,627. If line 5a is off, did you increase the MAGI by the VA benefits (Pub 4012, page F-11)? |
 | N | Schedule A, Line 5a | Note N12: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box checked, $1,949; line 7 = $8,005; line 10 = $7,065; line 14 = $11,425; line 17 = $40,627. If line 5a is off, did you increase the MAGI by the VA benefits (Pub 4012, page F-11)? |
-| O | Federal Form 1040, Line 12e | Note N13: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425. |
+| O | Federal Form 1040, Line 12e | Note N13: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425; line 17 = $41,137. |
 | O | Federal Form 1040, Line 7a | Note N13b: on the Capital Loss Carryover Worksheet, line 8 = 786 and line 13 = 3,992. |
 | O | Federal Form 1040, Line 15 | Note N13b: on the Capital Loss Carryover Worksheet, line 8 = 786 and line 13 = 3,992. |
 | P | Schedule 3, Line 2 | Note N14: if you do not match, did you mark Jane as qualified but with no expenses? See Pub 4012, 'Child & Dependent Care Expenses', especially page G-15. |
 | P | Federal Form 1040, Line 21 | Note N14: if you do not match, did you mark Jane as qualified but with no expenses? See Pub 4012, 'Child & Dependent Care Expenses', especially page G-15. |
-| R | Federal Form 1040, Line 12e | Note N15: Schedule A line 1 = $21,058; line 4 = $12,520; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425. |
+| R | Federal Form 1040, Line 12e | Note N15: Schedule A line 1 = $21,058; line 4 = $12,520; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425; line 17 = $39,525. |
 
 ### Answer key notes
 
@@ -587,7 +587,7 @@ Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O.
 | Line 12e | Standard or itemized deduction | The standard deduction follows from the filing status (single) and Mary's age. Re-check the filing status and her birth date from Step A. |
 | Line 15 | Taxable income | Taxable income is AGI minus the deduction, never below zero. If lines 11a and 12e are right, this follows. |
 | Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income (line 15) is right, this follows. |
-| Line 19 | Child tax credit and credit for other dependents | Line 19 is the credit for other dependents for Sue (note N1). It shows once Mary has tax to apply it against. Re-check Sue's dependent screen from Step A. |
+| Line 19 | Child tax credit and credit for other dependents | Line 19 is the credit for other dependents for Sue (note N1). It first shows at Step F, when the royalties give Mary tax to apply it against. Re-check Sue's dependent screen from Step A. |
 | Line 24 | Total tax | Total tax is the tax minus the credits. Check lines 16 and 19 first; this follows from them. |
 | Line 37 | Amount you owe | Mary has no withholding or payments, so the amount she owes equals the total tax. If line 24 is right, this follows. |
 
@@ -614,7 +614,7 @@ Steps: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O.
 | Line 11 | California exemption amount | The exemption amount follows from Mary's personal exemption and Sue as a dependent. Re-check the dependent entries from Step A, as note N1 describes. |
 | Line 14 | California subtractions | California subtractions come from Schedule CA, column B: last year's state refund, the nontaxable part of the Canadian pension, and the California Lottery winnings. Check the Schedule CA lines for the step you are on. |
 | Line 16 | California additions | California taxes the Canada Pension Plan benefits that the federal return treats like Social Security (note N3b), so the $10,000 is added back on Schedule CA. Enter it as a manual California adjustment. |
-| Line 18 | California deduction | California uses the larger of its standard deduction and its own itemized deductions. Once Mary's itemized deductions are entered (Step L), California itemizes even though the federal return does not. Check the Schedule A entries. |
+| Line 18 | California deduction | California uses the larger of its standard deduction (set by the filing status in Step A) and its own itemized deductions. Once Mary's itemized deductions are entered (Step L), California itemizes even though the federal return does not. Check the Schedule A entries. |
 | Line 19 | California taxable income | California taxable income is the California AGI minus the deduction on line 18. Check the subtractions, additions, and line 18 first. |
 | Line 31 | California tax | California tax comes from taxable income (line 19). If line 19 is right, this follows. |
 | Line 46 | Nonrefundable renter’s credit | Mary rents, so she may qualify for the California renter's credit. Read the Interview Notes about her home, and the renter's credit questions in TaxSlayer's state section. |

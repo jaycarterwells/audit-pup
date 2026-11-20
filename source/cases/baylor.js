@@ -29,7 +29,7 @@ var B_LINES = {
   fed_25d: {form:'fed', line:'Line 25d', name:'Federal tax withheld', read:['box','fed','25d'],
     hint:"Line 25d adds federal withholding from every W-2 (box 2) and the unemployment Form 1099-G (box 4). Compare each one you entered with the problem."},
   fed_27a: {form:'fed', line:'Line 27a', name:'Earned income credit (EIC)', read:['box','fed','27a'],
-    hint:"The EIC depends on earned income and on Willie as a qualifying child. Re-check his dependent entry from Step A and the W-2 amounts."},
+    hint:"The EIC depends on earned income and on Willie as a qualifying child. On the answer key it changes at Steps B and C, as the Betts and Supt of Schools W-2 wages are added. Re-check his dependent entry from Step A and the W-2 amounts."},
   fed_28:  {form:'fed', line:'Line 28',  name:'Additional child tax credit (ACTC)', read:['box','fed','28'],
     hint:"The additional child tax credit depends on Willie qualifying for the child tax credit (note N1) and on earned income. Re-check his dependent screen."},
   fed_33:  {form:'fed', line:'Line 33',  name:'Total payments', read:['box','fed','33'],
@@ -109,7 +109,7 @@ var B_N8="Note N8: the Form 1099-G for last year's California refund should not 
 var B_N9="Note N9: see Jury Duty in Pub 4012. The jury pay and the amount given to the employer cannot be netted against each other.";
 var B_N11="Note N11: Willie qualifies for only 4 months of care, because he turned 13 on May 1. Enter only the qualified expenses, not the total paid.";
 var B_N12="Note N12: Michael did not need to itemize. Compare the itemized total with his standard deduction before entering Step M.";
-var B_N13="Note N13: double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'.";
+var B_N13="Note N13: if the CA 540 numbers do not match, double-check the manual California changes for an HSA, using the last bullet under 'Distributions From HSA' in the handout 'HSA Notes'.";
 
 var B_STEPS = [
   {id:'A', name:'Step A: Basic information', type:'check', expected:B_EXP.A, notes:['N1','N2','NN_A'], hints:{ca540_46:B_N3}},
@@ -138,7 +138,7 @@ var B_TSNOTE_COACH="Good TS Notes explain why items are treated differently than
 /* carry: true = checked at its own step and again at every later step (read from the PDF, stays once added);
    false = checked at its own step only. N4 is false: the later printouts do not show the Betts W-2 address. */
 var B_NOTES = {
-  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/qualifying surviving spouse/i, dependent:'WILLIAM', dependentName:'Willie (William)', minMonths:7, ctc:true,
+  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/qualifying surviving spouse/i, dependent:'WILLIAM', dependentName:'Willie (William)', months:12, ctc:true,
     key:"Filing status = QSS. Using the 'Qualifying Child or Relative Resource Tool', Willie = Box 35, CTC.",
     coach:"Joan died in 2023 and Michael supports his son, so check the qualifying surviving spouse rules. Walk Willie through the Resource Tool and the handout 'CTC ODC Chart' to decide his dependent status and the child tax credit box. Then check the filing status and dependent screens in TaxSlayer."},
   N2:{form:'fed', kind:'ippin', carry:true, name:'Identity Protection PIN entered', pin:'543456',

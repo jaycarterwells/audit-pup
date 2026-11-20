@@ -58,6 +58,9 @@ Each case has `cases/<case>/case.json`: the PDF for each step, the items left fo
 | --- | --- |
 | `cases_steps.js` | `case.json` lists the page's steps in order; each step's correct PDF passes every check on the page with only the student's items left; the case's longest PDF checks in time with the processor slowed 6 times. |
 | `cases_matrix.js` | A sample of printout and step pairs through the page (each printout against the steps it may pass and the next one it may not): no wrong pass, no on-screen error. The full every-pair check runs at engine level. |
+| `hint_steps.js` | Every line hint that names steps names every step where the answer key changes that line. |
+| `note_facts.js` | Each fact a note reads from the PDF (each dependent's months, the filing status, each dependent's name, each PIN digit) is changed in the printout text, and the note must fail; the author's original Quinn printouts (12 months) fail N1. |
+| `sheet_notes.js` | Run by `dev_test.sh` with LibreOffice: every number in every answer sheet note is in the page's text for that note. |
 | `cases_switch.js` | Switching cases keeps each case's progress, TS Note boxes are per step where `case.json` says so, and Start over clears only the case picked. |
 | `case_pick.js` | Every case: its PDF dropped while another case shows switches to its case, keeps the file, and Zeke says so; a step letter picked by hand is kept when the new case has it; the check then grades the new case; a PDF for the case showing changes nothing. The Guide button opens the guide. (`engine_cases.js` proves every printout names its own case.) |
 

@@ -210,17 +210,20 @@ function preparerNotes(pages){
 /* Is an answer key note that Audit Pup reads from the PDF met by this printout? true or false; null for a note the
    student enters or ticks (a worksheet, a TS Note box), which a printout cannot show. The page's note rows and the
    "Notes from earlier steps" row both use this, and so do the tests. */
+/* Months a dependent lived in the home, from TaxSlayer's dependent summary: an exact match to the problem, never a
+   range. A summary that cannot be read fails (Mary Ryan's review, November 2026: "7 or more" passed 12). */
+function monthsOk(pages,d){ if(d.months==null) return true; var i=dependentInfo(pages,d.first); return !!i && i.months===d.months; }
 function noteOk(N,pages){
   if(N.kind==='filing' && N.deps){
     var fs=filingStatus(pages), tp=taxpayerName(pages), have=dependentCredits(pages)||[];
     var deps=N.deps.every(function(d){ var f=have.filter(function(x){ return x.name.toUpperCase().indexOf(d.first)===0; })[0];
-      return !!f && f.ctc===(d.box==='ctc') && f.odc===(d.box==='odc'); });
+      return !!f && f.ctc===(d.box==='ctc') && f.odc===(d.box==='odc') && monthsOk(pages,d); });
     var extra=have.some(function(x){ return !N.deps.some(function(d){ return x.name.toUpperCase().indexOf(d.first)===0; }); });
     return !!(fs && N.status.test(fs) && tp && tp.toUpperCase().indexOf(N.taxpayer)===0 && deps && !extra);
   }
   if(N.kind==='filing'){
     var st=filingStatus(pages), dep=dependentInfo(pages,N.dependent), ctc=N.ctc?firstDependentCTC(pages):null;
-    return !!(st && N.status.test(st) && dep && (dep.months==null || dep.months>=N.minMonths) && (!N.ctc || ctc===true));
+    return !!(st && N.status.test(st) && dep && dep.months===N.months && (!N.ctc || ctc===true));
   }
   if(N.kind==='ippin') return ipPin(pages)===N.pin;
   if(N.kind==='w2text') return onW2(pages,N.employer,N.text)===true;

@@ -27,19 +27,19 @@ var K_LINES = {
   fed_11a: {form:'fed', line:'Line 11a', name:'Adjusted gross income', read:['box','fed','11a'],
     hint:"Line 11a is total income minus the adjustments. If lines 9 and 10 are right, this follows."},
   fed_12e: {form:'fed', line:'Line 12e', name:'Standard or itemized deduction', read:['box','fed','12e'],
-    hint:"Before Step N this is the standard deduction for head of household and Karl's age; from Step N, Karl itemizes. Re-check the filing status from Step A, or the Schedule A amounts the answer sheet lists for this step."},
+    hint:"Before Step N this is the standard deduction for head of household and Karl's age, set in Step A. From Step N, Karl itemizes, and the total changes again at Step O (last year's return and the sales tax), Step Q (the IRA deduction lowers AGI, which changes the medical floor), and Step R (the net premium tax credit reduces medical expenses). Re-check the Schedule A amounts the answer sheet lists for your step."},
   fed_13a: {form:'fed', line:'Line 13a', name:'Qualified business income deduction', read:['box','fed','13a'],
     hint:"Line 13a is the qualified business income deduction from the Section 199A dividends on a 1099-DIV (Step E). Check box 5 of the 1099-DIV you entered."},
   fed_13b: {form:'fed', line:'Line 13b', name:'Additional deductions (Schedule 1-A)', read:['box','fed','13b'],
-    hint:"Line 13b comes from Schedule 1-A: the new deduction for a taxpayer age 65 or older, which phases out as income rises. Check Karl's birth date from Step A; if line 11a is right, this follows."},
+    hint:"Line 13b comes from Schedule 1-A: the new deduction for a taxpayer age 65 or older, set by Karl's birth date in Step A. It phases out as income rises, so it shrinks at Steps D and E (the interest and dividends). If line 11a is right, this follows."},
   fed_15:  {form:'fed', line:'Line 15',  name:'Taxable income', read:['box','fed','15'],
     hint:"Taxable income is AGI minus the deductions on lines 12e through 13b, never below zero. If those lines are right, this follows."},
   fed_16:  {form:'fed', line:'Line 16',  name:'Tax', read:['box','fed','16'],
     hint:"Tax comes from taxable income, with qualified dividends and capital gains taxed at lower rates. If line 15 and the dividend and gain lines are right, this follows."},
   fed_19:  {form:'fed', line:'Line 19',  name:'Child tax credit and credit for other dependents', read:['box','fed','19'],
-    hint:"Line 19 is the child tax credit for Jane (note N1), limited to the tax. Kendra and Susan are not dependents and are not listed. Re-check the dependent screens from Step A."},
+    hint:"Line 19 is the child tax credit for Jane (note N1), limited to the tax, so it grows at Steps B, C, and D as income and tax rise. Kendra and Susan are not dependents and are not listed. Re-check the dependent screens from Step A, then the income for those steps."},
   fed_20:  {form:'fed', line:'Line 20',  name:'Credits from Schedule 3, line 8', read:['box','fed','20'],
-    hint:"Line 20 comes from Schedule 3: the foreign tax credit from the 1099-DIVs and the K-1, and from Step P the child and dependent care credit. Check the Schedule 3 lines in this list."},
+    hint:"Line 20 comes from Schedule 3: the foreign tax credit from the ZYX 1099-INT (Step D), the ZYX 1099-DIV (Step E), and the K-1 (Step L), and from Step P the child and dependent care credit. Check the Schedule 3 lines in this list."},
   fed_21:  {form:'fed', line:'Line 21',  name:'Total credits', read:['box','fed','21'],
     hint:"Line 21 adds lines 19 and 20. If those are right, this follows."},
   fed_22:  {form:'fed', line:'Line 22',  name:'Tax after credits', read:['box','fed','22'],
@@ -72,7 +72,7 @@ var K_LINES = {
   sch3_9:  {form:'sch3', line:'Line 9',   name:'Net premium tax credit', read:['box','sch3','9'],
     hint:"Line 9 is the net premium tax credit from Form 8962 (Step R). Check the 1095-A entries month by month against the form in the problem."},
   schA_5a: {form:'schA', line:'Line 5a',  name:'State and local income or sales tax', read:['box','schA','5a'],
-    hint:"Line 5a is the larger of the state income tax and the general sales tax. From Step N, use the sales tax worksheet in TaxSlayer, with the VA benefits added to the income for it (note N12)."},
+    hint:"Line 5a is the larger of the state and local income taxes and the general sales tax. From Step B it holds the CASDI from box 14 of Karl's W-2. From Step N, use the sales tax worksheet in TaxSlayer, with the VA benefits added to the income for it (note N12)."},
 
   ca540_11:  {form:'ca540', line:'Line 11',  name:'California exemption amount', read:['ca','11',500],
     hint:"The exemption amount follows from Karl's personal exemption and Jane as a dependent. Re-check the dependent entries from Step A, as note N1 describes."},
@@ -83,13 +83,13 @@ var K_LINES = {
   ca540_17:  {form:'ca540', line:'Line 17',  name:'California AGI', read:['ca','17',500],
     hint:"California AGI is the federal AGI minus the subtractions plus the additions. Check lines 14 and 16 first."},
   ca540_18:  {form:'ca540', line:'Line 18',  name:'California deduction', read:['ca','18',500],
-    hint:"California uses the larger of its standard deduction and its own itemized deductions. From Step N, the California itemized deductions start from Schedule A. Check the Schedule A entries."},
+    hint:"California uses the larger of its standard deduction (set by the filing status in Step A) and its own itemized deductions. From Step N, the California itemized deductions start from Schedule A, and they change again at Step Q (the IRA deduction changes the medical floor) and Step R (the net premium tax credit). Check the Schedule A entries."},
   ca540_19:  {form:'ca540', line:'Line 19',  name:'California taxable income', read:['ca','19',500],
     hint:"California taxable income is the California AGI minus line 18. Check lines 17 and 18 first."},
   ca540_31:  {form:'ca540', line:'Line 31',  name:'California tax', read:['ca','31',500],
     hint:"California tax comes from taxable income (line 19). If line 19 is right, this follows."},
   ca540_35:  {form:'ca540', line:'Line 35',  name:'California tax after exemption credits', read:['ca','35',500],
-    hint:"Line 35 is the California tax minus the exemption credits. Check line 31 and the dependent entries from Step A."},
+    hint:"Line 35 is the California tax minus the exemption credits. It stays $0 until the tax is larger than the credits, at Step D (the 1099-INT), and grows at Step E. Check line 31 and the dependent entries from Step A."},
   ca540_46:  {form:'ca540', line:'Line 46',  name:'Nonrefundable renter’s credit', read:['ca','46',500],
     hint:"Karl rents his home on Rivermeade Drive. Read the Interview Notes and the Duck Book on the California renter's credit, including its income limit."},
   ca540_48:  {form:'ca540', line:'Line 48',  name:'California tax after credits', read:['ca','48',500],
@@ -99,7 +99,7 @@ var K_LINES = {
   ca540_72:  {form:'ca540', line:'Line 72',  name:'California estimated payments', read:['ca','72',500],
     hint:"Line 72 adds Karl's California estimated payments for the year (Step O), including the one made in January, plus last year's California refund applied to this year. Look at last year's return in the problem."},
   ca540_76:  {form:'ca540', line:'Line 76',  name:'Young child tax credit', read:['ca','76',500],
-    hint:"The young child tax credit depends on Jane being under 6 and on earned income. Once Karl has wages (Step B), check that Jane is entered as a qualifying child for the California EITC."},
+    hint:"The young child tax credit depends on Jane being under 6 and on earned income. At Step A, with Jane entered and no income yet, it shows; once Karl has wages (Step B), it drops to $0. Check that Jane is entered as a qualifying child for the California EITC."},
   ca540_78:  {form:'ca540', line:'Line 78',  name:'California total payments', read:['ca','78',500],
     hint:"Line 78 adds the California payments and refundable credits. Check line 72 first."},
   ca540_111: {form:'ca540', line:'Line 111', name:'California amount you owe', read:['ca','111',500],
@@ -115,14 +115,14 @@ var K_N4="Note N4: Schedule CA, line 2 should be 147; 63,519; 500; 25. Not match
 var K_N5="Note N5: incorrect amount? Read the Duck Book about box 12 under 'Line 3 - Dividends', including the 'Note for CA returns'. Schedule CA line 2 should be 38,147; 63,519; 500; 38,025, and line 3 should be 150; 232; 0; 0.";
 var K_N7="Note N7: Schedule CA line 2 should be 38,933; 63,519; 500; 38,489, and line 3 should be 150; 232; 0; 0.";
 var K_N8="Note N8: look at Schedule D line 10. Did you enter the sale of the main home correctly? The line should read 470,000; 240,000; -230,000; 0.";
-var K_N9="Note N9: look at Schedule D. Line 1b = 6,203; 9,381; 200; -2,978. Line 7 = -2,978. Line 8a = 15,000; 12,000; 3,000. Line 9 = 27,403; 33,277; 0; -5,874. Line 10 stays 470,000; 240,000; -230,000; 0. On the Capital Loss Carryover Worksheet, line 8 = 0 and line 13 = 2,783.";
+var K_N9="Note N9: look at Schedule D. Line 1b = 6,203; 9,381; 200; -2,978. Line 7 = -2,978. Line 8a = 15,000; 12,000; 3,000. Line 9 = 27,403; 33,277; 0; -5,874. Line 10 stays 470,000; 240,000; -230,000; 0. Line 13 = 69; line 15 = -2,805. On the Capital Loss Carryover Worksheet, line 8 = 0 and line 13 = 2,783.";
 var K_N10="Note N10: did you check the boxes for 'passive entity' and 'publicly traded partnership' on the K-1 form? Schedule D line 5 = -8 and line 12 = 13.";
 var K_N11="Note N11: Schedule CA line 2 should be 39,224; 63,564; 500; 38,780, and line 3 should be 175; 308; 0; 0. If not, tax-exempt interest and foreign taxes paid should be entered on the federal interest screen, not directly in the California state section.";
 var K_N12="Note N12: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box checked, $1,949; line 7 = $8,005; line 10 = $7,065; line 14 = $11,425; line 17 = $40,627. If line 5a is off, did you increase the MAGI by the VA benefits (Pub 4012, page F-11)?";
-var K_N13="Note N13: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425.";
+var K_N13="Note N13: Schedule A line 1 = $23,270; line 4 = $14,132; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425; line 17 = $41,137.";
 var K_N13b="Note N13b: on the Capital Loss Carryover Worksheet, line 8 = 786 and line 13 = 3,992.";
 var K_N14="Note N14: if you do not match, did you mark Jane as qualified but with no expenses? See Pub 4012, 'Child & Dependent Care Expenses', especially page G-15.";
-var K_N15="Note N15: Schedule A line 1 = $21,058; line 4 = $12,520; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425.";
+var K_N15="Note N15: Schedule A line 1 = $21,058; line 4 = $12,520; line 5a box NOT checked, $2,459; line 7 = $8,515; line 10 = $7,065; line 14 = $11,425; line 17 = $39,525.";
 
 var K_STEPS = [
   {id:'A', name:'Step A: Basic information', type:'check', expected:K_EXP.A, notes:['N1'], hints:{ca540_46:K_N3, ca540_76:K_N2, ca540_115:K_N2}},
@@ -157,7 +157,7 @@ function kNN(step,what,example){ return {form:'fed', kind:'confirm', carry:false
    N1 stays in the return, so it is checked again at every later step. */
 var K_NOTES = {
   N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependents', status:/head of household/i, taxpayer:'KARL', taxpayerName:'Karl',
-    deps:[{first:'JANE', name:'Jane', box:'ctc'}],
+    deps:[{first:'JANE', name:'Jane', box:'ctc', months:12}],
     key:"Filing status = HOH. Using the 'Qualifying Child or Relative Resource Tool', Jane = Box 35, CTC. Kendra and Susan = Chart 2 Box 12, not a dependent, no EIC, but medical and dependent care allowed. The CTC ODC Chart shows these two are not entered on the tax return in the dependents area.",
     coach:"Start the 'Qualifying Child or Relative Resource Tool' with Karl and Kendra, then Jane and Susan. Only Jane is listed, for the child tax credit, and she lived with Karl all 12 months. Kendra and Susan are not entered as dependents at all, even as 'not a dependent'. Check the filing status and the dependents area."},
   NN_N:kNN('N','the VA benefits',"STEP N - VA BENEFITS: ENTERED $30,000 OF NON-TAXABLE VA BENEFITS INTO THE SALES TAX MAGI."),

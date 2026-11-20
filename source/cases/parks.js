@@ -27,7 +27,7 @@ var P_LINES = {
   fed_16:  {form:'fed', line:'Line 16',  name:'Tax', read:['box','fed','16'],
     hint:"Tax comes from taxable income through the tax table. If taxable income (line 15) is right, this follows."},
   fed_19:  {form:'fed', line:'Line 19',  name:'Child tax credit and credit for other dependents', read:['box','fed','19'],
-    hint:"Line 19 is the credit for other dependents for Sue (note N1). It shows once Mary has tax to apply it against. Re-check Sue's dependent screen from Step A."},
+    hint:"Line 19 is the credit for other dependents for Sue (note N1). It first shows at Step F, when the royalties give Mary tax to apply it against. Re-check Sue's dependent screen from Step A."},
   fed_24:  {form:'fed', line:'Line 24',  name:'Total tax', read:['box','fed','24'],
     hint:"Total tax is the tax minus the credits. Check lines 16 and 19 first; this follows from them."},
   fed_37:  {form:'fed', line:'Line 37',  name:'Amount you owe', read:['box','fed','37'],
@@ -53,7 +53,7 @@ var P_LINES = {
   ca540_16:  {form:'ca540', line:'Line 16',  name:'California additions', read:['ca','16',500],
     hint:"California taxes the Canada Pension Plan benefits that the federal return treats like Social Security (note N3b), so the $10,000 is added back on Schedule CA. Enter it as a manual California adjustment."},
   ca540_18:  {form:'ca540', line:'Line 18',  name:'California deduction', read:['ca','18',500],
-    hint:"California uses the larger of its standard deduction and its own itemized deductions. Once Mary's itemized deductions are entered (Step L), California itemizes even though the federal return does not. Check the Schedule A entries."},
+    hint:"California uses the larger of its standard deduction (set by the filing status in Step A) and its own itemized deductions. Once Mary's itemized deductions are entered (Step L), California itemizes even though the federal return does not. Check the Schedule A entries."},
   ca540_19:  {form:'ca540', line:'Line 19',  name:'California taxable income', read:['ca','19',500],
     hint:"California taxable income is the California AGI minus the deduction on line 18. Check the subtractions, additions, and line 18 first."},
   ca540_31:  {form:'ca540', line:'Line 31',  name:'California tax', read:['ca','31',500],
@@ -119,7 +119,7 @@ function pNN(step,what,example){ return {form:'fed', kind:'confirm', carry:false
    N1 stays in the return, so it is checked again at every later step. */
 var P_NOTES = {
   N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependents', status:/^single$/i, taxpayer:'MARY', taxpayerName:'Mary',
-    deps:[{first:'SUE', name:'Sue', box:'odc'}],
+    deps:[{first:'SUE', name:'Sue', box:'odc', months:12}],
     key:"Filing status = Single. Using the 'Qualifying Child or Relative Resource Tool', Devon = Chart 1 Box 36, so he is NOT a dependent but is eligible for EIC. Pam = Chart 2 Box 2, is NOT a dependent and should NOT be listed on the tax return. Sue = Chart 2 Box 24, ODC, but no EIC. Her relationship = NONE.",
     coach:"Walk Devon, Pam, and Sue through the 'Qualifying Child or Relative Resource Tool'. Only Sue is a dependent, for the credit for other dependents, with relationship None. Devon is listed for the EIC only, not as a dependent, and Pam is not listed at all. Check the filing status and each person's screen."},
   NN_C:pNN('C','the Canadian pension',"STEP C - CANADIAN PENSION: MARY RECEIVES MONIES FROM A CANADIAN PENSION. BE SURE TO ASK HER FOR IT EACH YEAR IF SHE DOESN'T OFFER THE INFORMATION."),
