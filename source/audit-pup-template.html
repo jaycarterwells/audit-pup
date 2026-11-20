@@ -603,7 +603,9 @@ function showErr(m){ errEl.textContent=m; errEl.classList.remove('hidden'); }
 /* the whole zone is clickable with a mouse; the Choose PDF button inside it is the keyboard and screen reader way in */
 drop.addEventListener('click',function(){ fileInput.click(); });
 document.getElementById('choose').addEventListener('click',function(e){ e.stopPropagation(); fileInput.click(); });
-fileInput.addEventListener('change',function(e){ if(e.target.files[0]) setFile(e.target.files[0]); });
+/* The picker is emptied right after each choice. A browser fires no "change" when the same file name is chosen again, so
+   without this a corrected PDF saved under the same name after a failed check was never read, and Check graded the old one. */
+fileInput.addEventListener('change',function(e){ var f=e.target.files[0]; try{ e.target.value=''; }catch(x){} if(f) setFile(f); });
 /* a file dragged anywhere over the page lights up the drop zone (a file can be dropped anywhere) */
 window.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('over'); });
 window.addEventListener('dragleave',function(e){ if(!e.relatedTarget) drop.classList.remove('over'); });
@@ -1108,7 +1110,8 @@ function showUpdate(){
 }
 var CHANGELOG=[
   {version:'0.19.1', date:'2026-11-19',
-   fixed:['After you finish the last step of a case, Zeke now congratulates you instead of telling you to start Step A. If some earlier steps were never checked in Audit Pup, he names the first one so you can check it.']},
+   fixed:['After a check that needs fixing, you can now choose your corrected PDF even when it has the same file name. Before, Audit Pup could keep checking the old file until the name changed.',
+          'After you finish the last step of a case, Zeke now congratulates you instead of telling you to start Step A. If some earlier steps were never checked in Audit Pup, he names the first one so you can check it.']},
   {version:'0.19.0', date:'2026-11-19',
    added:['A fifth case: Kent (Karl Kent, 2025), with 17 steps covering a W-2, seller-financed mortgage interest, interest and dividends from brokerage statements, last year\'s state refund, the sale of a home, brokerage sales, a partnership K-1, itemizing, estimated payments, dependent care, an IRA contribution, and the 1095-A. Drop a Kent PDF and Audit Pup picks the case for you, or choose it in the Case box.']},
   {version:'0.18.0', date:'2026-11-19',
