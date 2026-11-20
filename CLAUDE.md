@@ -94,7 +94,7 @@ open tax-aide-quinn-checker.html          # to look at the built page locally
 ## Current state
 
 * Open items that must be settled before the next release are tracked in `docs/open-issues.md`. Keep it current. All five cases are in; next up is Instructor mode (see the golden files bullet).
-* 0.19.1 (collecting fixes on `dev/fixes`, Carter publishes them together): Zeke congratulates after the last step of a case instead of saying to start Step A.
+* 0.19.1 (collecting fixes on `dev/fixes`, Carter publishes them together): Zeke congratulates after the last step of a case instead of saying to start Step A; a corrected PDF chosen under the same file name is read again (the picker is emptied after each choice); the Start over link reads "Start <Case> Over" and its confirmation names the case in bold (Carter's wording).
 * 0.19.0 (released November 19, 2026): the Kent case.
 * 0.18.0 (released November 18, 2026): the Parks case.
 * 0.17.0 (released November 18, 2026): the Graham case with the author's confirmed exceptions, checkbox and Schedule CA lines, notes checked again at later steps, the newer-version check, the clearer Baylor Preparer Note hint, and Carter's layout requests (drop zone first, case picked from the PDF, smaller paws below Check, the guide in a Guide window). The update box says checking is off until the update. Pages from 0.16.0 and earlier have no check: anyone still on one sees the new version only after a reload. Still open: the expert hint review (`docs/hints.md`) and real Chromebook and Mac checks. The GitHub release notes for v0.17.0 were written before the Graham entry's wording was fixed ("Pick it in the first box"); the page's What's new list has the fix from the next release on.

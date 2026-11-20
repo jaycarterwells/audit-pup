@@ -1110,6 +1110,7 @@ function showUpdate(){
 }
 var CHANGELOG=[
   {version:'0.19.1', date:'2026-11-19',
+   changed:['The Start over link now names the case, for example Start Kent Over, and asks you to confirm erasing that case only. Your other cases are never changed.'],
    fixed:['After a check that needs fixing, you can now choose your corrected PDF even when it has the same file name. Before, Audit Pup could keep checking the old file until the name changed.',
           'After you finish the last step of a case, Zeke now congratulates you instead of telling you to start Step A. If some earlier steps were never checked in Audit Pup, he names the first one so you can check it.']},
   {version:'0.19.0', date:'2026-11-19',
@@ -1216,8 +1217,8 @@ function whenText(ms){ var d=new Date(ms); return d.toLocaleDateString(undefined
 function renderProgress(){
   var box=document.getElementById('progress'), h='<div class="ptop"><span class="plabel">Your progress</span>';
   h+='<span class="pend">'+(confirmReset
-      ? 'Erase saved progress for this case? <button type="button" class="linkbtn" id="resetyes">Erase</button><button type="button" class="linkbtn" id="resetno">Keep</button>'
-      : '<button type="button" class="linkbtn" id="resetbtn">Start over</button>')+'</span></div>';
+      ? '<span class="resetask">Erase all saved progress for the <b>'+esc(CASE.short.toUpperCase())+' CASE</b>? Your other cases are not changed.</span> <button type="button" class="linkbtn" id="resetyes">Erase '+esc(CASE.short)+' progress</button><button type="button" class="linkbtn" id="resetno">Keep</button>'
+      : '<button type="button" class="linkbtn" id="resetbtn">Start '+esc(CASE.short)+' Over</button>')+'</span></div>';   /* Start over erases only the case picked (Carter's wording) */
   if(!storageOK) h+='<span class="nosave">This browser is not saving progress, so it resets when you close the page.</span>';
   h+='<div class="trail">';
   STEPS.forEach(function(s){

@@ -70,7 +70,7 @@ To fix something: go back to TaxSlayer, correct it, print a new PDF, and check a
 
 The paw-print trail under the Check button shows each step by its letter, with its status under the paw: **Done**, **Fix**, or **To finish**. A step with nothing under its letter is not checked yet. The selected step has a gold ring. Cases with many steps wrap onto two rows. Tap a step to select it. Point at a paw (or listen with a screen reader) for its full status and when it was checked.
 
-Each case keeps its own progress, so you can switch cases and come back. Progress is saved **only in Chrome on this Chromebook**. It does not follow you to another computer, and clearing your browsing history erases it. **Start over** (above the trail, on the right) erases the progress for the case you have picked, on purpose. Audit Pup asks first.
+Each case keeps its own progress, so you can switch cases and come back. Progress is saved **only in Chrome on this Chromebook**. It does not follow you to another computer, and clearing your browsing history erases it. The link above the trail, on the right, names the case you have picked, for example "Start Kent Over". It erases the progress for that case only, on purpose: Audit Pup first asks you to confirm erasing that case, and your other cases are never changed.
 
 ## Handy Chromebook keys
 
