@@ -17,7 +17,7 @@ Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that nam
 * Hints name every step
   Symptom: Some hints named only some of the steps that change their line.
   Cause: Those hints did not list every step where the answer key changes the line.
-  Fix: These 17 hints now name every step that changes their line.
+  Fix: 17 hints now name every step that changes their line.
 * Answer key notes completed
   Symptom: Three Kent answer key notes were missing some numbers.
   Cause: Short lines of those notes were left out.
