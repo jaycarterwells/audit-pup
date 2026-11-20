@@ -1,9 +1,12 @@
 # Release and deploy. Nothing goes live until Carter publishes the release (Carter, November 20, 2026).
+#  * There is one set of release notes: docs/release-notes.md. The page's What's new list is built from it, and every
+#    GitHub Release gets its version's section from it, so the two never differ. Edit the notes there, not on GitHub.
 #  * After the tests pass on main: when source/VERSION holds a version with no release yet, make a DRAFT GitHub
-#    Release for that tested commit, with the notes from the page's What's new list. Nothing is tagged or deployed.
-#    Carter reads and edits the notes on GitHub (Releases, the draft, Edit) and clicks "Publish release".
+#    Release for that tested commit, with that version's notes. Nothing is tagged or deployed. When the notes change
+#    on main while the draft waits, the draft gets the new notes. Carter reads the draft and clicks "Publish release".
 #  * Publishing the release tags the commit and starts this workflow again, which deploys that tag (through the same
-#    path as a deploy by hand, so it runs from main) and checks the live site.
+#    path as a deploy by hand, so it runs from main), sets the release's notes from the file once more (an edit made on
+#    GitHub would not be in the page), and checks the live site.
 #  * By hand (Actions, release, Run workflow): deploy an existing release tag again, for example v0.14.0.
 #  Ordinary changes (same version) do nothing, so the live site stays at the last published release.
 # After every deploy, the live site is checked: right version, and one step of every case passes.
@@ -76,10 +79,16 @@ jobs:
             exit 0
           fi
           version=$(tr -d '[:space:]' < source/VERSION)
-          # a release for this version already exists: published, or a draft waiting for Carter
-          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null || gh release view "v$version" --repo "${{ github.repository }}" >/dev/null 2>&1; then
-            echo "v$version already has a release (published, or a draft waiting to be published); nothing to do."
+          # a release for this version is already published: nothing to do
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already released; nothing to do."
             { echo "deploy=false"; echo "new=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # a draft is waiting for Carter: give it this commit and the notes as they are now on main
+          if gh release view "v$version" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "v$version is a draft waiting to be published; its notes and commit are brought up to date."
+            { echo "tag=v$version"; echo "version=$version"; echo "deploy=false"; echo "new=false"; echo "refresh=true"; } >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # a case still waiting for a corrected printout or answer sheet (case.json "awaiting") is not ready for counselors
@@ -92,9 +101,18 @@ jobs:
           # a new version: make a draft release and stop; it deploys when Carter publishes it
           { echo "tag=v$version"; echo "version=$version"; echo "deploy=false"; echo "new=true"; } >> "$GITHUB_OUTPUT"
 
-      - name: Write the release notes from the page's What's new list
-        if: steps.v.outputs.new == 'true'
+      - name: Write the release notes from docs/release-notes.md (the same notes as the page's What's new list)
+        if: steps.v.outputs.new == 'true' || steps.v.outputs.refresh == 'true'
         run: node source/release_notes.js "${{ steps.v.outputs.version }}" > release-notes.md
+
+      - name: Bring the waiting draft up to date
+        if: steps.v.outputs.refresh == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit "${{ steps.v.outputs.tag }}" --repo "${{ github.repository }}" \
+            --target "${{ github.event.workflow_run.head_sha }}" --notes-file release-notes.md
+          echo "::notice::Draft release ${{ steps.v.outputs.tag }} now has the notes from docs/release-notes.md on main."
 
       - name: Make a draft release for Carter to read, edit, and publish
         if: steps.v.outputs.new == 'true'
@@ -105,7 +123,19 @@ jobs:
             --target "${{ github.event.workflow_run.head_sha }}" \
             --title "Audit Pup ${{ steps.v.outputs.version }}" \
             --notes-file release-notes.md
-          echo "::notice::Draft release ${{ steps.v.outputs.tag }} is ready. Nothing is live until it is published: Releases, the draft, Edit, Publish release."
+          echo "::notice::Draft release ${{ steps.v.outputs.tag }} is ready. Nothing is live until it is published: Releases, the draft, Edit, Publish release. Change the notes in docs/release-notes.md, not in the draft."
+
+      - name: Give the published release the notes from its tag
+        if: steps.v.outputs.deploy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          # releases before the notes file (v0.19.1 and earlier) keep their GitHub notes
+          if ! git cat-file -e "$TAG:docs/release-notes.md" 2>/dev/null; then echo "$TAG has no docs/release-notes.md; its GitHub notes are kept."; exit 0; fi
+          git checkout -q "$TAG"
+          node source/release_notes.js "$(tr -d '[:space:]' < source/VERSION)" > release-notes.md
+          gh release edit "$TAG" --repo "${{ github.repository }}" --notes-file release-notes.md
 
 
   deploy:

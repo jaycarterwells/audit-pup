@@ -19,7 +19,7 @@ const page=fs.readFileSync(path.join(ROOT,'source','tax-aide-quinn-checker.html'
   .replace(/^\s*\/\/.*$/gm,'')
   .replace(/var CHANGELOG=\[[\s\S]*?\n\];/,'')
   .replace(/var CHANGELOG_EARLIER=.*$/m,'');
-if(/version:'\d+\.\d+\.\d+'/.test(page)) throw new Error('the release notes were not removed before the check');
+if(/"version":"\d+\.\d+\.\d+"/.test(page)) throw new Error('the release notes were not removed before the check');
 const lines=page.split('\n');
 const NOT_PAGE_TEXT={
   'Chrome or TaxSlayer': ['Downloads','Download','Destination','Save as PDF','Save','Open'],

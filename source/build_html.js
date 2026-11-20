@@ -5,8 +5,9 @@ const wrk=fs.readFileSync('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.j
 // Version comes from the VERSION file (semantic versioning: MAJOR.MINOR.PATCH)
 const version=fs.readFileSync('VERSION','utf8').trim();
 if(!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error('VERSION is not a semantic version: '+version);
-// The release notes inside the page must have an entry for this version
-if(!tpl.includes(`version:'${version}'`)) throw new Error('No changelog entry for version '+version+' in the template CHANGELOG');
+// The release notes (docs/release-notes.md, the one list, also used for the GitHub Release) must have this version
+const notes=require('./release_notes_md.js').read();
+if(!notes.list.some(r=>r.version===version)) throw new Error('No entry for version '+version+' in docs/release-notes.md');
 // The build date shown on the page: BUILD_DATE (YYYY-MM-DD) when set, as the release workflow does with the release
 // commit's date, otherwise today.
 const d=new Date(), stamp=process.env.BUILD_DATE&&/^\d{4}-\d{2}-\d{2}$/.test(process.env.BUILD_DATE)?process.env.BUILD_DATE:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -27,7 +28,11 @@ const tplB0=tplA.replace(/\/\*__ENGINE_AND_CASES__\*\/[^\n]*/,()=>engineAndCases
 // The counselor guide, shown by the Guide button: made from docs/chromebook-guide.md, so it always matches this version
 if(!tplB0.includes('__GUIDE_HTML__')) throw new Error('The template has no __GUIDE_HTML__ marker');
 const tplB=tplB0.replace('__GUIDE_HTML__',()=>require('./guide_html.js').guideHtml(fs.readFileSync(path.join('..','docs','chromebook-guide.md'),'utf8')));
-const out=tplB.split('__PDFJS_LIB__').join(lib).split('__PDFJS_WORKER__').join(wrk).split('__APP_VERSION__').join(version).split('__BUILD_DATE__').join(stamp);
+// one release per line, so tests can find the list (and its closing "\n];")
+if(!tplB.includes('/*__CHANGELOG__*/[]') || !tplB.includes("/*__CHANGELOG_EARLIER__*/''")) throw new Error('The template has no /*__CHANGELOG__*/ markers');
+const tplC=tplB.replace('/*__CHANGELOG__*/[]',()=>'[\n'+notes.list.map(r=>JSON.stringify(r)).join(',\n')+'\n]')
+  .replace("/*__CHANGELOG_EARLIER__*/''",()=>JSON.stringify(notes.earlier));
+const out=tplC.split('__PDFJS_LIB__').join(lib).split('__PDFJS_WORKER__').join(wrk).split('__APP_VERSION__').join(version).split('__BUILD_DATE__').join(stamp);
 const name=`Audit Pup ${version} ${stamp}.html`;
 fs.mkdirSync('dist',{recursive:true});
 fs.writeFileSync('dist/'+name, out);
