@@ -2,9 +2,31 @@
   "id": "quinn",
   "order": 1,
   "about": "Test description of the Quinn case. The answer key is answer_key.json (made from answer_sheet.doc); the lines, steps, and notes are in source/cases/quinn.js. This file tells the tests which PDF goes with each step.",
-  "pdf": { "A": "Quinn_Sec_A.pdf", "B": "Quinn_Sec_B.pdf", "D": "Quinn_Sec_D.pdf", "E": "Quinn_Sec_E.pdf", "F": "Quinn_Sec_F.pdf" },
-  "todo": { "E": 2, "F": 2 },
+  "pdf": {
+    "A": "Quinn_Sec_A.pdf",
+    "B": "Quinn_Sec_B.pdf",
+    "D": "Quinn_Sec_D.pdf",
+    "E": "Quinn_Sec_E.pdf",
+    "F": "Quinn_Sec_F.pdf"
+  },
+  "todo": {
+    "E": 2,
+    "F": 2
+  },
   "todoWhy": "Steps E and F leave the MWP Worksheet entries (N3) and the TS Note box (NN) for the student to finish.",
-  "sameReturn": [["B", "D"], ["E", "F"]],
-  "speed": { "step": "F", "maxSeconds": 15 }
+  "sameReturn": [
+    [
+      "B",
+      "D"
+    ],
+    [
+      "E",
+      "F"
+    ]
+  ],
+  "speed": {
+    "step": "F",
+    "maxSeconds": 15
+  },
+  "pdfWhy": "The case author's printouts printed James's months in the home as 12 on TaxSlayer's dependent summary (page 2); the problem says 7, and the case author confirmed 7 on November 20, 2026. These printouts are hers with only that number changed to 7 (the FTB 3532 already shows 214 days). The originals are in original/: the saved-progress test uses the Step B original, and N1 must fail on every original."
 }

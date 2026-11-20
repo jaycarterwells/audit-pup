@@ -103,13 +103,13 @@ var Q_WORKSHEET = {
 /* carry: true = checked at its own step and again at every later step (read from the PDF, stays once added);
    false = checked at its own step only (entered or ticked by the student, or not printed at later steps). */
 var Q_NOTES = {
-  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/head of household/i, dependent:'JAMES', dependentName:'James', minMonths:7,
-    key:'Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25).',
+  N1:{form:'fed', kind:'filing', carry:true, name:'Filing status and dependent', status:/head of household/i, dependent:'JAMES', dependentName:'James', months:7,
+    key:'Filing status = HOH. Using the Resource Tool, James is a dependent of Raymond and lived in his home for more than half the year (Chart 2, Box 25): 7 months, as the problem says.',
     coach:'Walk James through the Resource Tool, Chart 2: his relationship to Raymond, the months he lived in the home, and support. That decides his dependent status, and his dependent status drives the filing status. Then check the dependent and filing status screens in TaxSlayer.'},
   N2:{form:'fed', kind:'mwpRefunds', carry:false, name:'Both refunds match the option you chose',
     coach:'Both refunds should equal the results of the option you circled on your MWP Worksheet. If they do not, the W-2 screen in TaxSlayer is probably still set up for another option you tested. Re-check the Medicaid Waiver Payment field, the include in earned income box, and Box 16.'},
   N3:{form:'ca3514', kind:'mwpWorksheet', carry:false, name:'MWP Worksheet scenarios',
-    coach:'For any option that does not match, set the W-2 screen back to that option\'s three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.'},
+    coach:'Compare your handout 2025 MWP Worksheet with the one attached to the answer sheet to see whether you did the scenarios correctly. For any option that does not match, set the W-2 screen back to that option\'s three settings (Medicaid Waiver Payment field, include in earned income box, Box 16) and read the results again.'},
   NN:{form:'fed', kind:'confirm', carry:false, name:'TS Note added for this step', mark:'nn', confirm:'I added a TS Note for Step E in TaxSlayer',
     example:'STEP E - MWP: FOR TAX YEAR 2025, THE MWP WORKSHEET WAS COMPLETED, ENTERED INTO TS AND THEN PLACED IN THE TP ENVELOPE. OPTION 1 WAS THE BEST ENTRY COMBINATION FOR THIS YEAR.',
     coach:'Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year\'s counselor should know.'}

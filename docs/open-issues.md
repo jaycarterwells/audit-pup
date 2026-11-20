@@ -8,7 +8,8 @@ Nothing open. 0.17.0 was released on November 18, 2026.
 
 ## Also pending (not blocking a release)
 
-* Expert review of every hint in `docs/hints.md` (all cases; the Parks and Kent hints are new), which Carter is arranging.
+* Expert review of every hint (the review sheet "Audit Pup hint review" and the PDF in Carter's Drive, numbered like Q-1 and B-12). Mary Ryan's first findings (November 20) are fixed in 0.19.1; her full review is due after Thanksgiving weekend.
+* Possible next check: California Form 3532 line 5 (days the qualifying person lived with the taxpayer; Quinn prints 214). Not on the answer sheet, so not checked yet.
 * Real Chromebook and Mac checks for 0.17.0.
 
 ## Resolved

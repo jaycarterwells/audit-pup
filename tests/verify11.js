@@ -21,6 +21,7 @@ const F={A:'Quinn_Sec_A',B:'Quinn_Sec_B',E:'Quinn_Sec_E'};
   await p.selectOption('#step','E'); check('changing the step renames the drop box', (await p.textContent('#dropbig'))==='Drop your Step E PDF here');
   await p.setInputFiles('#file',`${U}/${F.E}.pdf`); check('choosing a file: Zeke says to click Check', (await p.textContent('#guidesay'))==='Got it. Click Check Step E when you are ready.');
   await p.waitForFunction(()=>document.getElementById('grade').dataset.state==='ready');
+  check('the file picker is emptied after each choice, so a corrected PDF with the same name is read again', (await p.$eval('#file',e=>e.value))==='');
   check('choosing a file: the drop box becomes a file bar and the button turns gold, naming the step', await p.$eval('#drop',e=>e.classList.contains('has')) && await p.isHidden('#dropbig') &&
     (await p.textContent('#choose'))==='Choose a different PDF' && (await p.textContent('#grade'))==='Check Step E' && await gold());
   await grade('E','B'); let m=await mood(); check('failing check: Zion, the corrections officer, with a red ring, red bar', m.mood==='mood red' && m.dog==='Zion corrections officer' && m.label==="Zion, Audit Pup's corrections officer" && m.bar==='rgb(180, 35, 24)', JSON.stringify(m));
