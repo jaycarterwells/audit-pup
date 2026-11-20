@@ -1,0 +1,15 @@
+{
+ "about": "Saved progress left by Audit Pup 0.19.0, made by tests/make_storage_fixture.js. Do not edit by hand.",
+ "version": "0.19.0",
+ "chips": {
+  "quinn": "A:done B:done D:todo E:done F:none",
+  "baylor": "A:done B:none C:none E:none F:none G:none H:none I:none J:none L:none M:none N:none O:none P:none R:none",
+  "graham": "A:done B:none C:done D:none E:none F:none G:none H:none I:none J:none K:none L:none M:none N:none O:none P:none Q:done R:none R2:todo S:none U:none V:none W:none"
+ },
+ "storage": {
+  "auditpup.progress.v1.baylor": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":10,\"total\":10,\"when\":1795213252174,\"file\":\"Baylor_Sec_A.pdf\"}},\"n3\":null,\"nn\":false,\"seen\":{\"261501-51d83271-6f404ab4\":{\"stepId\":\"A\",\"name\":\"Baylor_Sec_A.pdf\"}},\"marks\":{\"nn_A\":true}}",
+  "auditpup.progress.v1.graham": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":6,\"total\":6,\"when\":1795213255639,\"file\":\"Graham_Sec_A.pdf\"},\"C\":{\"status\":\"done\",\"pass\":27,\"total\":27,\"when\":1795213258474,\"file\":\"Graham_Sec_C.pdf\"},\"Q\":{\"status\":\"done\",\"pass\":29,\"total\":29,\"when\":1795213260843,\"file\":\"Graham_Sec_Q.pdf\"},\"R2\":{\"status\":\"todo\",\"pass\":29,\"total\":29,\"when\":1795213262954,\"file\":\"Graham_Sec_Q.pdf\"}},\"n3\":null,\"nn\":false,\"seen\":{\"343615-f3343ea1-a8a626f6\":{\"stepId\":\"A\",\"name\":\"Graham_Sec_A.pdf\"},\"929234-c0f65702-f5849da2\":{\"stepId\":\"C\",\"name\":\"Graham_Sec_C.pdf\"},\"1462006-875a80ec-6d018b80\":{\"stepId\":\"Q\",\"name\":\"Graham_Sec_Q.pdf\"}},\"marks\":{\"nn_C\":true}}",
+  "auditpup.case": "quinn",
+  "auditpup.progress.v1.quinn": "{\"steps\":{\"A\":{\"status\":\"done\",\"pass\":5,\"total\":5,\"when\":1795213244500,\"file\":\"Quinn_Sec_A.pdf\"},\"B\":{\"status\":\"done\",\"pass\":23,\"total\":23,\"when\":1795213245824,\"file\":\"Quinn_Sec_B.pdf\"},\"E\":{\"status\":\"done\",\"pass\":29,\"total\":29,\"when\":1795213247741,\"file\":\"Quinn_Sec_E.pdf\"},\"D\":{\"status\":\"todo\",\"pass\":23,\"total\":23,\"when\":1795213249606,\"file\":\"Quinn_Sec_B.pdf\"}},\"n3\":{\"v\":[\"3027\",\"2883\",\"2715\",\"2571\",\"2363\"],\"sel\":\"1\"},\"nn\":true,\"seen\":{\"255649-79212091-6644faf4\":{\"stepId\":\"A\",\"name\":\"Quinn_Sec_A.pdf\"},\"492013-ac9e967b-c7a731ca\":{\"stepId\":\"B\",\"name\":\"Quinn_Sec_B.pdf\"},\"587944-16673b66-5c173634\":{\"stepId\":\"E\",\"name\":\"Quinn_Sec_E.pdf\"}}}"
+ }
+}

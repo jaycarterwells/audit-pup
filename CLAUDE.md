@@ -97,6 +97,7 @@ open tax-aide-quinn-checker.html          # to look at the built page locally
 ## Current state
 
 * Open items that must be settled before the next release are tracked in `docs/open-issues.md`. Keep it current. All five cases are in; next up is Instructor mode (see the golden files bullet).
+* 0.19.2 (November 20, 2026): the one set of release notes (`docs/release-notes.md`), drafts held for Carter, and bug fixes shown in What's new as a title with Symptom, Cause, and Fix lines; saved-progress records for 0.18.0, 0.19.0, and 0.19.1.
 * 0.19.1 (released November 20, 2026): Zeke congratulates after the last step of a case instead of saying to start Step A; a corrected PDF chosen under the same file name is read again (the picker is emptied after each choice); the Start over link reads "Start <Case> Over" and its confirmation names the case in bold (Carter's wording); the fixes from Mary Ryan's first hint review (exact dependent months, 17 hints naming every step that changes their line, Kent notes N9, N13, N15 restored) with three developer tests and rule 11.
 * 0.19.0 (released November 19, 2026): the Kent case.
 * 0.18.0 (released November 18, 2026): the Parks case.

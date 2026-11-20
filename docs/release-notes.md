@@ -6,6 +6,12 @@ How to edit it: change the words under a version, keep the headings as they are,
 
 Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, with every word capitalized, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
 
+## 0.19.2, November 20, 2026
+
+### Changed
+
+* What's new shows each fix with a short title, then what you saw (Symptom), why it happened (Cause), and what changed (Fix), each on its own line. The fixes in version 0.19.1 are written this way too.
+
 ## 0.19.1, November 20, 2026
 
 ### Fixed
