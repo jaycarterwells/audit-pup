@@ -22,6 +22,7 @@ run style_check node tests/style_check.js
 run build bash -c 'cd source && node build_html.js'
 run html_check node tests/html_check.js
 run guide_check node tests/guide_check.js
+run release_notes_check node tests/release_notes_check.js
 run hints_doc node tests/hints_doc.js
 run unit_engine node tests/unit_engine.js
 run hint_steps node tests/hint_steps.js
