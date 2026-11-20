@@ -4,29 +4,29 @@ This is the one list of release notes. Audit Pup shows it under the Version butt
 
 How to edit it: change the words under a version, keep the headings as they are, and save. A new version goes at the top as `## <version>, <Month> <day>, <year>`, with any of the sections Added, Fixed, Changed, and What this version includes, each item starting with `* `. Write for counselors: plain words, no em dashes, and no user names.
 
-Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
+Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, with every word capitalized, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
 
 ## 0.19.1, November 20, 2026
 
 ### Fixed
 
-* Dependent months checked exactly
+* Dependent Months Checked Exactly
   Symptom: A dependent's months in the home could be marked correct when they did not match the problem.
   Cause: The check accepted any number of months from 7 up.
   Fix: The months must now match the problem exactly, in every case.
-* Hints name every step
+* Hints Name Every Step
   Symptom: Some hints named only some of the steps that change their line.
   Cause: Those hints did not list every step where the answer key changes the line.
   Fix: 17 hints now name every step that changes their line.
-* Answer key notes completed
+* Answer Key Notes Completed
   Symptom: Three Kent answer key notes were missing some numbers.
   Cause: Short lines of those notes were left out.
   Fix: The missing numbers are restored, and every note is now checked against the answer sheet.
-* Corrected PDF read again
+* Corrected PDF Read Again
   Symptom: A corrected PDF chosen under the same file name was not checked.
   Cause: The file picker kept the last file chosen.
   Fix: The picker is now cleared after each choice.
-* Congratulations after the last step
+* Congratulations After The Last Step
   Symptom: After the last step of a case, Zeke said to start Step A.
   Cause: The message pointed to the first step not yet checked.
   Fix: Zeke now congratulates you and names any steps not yet checked.

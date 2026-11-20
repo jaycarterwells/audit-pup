@@ -46,6 +46,7 @@ function bugFixProblem(item){
   const words=lines[0].split(/\s+/).length;
   if(words<3||words>5) return 'the title must be 3 to 5 words';
   if(/[.:]$/.test(lines[0])) return 'the title ends without a period or colon';
+  if(lines[0].split(/\s+/).some(w=>!/^[A-Z0-9]/.test(w))) return 'every word of the title starts with a capital letter';
   for(let i=0;i<3;i++){
     const m=lines[i+1].match(/^(\w+): (.+)$/);
     if(!m||m[1]!==LABELS[i]) return 'line '+(i+2)+' must start with "'+LABELS[i]+': "';
