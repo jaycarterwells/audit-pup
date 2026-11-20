@@ -4,15 +4,32 @@ This is the one list of release notes. Audit Pup shows it under the Version butt
 
 How to edit it: change the words under a version, keep the headings as they are, and save. A new version goes at the top as `## <version>, <Month> <day>, <year>`, with any of the sections Added, Fixed, Changed, and What this version includes, each item starting with `* `. Write for counselors: plain words, no em dashes, and no user names.
 
+Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
+
 ## 0.19.1, November 20, 2026
 
 ### Fixed
 
-* Symptom: Quinn Step A marked the filing status and dependent note Correct when James was entered as living with Raymond 12 months. Cause: the check accepted any number of months from 7 up, and the answer key's own printouts said 12. Fix: the months must match the problem exactly (7 for James), and months that cannot be read are marked to check. Every dependent in every case now has its months checked the same way.
-* Symptom: some hints named a few of the steps that change a line but not all of them, for example Graham line 5b and line 4b, and Kent Schedule A line 5a. Cause: those hints were written from the answer sheet notes instead of from every step where the answer key changes the line. Fix: 17 hints now name every step that changes their line, and a new developer test keeps it that way.
-* Symptom: three Kent answer sheet notes were missing numbers (N9 left out Schedule D lines 13 and 15; N13 and N15 left out Schedule A line 17). Cause: the notes were copied from the answer sheet by hand and short lines were dropped. Fix: the missing numbers are restored, and a new developer test compares every number in every answer sheet note with what Audit Pup shows.
-* Symptom: after a check that needed fixing, choosing the corrected PDF under the same file name did not check the new file. Cause: the file picker kept the last choice, and the browser does not report choosing the same name again. Fix: the picker is emptied after each choice, so a corrected PDF is always read again.
-* Symptom: after finishing the last step of a case, Zeke said to start Step A. Cause: Audit Pup moves to the first step not yet checked here, and the message treated it as the next step to do in TaxSlayer. Fix: Zeke now congratulates you and names any earlier steps that are not checked yet.
+* Dependent months checked exactly
+  Symptom: A dependent's months in the home could be marked correct when they did not match the problem.
+  Cause: The check accepted any number of months from 7 up.
+  Fix: The months must now match the problem exactly, in every case.
+* Hints name every step
+  Symptom: Some hints named only some of the steps that change their line.
+  Cause: Those hints did not list every step where the answer key changes the line.
+  Fix: These 17 hints now name every step that changes their line.
+* Answer key notes completed
+  Symptom: Three Kent answer key notes were missing some numbers.
+  Cause: Short lines of those notes were left out.
+  Fix: The missing numbers are restored, and every note is now checked against the answer sheet.
+* Corrected PDF read again
+  Symptom: A corrected PDF chosen under the same file name was not checked.
+  Cause: The file picker kept the last file chosen.
+  Fix: The picker is now cleared after each choice.
+* Congratulations after the last step
+  Symptom: After the last step of a case, Zeke said to start Step A.
+  Cause: The message pointed to the first step not yet checked.
+  Fix: Zeke now congratulates you and names any steps not yet checked.
 
 ### Changed
 

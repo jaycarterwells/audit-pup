@@ -5,8 +5,8 @@
 #    Release for that tested commit, with that version's notes. Nothing is tagged or deployed. When the notes change
 #    on main while the draft waits, the draft gets the new notes. Carter reads the draft and clicks "Publish release".
 #  * Publishing the release tags the commit and starts this workflow again, which deploys that tag (through the same
-#    path as a deploy by hand, so it runs from main), sets the release's notes from the file once more (an edit made on
-#    GitHub would not be in the page), and checks the live site.
+#    path as a deploy by hand, so it runs from main), sets the release's notes from the file on main once more (an edit made
+#    on GitHub would not be in the page), and checks the live site.
 #  * By hand (Actions, release, Run workflow): deploy an existing release tag again, for example v0.14.0.
 #  Ordinary changes (same version) do nothing, so the live site stays at the last published release.
 # After every deploy, the live site is checked: right version, and one step of every case passes.
@@ -125,18 +125,17 @@ jobs:
             --notes-file release-notes.md
           echo "::notice::Draft release ${{ steps.v.outputs.tag }} is ready. Nothing is live until it is published: Releases, the draft, Edit, Publish release. Change the notes in docs/release-notes.md, not in the draft."
 
-      - name: Give the published release the notes from its tag
+      - name: Give the published release its notes from docs/release-notes.md on main
         if: steps.v.outputs.deploy == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.v.outputs.tag }}
         run: |
-          # releases before the notes file (v0.19.1 and earlier) keep their GitHub notes
-          if ! git cat-file -e "$TAG:docs/release-notes.md" 2>/dev/null; then echo "$TAG has no docs/release-notes.md; its GitHub notes are kept."; exit 0; fi
-          git checkout -q "$TAG"
-          node source/release_notes.js "$(tr -d '[:space:]' < source/VERSION)" > release-notes.md
+          # the one set of notes is the file on main (this run's checkout), so a release made before the file existed,
+          # or one whose notes were reworded later, gets the same words as the page's What's new list
+          v=$(git show "$TAG:source/VERSION" | tr -d '[:space:]')
+          if ! node source/release_notes.js "$v" > release-notes.md; then echo "::warning::docs/release-notes.md has no $v; its GitHub notes are kept."; exit 0; fi
           gh release edit "$TAG" --repo "${{ github.repository }}" --notes-file release-notes.md
-
 
   deploy:
     needs: release

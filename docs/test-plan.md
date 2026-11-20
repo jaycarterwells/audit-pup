@@ -38,6 +38,7 @@ All tests are in `tests/`. Page tests open the built page (`source/tax-aide-quin
 | `html_check.js` | html-validate (recommended rules) on the built page. Two intended exceptions are marked in the page with their reasons. |
 | `hints_doc.js` | `docs/hints.md`, the hints page for expert review, matches every hint in the case files. |
 | `guide_check.js` | Every bold phrase in `docs/chromebook-guide.md` is in the page's displayable text (comments and release notes are left out), or is listed as not Audit Pup text with a reason. |
+| `release_notes_check.js` | `docs/release-notes.md` reads cleanly, and the bug fix format rule (a 3 to 5 word title, then Symptom, Cause, and Fix lines, each sentence capitalized) refuses each kind of mistake it is for. |
 
 ### Engine tests (Node, no browser)
 

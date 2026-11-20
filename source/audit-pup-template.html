@@ -301,6 +301,8 @@
   .wn-rel .when{font-size:14.5px; color:var(--muted); margin-bottom:6px}
   .wn-rel .cur{display:inline-block; margin-left:8px; font-family:"Atkinson",Verdana,sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
     color:var(--pass); border:1px solid var(--pass-bd); background:var(--pass-bg); border-radius:999px; padding:1px 8px; vertical-align:2px}
+  .wn-rel .wn-t,.wn-rel .wn-l{display:block}
+  .wn-rel .wn-l{margin-top:2px}
   .wn-rel h4{margin:10px 0 4px; font-size:14px; text-transform:uppercase; letter-spacing:.07em; color:var(--gold-ink)}
   .wn-rel ul{margin:0; padding-left:22px} .wn-rel li{margin:3px 0}
   .wn-note{font-size:15px; color:var(--muted); padding-top:12px}
@@ -1120,7 +1122,10 @@ function fillWhatsNew(){
   CHANGELOG.forEach(function(r){
     h+='<div class="wn-rel"><h3>Version '+esc(r.version)+(r.version===APP_VERSION?'<span class="cur">You have this one</span>':'')+'</h3><div class="when">'+niceDate(r.date)+'</div>';
     [['added','Added'],['fixed','Fixed'],['changed','Changed'],['includes','What this version includes']].forEach(function(sec){
-      if(r[sec[0]] && r[sec[0]].length){ h+='<h4>'+sec[1]+'</h4><ul>'; r[sec[0]].forEach(function(t){ h+='<li>'+esc(t)+'</li>'; }); h+='</ul>'; } });
+      if(r[sec[0]] && r[sec[0]].length){ h+='<h4>'+sec[1]+'</h4><ul>'; r[sec[0]].forEach(function(t){ var l=t.split('\n');
+        // a bug fix: its title, then Symptom, Cause, and Fix each on its own line
+        h+=l.length>1?'<li><b class="wn-t">'+esc(l[0])+'</b>'+l.slice(1).map(function(x){ var m=x.match(/^(\w+): ([\s\S]*)$/);
+          return '<span class="wn-l">'+(m?'<b>'+esc(m[1])+':</b> '+esc(m[2]):esc(x))+'</span>'; }).join('')+'</li>':'<li>'+esc(t)+'</li>'; }); h+='</ul>'; } });
     h+='</div>';
   });
   h+='<div class="wn-note">'+esc(CHANGELOG_EARLIER)+'</div>';

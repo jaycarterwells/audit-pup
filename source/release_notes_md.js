@@ -26,11 +26,34 @@ function parse(md){
     if(inEarlier){ earlier+=(earlier?' ':'')+line; continue; }
     if(!rel) continue;                                  // the introduction above the first version
     if(line.startsWith('* ')){ if(!sec) fail('an item must be under a ### heading',line); rel[sec].push(line.slice(2).trim()); continue; }
-    if(sec && rel[sec].length){ rel[sec][rel[sec].length-1]+=' '+line; continue; }   // an item that wraps onto a second line
+    if(sec && rel[sec].length){ const i=rel[sec].length-1;
+      rel[sec][i]+=(/^(Symptom|Cause|Fix):/.test(line)?'\n':' ')+line; continue; }   // a bug fix's own line, or an item that wraps
     fail('text under a version must be a "* " item',line);
   }
-  for(const r of list) if(!Object.values(SECTIONS).some(k=>r[k]&&r[k].length)) throw new Error('docs/release-notes.md: version '+r.version+' has no items');
+  for(const r of list){
+    if(!Object.values(SECTIONS).some(k=>r[k]&&r[k].length)) throw new Error('docs/release-notes.md: version '+r.version+' has no items');
+    if(newer(r.version,'0.19.0')) (r.fixed||[]).forEach(item=>{ const why=bugFixProblem(item);
+      if(why) throw new Error(`docs/release-notes.md, ${r.version} Fixed: ${why}: ${item.split('\n')[0]}`); });
+  }
   return { list, earlier: earlier||'' };
 }
+// Bug fix items (Carter, November 20, 2026): a title of 3 to 5 words, then Symptom, Cause, and Fix lines in that order,
+// each sentence starting with a capital letter (or a number).
+const LABELS=['Symptom','Cause','Fix'];
+function bugFixProblem(item){
+  const lines=item.split('\n');
+  if(lines.length!==4) return 'a fix needs a title, then Symptom, Cause, and Fix lines';
+  const words=lines[0].split(/\s+/).length;
+  if(words<3||words>5) return 'the title must be 3 to 5 words';
+  if(/[.:]$/.test(lines[0])) return 'the title ends without a period or colon';
+  for(let i=0;i<3;i++){
+    const m=lines[i+1].match(/^(\w+): (.+)$/);
+    if(!m||m[1]!==LABELS[i]) return 'line '+(i+2)+' must start with "'+LABELS[i]+': "';
+    for(const s of m[2].split(/(?<=[.!?]) +/)) if(!/^[A-Z0-9]/.test(s)) return 'every sentence starts with a capital letter: "'+s+'"';
+  }
+  return '';
+}
+function newer(a,b){ const x=a.split(/[.-]/).map(Number), y=b.split(/[.-]/).map(Number);
+  for(let i=0;i<3;i++){ if(x[i]!==y[i]) return x[i]>y[i]; } return false; }
 function read(){ return parse(fs.readFileSync(FILE,'utf8')); }
-module.exports={ parse, read, FILE };
+module.exports={ parse, read, FILE, bugFixProblem };
