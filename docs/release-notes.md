@@ -6,6 +6,27 @@ How to edit it: change the words under a version, keep the headings as they are,
 
 Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, with every word capitalized, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
 
+## 0.21.0, November 23, 2026
+
+### Added
+
+* Kent Steps K and O check the Capital Loss Carryover Worksheet in your PDF (answer key notes N9 and N13b). Form 1040 line 7a stops at -$3,000, so a capital loss carryover mistake can leave that line correct; the worksheet shows it.
+
+### Fixed
+
+* Clearer Medicaid Waiver Hint
+  Symptom: The Quinn hint for Form 1040 line 1d said the Medicaid Waiver Payment had no W-2.
+  Cause: The hint did not match the problem, where the payment is on a W-2 with nothing in box 1.
+  Fix: The hint and the line's name now say the payment is not in box 1 of a W-2.
+* Complete Adjusted Gross Income Hint
+  Symptom: The Baylor hint for Form 1040 line 11a listed only some of the items that change it.
+  Cause: The hint named the adjustments but not the Schedule 1 income.
+  Fix: The hint now names the Schedule 1 income on lines 1 through 9 as well.
+* Kent Capital Gain Hint Completed
+  Symptom: The Kent hint for Form 1040 line 7a did not name Step O.
+  Cause: The hint left out last year's capital loss carryover, which Step O adds.
+  Fix: The hint now names Step O and points to Schedule D lines 6 and 14.
+
 ## 0.19.2, November 20, 2026
 
 ### Changed

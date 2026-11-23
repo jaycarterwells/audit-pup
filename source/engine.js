@@ -196,6 +196,40 @@ function caseOfPages(cases,pages){
   return m.length===1 ? m[0].id : null;
 }
 
+/* TaxSlayer prints some worksheets (the Capital Loss Carryover Worksheet among them) in a font whose characters are
+   coded out of order: capitals from code 4, small letters from 183, digits from 695, and a few marks of their own.
+   This puts them right; any other character is kept as it is. (Not the font that prints text 29 characters early.) */
+var WS_MARKS={3:' ',401:',',402:';',404:'.',406:'-',442:'(',443:')'};
+function worksheetText(s){
+  var o='';
+  for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i);
+    if(WS_MARKS[c]) o+=WS_MARKS[c];
+    else if(c>=4 && c<=29) o+=String.fromCharCode(c+61);
+    else if(c>=183 && c<=208) o+=String.fromCharCode(c-86);
+    else if(c>=695 && c<=704) o+=String.fromCharCode(c-647);
+    else o+=s.charAt(i); }
+  return o;
+}
+/* The Capital Loss Carryover Worksheet (Worksheet 4-1), which TaxSlayer prints after Schedule D: each line number in
+   its amount column with the amount beside it, as {'8':786, '13':3992}. A line with no amount is 0. null when the
+   worksheet is not in the PDF. */
+function carryoverWorksheet(pages){
+  for(var p=0;p<pages.length;p++){ var its=pages[p].items;
+    if(!its.some(function(i){ return worksheetText(i.s).trim()==='Capital Loss Carryover Worksheet'; })) continue;
+    var out={};
+    its.forEach(function(l){ var m=/^(\d{1,2})\.$/.exec(worksheetText(l.s)); if(!m || l.x<400) return;
+      var v=its.filter(function(i){ return Math.abs(i.y-l.y)<=4 && i.x>l.x && /^-?\d[\d,]*$/.test(i.s); })[0];
+      out[m[1]]=v ? +v.s.replace(/,/g,'') : 0; });
+    return out;
+  }
+  return null;
+}
+/* Does the worksheet show every amount the note lists? */
+function worksheetOk(pages,want){
+  var w=carryoverWorksheet(pages);
+  return !!w && Object.keys(want).every(function(k){ return w[k]===want[k]; });
+}
+
 /* Text of TaxSlayer's Preparer Notes page, if one was printed */
 function preparerNotes(pages){
   for(var p=0;p<pages.length;p++){ var its=pages[p].items;
@@ -228,6 +262,7 @@ function noteOk(N,pages){
   if(N.kind==='ippin') return ipPin(pages)===N.pin;
   if(N.kind==='w2text') return onW2(pages,N.employer,N.text)===true;
   if(N.kind==='prepnote') return !!preparerNotes(pages);
+  if(N.kind==='carryws') return worksheetOk(pages,N.lines);
   return null;
 }
 /* The notes checked again at a step: every note marked carry:true that an EARLIER step lists, and this step does not.

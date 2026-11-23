@@ -6,6 +6,7 @@
 //   * the checked filing status, changed to another one, fails;
 //   * each listed dependent, renamed, fails;
 //   * one digit of the Identity Protection PIN, changed, fails.
+//   * each Capital Loss Carryover Worksheet amount, one more or one less, blank, or the worksheet left out, fails.
 // Also: the Quinn printouts as the case author made them (cases/quinn/original/, 12 months) fail N1.
 // The planted-mistake sweep (engine_sweep.js) changes dollar amounts only; this is its counterpart for notes.
 const path=require('path'), fs=require('fs');
@@ -46,6 +47,22 @@ const STATUSES=['Single','Married filing jointly','Married filing separately','H
           const saved=hit.map(i=>i.s); hit.forEach(i=>{ i.s='ZED'+i.s.slice(first.length); });
           fails(`${first} is not on the return`,()=>{ hit.forEach((i,k)=>{ i.s=saved[k]; }); });
         }
+      }
+      if(N.kind==='carryws'){
+        // each amount on the Capital Loss Carryover Worksheet the note lists: one more, one less, and (if printed) blank
+        const pg=pages.find(p=>p.items.some(i=>E.worksheetText(i.s).trim()==='Capital Loss Carryover Worksheet'));
+        for(const k of Object.keys(N.lines)){
+          const lab=pg && pg.items.find(i=>i.x>=400 && E.worksheetText(i.s)===k+'.');
+          if(!expect(`${c.id} ${id}: line ${k} is on the worksheet`, !!lab)) continue;
+          let cell=pg.items.find(i=>Math.abs(i.y-lab.y)<=4 && i.x>lab.x && /^-?\d[\d,]*$/.test(i.s)), added=false;
+          if(!cell){ cell={x:lab.x+47, y:lab.y, s:'0'}; pg.items.push(cell); added=true; }
+          const orig=cell.s, v=+orig.replace(/,/g,'');
+          for(const w of [v+1, v-1]){ cell.s=String(w); fails(`worksheet line ${k} is ${w}, not ${N.lines[k]}`,()=>{ cell.s=orig; }); }
+          if(!added && N.lines[k]!==0){ cell.s=''; fails(`worksheet line ${k} is blank`,()=>{ cell.s=orig; }); }
+          if(added) pg.items.splice(pg.items.indexOf(cell),1);
+        }
+        // the worksheet left out of the PDF
+        if(pg){ const saved=pg.items; pg.items=[]; fails('the worksheet is not in the PDF',()=>{ pg.items=saved; }); }
       }
       if(N.kind==='ippin'){
         // the PIN boxes beside the 1040 signature line, found the way the reader finds them

@@ -822,6 +822,14 @@ function noteRow(step,id,got,present,pages){
     if(!okn) addHint(r,null,function(box){ box.appendChild(answerLine('a Preparer Note about the election worker pay')); box.appendChild(el('div',null,N.coach)); });
     return r;
   }
+  if(N.kind==='carryws'){
+    var cw=carryoverWorksheet(pages), okc=noteOk(N,pages);
+    setStatus(r, okc?'pass':'fail', {nochange:nochange});
+    r.body.appendChild(el('div','yours', cw ? 'Your Capital Loss Carryover Worksheet shows '+Object.keys(N.lines).map(function(k){
+      return 'line '+k+' = <b>'+(cw[k]==null?'not found':cw[k].toLocaleString('en-US'))+'</b>'; }).join(' and ')+'.' : 'Your PDF has <b>no Capital Loss Carryover Worksheet</b>.'));
+    if(!okc) addHint(r,null,function(box){ box.appendChild(answerLine(esc(N.key))); box.appendChild(el('div',null,N.coach)); });
+    return r;
+  }
   if(N.kind==='mwpRefunds'){
     var a=got.fed_35a, b=got.ca540_115, fr=w[4], cr=w[6];
     var ok2=present.fed && present.ca540 && a!=null && b!=null && a===fr && b===cr;
