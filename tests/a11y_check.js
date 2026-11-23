@@ -1,6 +1,7 @@
 // Accessibility scan with axe-core (WCAG 2.1 A and AA rules) of the screens counselors see, in both light and dark
 // themes, on a Chromebook-size screen: the start page of every case, results with a failing line and its hint open,
-// a finished step with the reward, and the What's new panel. Every finding fails, with the element it is about.
+// a finished step with the reward, the What's new panel, the Guide window, and Instructor mode (the passcode window and
+// a report). Every finding fails, with the element it is about.
 const path=require('path');
 const { chromium } = require('playwright');
 const { default: AxeBuilder } = require(path.join(__dirname,'..','source','node_modules','@axe-core','playwright'));
@@ -33,6 +34,13 @@ const TAGS=['wcag2a','wcag2aa','wcag21a','wcag21aa'];
     }
     await p.click('#verbtn'); await scan('What\'s new panel');
     await p.keyboard.press('Escape'); await p.click('#guidebtn'); await scan('Guide window');
+    // Instructor mode: the passcode window, then a report for student DH's Parks and Kent returns
+    await p.keyboard.press('Escape'); await p.click('#instrlink'); await scan('Instructor passcode window');
+    await p.fill('#pcinput','AARP'); await p.click('#pcform button[type=submit]');
+    await p.setInputFiles('#ifile',['Parks','Kent'].map(c=>require('path').join(__dirname,'fixtures','instructor',`DH ${c}.pdf`)));
+    await p.waitForFunction(()=>document.getElementById('ireport').dataset.state==='ready',null,{timeout:180000});
+    await p.click('.iunrep summary'); await scan('Instructor mode report');
+    await p.click('#ileave');
     await ctx.close();
   }
   expect('no accessibility problems', found===0, `${found} finding(s) on ${screens} screens`);

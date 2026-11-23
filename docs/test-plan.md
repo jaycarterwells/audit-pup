@@ -14,12 +14,13 @@ Every test traces back to one of these promises to counselors and to Carter:
 6. **Readable and usable by older volunteers.** Large print, color contrast, keyboard use, and screen reader names (WCAG 2.1 A and AA).
 7. **The guide matches the page.** Every message the counselor guide quotes exists in the page.
 8. **What is live is what was tested, and counselors use it.** The site is built from the release tag and checked after every deploy, and an open page or a downloaded copy that is out of date tells the counselor to update.
+9. **Instructor mode never hides a real difference.** A counselor's return compared with the golden file shows every difference as a row, a missing page or an extra page, except the kinds on the unreported list, which are counted under each case.
 
 ## Part 2: When the tests run
 
 | Tier | When | What runs | Time |
 | --- | --- | --- | --- |
-| **Developer** | Every change, before pushing (`npm run dev-test`, or `bash tests/dev_test.sh baylor` for one case) | Code checks, the build, the HTML and guide checks, the engine tests, the answer sheet re-import check (when LibreOffice is installed), the planted-mistake sweep, and each step of every case through the page. One line per check. | About 55 seconds |
+| **Developer** | Every change, before pushing (`npm run dev-test`, or `bash tests/dev_test.sh baylor` for one case) | Code checks, the build, the HTML and guide checks, the engine tests, the answer sheet re-import check (when LibreOffice is installed), the planted-mistake sweep, each step of every case through the page, and Instructor mode's golden data check, compare sweep and real-student test. One line per check. | About 4 minutes |
 | **Check-in** | Every pull request and every push to `main` (`.github/workflows/tests.yml`) | The full suite, `tests/run_all.sh`, in Chromium and WebKit. Required: the ruleset on `main` blocks a merge until the "tests" check passes. Logs and screenshots are kept for 14 days when a run fails. | About 4 minutes of tests, about 5 minutes on GitHub with setup |
 | **Release** | After the tests pass on a push to `main` with a new `source/VERSION` (`.github/workflows/release.yml`) | Makes a draft GitHub Release from `docs/release-notes.md` (the same notes as the page's What's new list). When Carter publishes it: tags `v<version>`, builds the page from the tag, deploys it to GitHub Pages, then `live_check.js` opens the live site and checks the version and the first step of every case. Carter adds the real-device checks in `docs/release-checklist.md`. | A few minutes |
 | **Weekly** | Every Sunday (`.github/workflows/weekly.yml`) | The full suite on `main` and the live site check, to catch drift in Chrome, Playwright, or the site. | About 6 minutes |
@@ -84,11 +85,20 @@ These test the page itself, so they use one case.
 | `verify11.js` | Zeke, Zion, and Bailey with their titles match green, red, and yellow; the drop box and button name the step; the built-in fonts load; a 19-step trail wraps onto 3 rows; no paw-print burst with reduced motion. |
 | `repro2.js` | Startup failures: scripts blocked (the "did not start" note), copies cut off in three places (made fresh from the current build), a PDF dropped outside the box, and older Safari file reading. |
 
+### Instructor mode tests
+
+| Test | What it proves |
+| --- | --- |
+| `golden_data.js` | Every case has its golden file, and its `golden.json` (the data the page compares against) was made from that PDF as it is now by `source/tools/golden_data.js`. |
+| `compare_golden.js` | The compare sweep (promise 9): each golden file against itself shows nothing, `golden.json` reads like the golden PDF, and about 34,000 planted differences, one at a time on every page of every golden file (a changed number, a changed letter, a removed value, an added value, a removed page), are each reported. A line added near the top of each page, which pushes the rows below it down, is the only row reported. Only changes the unreported list (`source/unreported.js`) covers may be left out (dates after the tax year, the preparer's PTIN, self-select PINs), and changes of only those kinds plus a middle initial produce no rows. Must print 0 hidden. |
+| `compare_dh.js` | A real graded counselor (DH, November 2026): each of the 16 instructor comments a PDF can show appears in the report, and Quinn, which the instructor called perfect, shows nothing. One comment (Kent Step N, the sales tax worksheet) cannot be seen in any PDF. Each distinct difference is one row (the FREEMONT address printed on 6 pages is one row naming the others; TaxSlayer's notes page is one row). Also the counselor's initials from the file names, and Unknown when they cannot be read. |
+| `instructor_mode.js` | The screen: the Instructor link and passcode (a wrong one is refused), DH's five PDFs dropped, the progress message naming the file and case being read and compared, the report (the counselor's initials, a section per case in alphabetical order, Counselor as the column name, rows (a difference printed on several pages is one row naming the others; Parks' four 1040-ES voucher pages are one row), the missing Preparer Notes page, every spot picture drawn, the closed unreported lists), Copy report, Unknown initials, staying on after a reload, and Leave instructor mode. |
+
 ### Browsers and accessibility
 
 | Test | What it proves |
 | --- | --- |
-| `a11y_check.js` | axe-core (WCAG 2.1 A and AA) on 22 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, the What's new panel, and the Guide window. Every finding fails. |
+| `a11y_check.js` | axe-core (WCAG 2.1 A and AA) on 38 screens in light and dark themes: each case's start page, results with a failing line and its hint open, a finished step with the reward, the What's new panel, the Guide window, and Instructor mode (the passcode window and a report with its unreported list open). Every finding fails. |
 | `webkit_check.js` | The main counselor paths in WebKit, Safari's engine: the page starts, each case's first step passes, a wrong PDF fails and its hint opens, progress survives a reload, and the What's new panel opens and closes. GitHub installs WebKit; elsewhere the test reports skip, and on GitHub a missing WebKit fails. |
 
 ### Release
