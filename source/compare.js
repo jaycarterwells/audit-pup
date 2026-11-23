@@ -94,53 +94,28 @@ function pairPages(golden,student){
     extra: student.map(function(_,i){ return i; }).filter(function(i){ return !sUsed[i]; }) };
 }
 
-/* Unreported differences (the product owner's list; docs/architecture shows the same table). Each rule names one kind
-   of difference instructors never comment on. A row is unreported only when every item in it is on the list. */
-var DATE_RE=/\b(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\b/g;
-function datesIn(s){ var out=[], m; DATE_RE.lastIndex=0; while((m=DATE_RE.exec(s))){ var y=+m[3]; if(y<100) y+=2000; out.push(y); } return out; }
-function withoutDates(s){ return s.replace(DATE_RE,'#DATE#'); }
-function letters(s){ return s.toUpperCase().replace(/[^A-Z0-9]/g,''); }
-function initialsOf(s){ return (s.toUpperCase().match(/(^|\s)[A-Z]\.?(?=\s|$)/g)||[]); }
-function dropInitials(s){ return s.toUpperCase().replace(/(^|\s)[A-Z]\.?(?=\s|$)/g,' '); }
-var UNREPORTED=[
-  { id:'date', name:'Dates after the tax year (when the return was printed, prepared or signed)',
-    test:function(g,s,taxYear){ var dg=datesIn(g), ds=datesIn(s);
-      return (dg.length||ds.length) && withoutDates(g)===withoutDates(s) && dg.concat(ds).every(function(y){ return y>taxYear; }); } },
-  { id:'ptin', name:'Paid preparer details (PTIN)',
-    test:function(g,s,taxYear,ctx){ return (/^[PS]\d{8}$/.test(g) && /^[PS]\d{8}$/.test(s)) || (ctx.preparerRow && /^\d$/.test(g) && /^\d$/.test(s)); } },
-  { id:'pin', name:'Self-select e-file signature PINs',
-    test:function(g,s,taxYear,ctx){ return ctx.pinRow && /^\d{1,5}$/.test(g) && /^\d{1,5}$/.test(s) && g.length===s.length; } },
-  { id:'name', name:'Minor name and address differences (a middle initial, spaces, punctuation, or capital letters)',
-    test:function(g,s){ if(g===s) return false;                     // the same words in another place: moved, reported
-      if(!/[A-Za-z]{2}/.test(g) || !/[A-Za-z]{2}/.test(s)) return false;   // single letters and marks (X) are always reported
-      if(g.replace(/\D/g,'')!==s.replace(/\D/g,'')) return false;     // any number changed: reported
-      if(letters(g)===letters(s)) return true;
-      // a middle initial added or removed (on one side only): "STACEY A GRAHAM" and "STACEY GRAHAM"
-      var ig=initialsOf(g), is=initialsOf(s);
-      if(ig.length && is.length) return false;
-      var dg=letters(dropInitials(g)), ds=letters(dropInitials(s));
-      return dg.length>=2 && dg===ds; } }
-];
-/* the row's label words say it holds a self-select signature PIN (not the IP PIN, which is always reported) */
-function isPinRow(rowText){ return /\bPIN\b/i.test(rowText) && !/Identity Protection/i.test(rowText); }
+/* The unreported list (what Instructor mode leaves out of the rows) is in unreported.js, the product owner's file. */
 
 /* Compare one golden page with its student page. Returns the differences, one per printed row:
    {y, label, golden, student, unreported (rule id or null)} */
 function comparePage(g,s,taxYear){
   var gi=itemsOf(g).map(function(i){ return {x:i.x,y:i.y,s:i.s}; }), si=itemsOf(s).map(function(i){ return {x:i.x,y:i.y,s:i.s}; });
-  var gLeft=[], sUsed=[];
-  // 1. the same words in the same place: no difference
-  var byText={}; si.forEach(function(b,j){ (byText[b.s]=byText[b.s]||[]).push(j); });
-  gi.forEach(function(a){ var c=byText[a.s]||[]; for(var k=0;k<c.length;k++){ var j=c[k]; if(!sUsed[j] && sameSpot(a,si[j],3)){ sUsed[j]=true; a.matched=true; return; } } gLeft.push(a); });
-  // 2. a whole printed row that moved up or down (a line added above it) is the same row: every item the same, in the
-  //    same columns. A single value that moved to another line is not matched here, so it is reported.
+  var sUsed=[];
+  // 1. whole printed rows first. A row is its words in order, each in its column.
   var gRows=rowsOf(gi,3), sRows=rowsOf(si.map(function(i,j){ return {x:i.x,y:i.y,s:i.s,j:j}; }),3), sRowUsed=[];
-  gRows.forEach(function(gr){ if(gr.items.some(function(i){ return i.matched; })) return;     // only rows with nothing matched yet
-    for(var k=0;k<sRows.length;k++){ var sr=sRows[k]; if(sRowUsed[k] || sr.items.length!==gr.items.length) continue;
-      if(sr.items.some(function(b){ return sUsed[b.j]; })) continue;
-      if(!gr.items.every(function(a,n){ return a.s===sr.items[n].s && Math.abs(a.x-sr.items[n].x)<=3; })) continue;
-      sRowUsed[k]=true; gr.items.forEach(function(a){ a.matched=true; }); sr.items.forEach(function(b){ sUsed[b.j]=true; }); break; } });
-  gLeft=gi.filter(function(a){ return !a.matched; });
+  function sameRow(gr,sr){ return sr.items.length===gr.items.length && gr.items.every(function(a,n){ return a.s===sr.items[n].s && Math.abs(a.x-sr.items[n].x)<=3; }); }
+  function takeRow(gr,k){ sRowUsed[k]=true; gr.done=true; gr.items.forEach(function(a){ a.matched=true; }); sRows[k].items.forEach(function(b){ sUsed[b.j]=true; }); }
+  //   a. the same row in the same place
+  gRows.forEach(function(gr){ for(var k=0;k<sRows.length;k++){ if(!sRowUsed[k] && Math.abs(sRows[k].y-gr.y)<=3 && sameRow(gr,sRows[k])){ takeRow(gr,k); return; } } });
+  //   b. the same row moved up or down (a line added above it), the nearest one. A single value moved to another line
+  //      changes both rows, so it is never matched here and is reported.
+  gRows.forEach(function(gr){ if(gr.done) return; var best=-1;
+    for(var k=0;k<sRows.length;k++){ if(!sRowUsed[k] && sameRow(gr,sRows[k]) && (best<0 || Math.abs(sRows[k].y-gr.y)<Math.abs(sRows[best].y-gr.y))) best=k; }
+    if(best>=0) takeRow(gr,best); });
+  // 2. in the rows left, the same words in the same place: no difference
+  var byText={}; si.forEach(function(b,j){ if(!sUsed[j]) (byText[b.s]=byText[b.s]||[]).push(j); });
+  gi.forEach(function(a){ if(a.matched) return; var c=byText[a.s]||[]; for(var k=0;k<c.length;k++){ var j=c[k]; if(!sUsed[j] && sameSpot(a,si[j],3)){ sUsed[j]=true; a.matched=true; return; } } });
+  var gLeft=gi.filter(function(a){ return !a.matched; });
   var sLeft=si.filter(function(_,j){ return !sUsed[j]; });
   // 3. group what is left into printed rows; each row is one difference
   var rows=[];

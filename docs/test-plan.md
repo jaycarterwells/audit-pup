@@ -14,7 +14,7 @@ Every test traces back to one of these promises to counselors and to Carter:
 6. **Readable and usable by older volunteers.** Large print, color contrast, keyboard use, and screen reader names (WCAG 2.1 A and AA).
 7. **The guide matches the page.** Every message the counselor guide quotes exists in the page.
 8. **What is live is what was tested, and counselors use it.** The site is built from the release tag and checked after every deploy, and an open page or a downloaded copy that is out of date tells the counselor to update.
-9. **Instructor mode never hides a real difference.** A student's return compared with the golden file shows every difference as a row, a missing page or an extra page, except the kinds on the unreported list, which are counted under each case.
+9. **Instructor mode never hides a real difference.** A counselor's return compared with the golden file shows every difference as a row, a missing page or an extra page, except the kinds on the unreported list, which are counted under each case.
 
 ## Part 2: When the tests run
 
@@ -90,9 +90,9 @@ These test the page itself, so they use one case.
 | Test | What it proves |
 | --- | --- |
 | `golden_data.js` | Every case has its golden file, and its `golden.json` (the data the page compares against) was made from that PDF as it is now by `source/tools/golden_data.js`. |
-| `compare_golden.js` | The compare sweep (promise 9): each golden file against itself shows nothing, `golden.json` reads like the golden PDF, and about 34,000 planted differences, one at a time on every page of every golden file (a changed number, a changed letter, a removed value, an added value, a removed page), are each reported. Only changes the unreported list covers (dates after the tax year, the preparer's PTIN, self-select PINs) may be left out, and changes of only those kinds plus a middle initial produce no rows. Must print 0 hidden. |
-| `compare_dh.js` | A real graded student (DH, November 2026): each of the 16 instructor comments a PDF can show appears in the report, and Quinn, which the instructor called perfect, shows nothing. One comment (Kent Step N, the sales tax worksheet) cannot be seen in any PDF. Also the student's initials from the file names, and Unknown when they cannot be read. |
-| `instructor_mode.js` | The screen: the Instructor link and passcode (a wrong one is refused), DH's five PDFs dropped, the report (student initials, a section per case in case order, rows, the missing Preparer Notes page, every spot picture drawn, the closed unreported lists), Copy report, Unknown initials, staying on after a reload, and Leave instructor mode. |
+| `compare_golden.js` | The compare sweep (promise 9): each golden file against itself shows nothing, `golden.json` reads like the golden PDF, and about 34,000 planted differences, one at a time on every page of every golden file (a changed number, a changed letter, a removed value, an added value, a removed page), are each reported. A line added near the top of each page, which pushes the rows below it down, is the only row reported. Only changes the unreported list (`source/unreported.js`) covers may be left out (dates after the tax year, the preparer's PTIN, self-select PINs), and changes of only those kinds plus a middle initial produce no rows. Must print 0 hidden. |
+| `compare_dh.js` | A real graded counselor (DH, November 2026): each of the 16 instructor comments a PDF can show appears in the report, and Quinn, which the instructor called perfect, shows nothing. One comment (Kent Step N, the sales tax worksheet) cannot be seen in any PDF. Also the counselor's initials from the file names, and Unknown when they cannot be read. |
+| `instructor_mode.js` | The screen: the Instructor link and passcode (a wrong one is refused), DH's five PDFs dropped, the progress message naming the file and case being read and compared, the report (the counselor's initials, a section per case in alphabetical order, Counselor as the column name, rows, the missing Preparer Notes page, every spot picture drawn, the closed unreported lists), Copy report, Unknown initials, staying on after a reload, and Leave instructor mode. |
 
 ### Browsers and accessibility
 

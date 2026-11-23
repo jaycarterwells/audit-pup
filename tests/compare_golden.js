@@ -2,7 +2,8 @@
 //  * Each golden file compared with itself shows nothing: no rows, no unreported items, no missing or extra pages.
 //  * The golden data the page uses (golden.json) reads exactly like the golden PDF.
 //  * Planted differences, one at a time on every page of every golden file, must each be reported: a changed number,
-//    a changed letter, a removed value, an added value, and a removed page. Only a change the unreported list covers
+//    a changed letter, a removed value, an added value, and a removed page. A line added near the top of a page, which
+//    pushes the rows below it down, is the only row reported. Only a change the unreported list covers
 //    (a date after the tax year, a preparer PTIN, a digit in a PIN or PTIN box) may be left out of the rows.
 //  * Planted changes of the unreported kinds only (dates after the tax year, the PTIN, a middle initial, capital
 //    letters) produce no rows.
@@ -43,6 +44,13 @@ const copy=pages=>pages.map(p=>({page:p.page, form:p.form, items:p.items.map(i=>
         plant('a removed value',sp=>{ sp.items.splice(sp.items.indexOf(find(it)(sp)),1); },it);
         plant('an added value',sp=>{ sp.items.push({x:it.x, y:it.y-9, s:'4321'}); },{x:it.x,y:it.y-9,s:'4321'}); });
     });
+    // a line added near the top of each page pushes the rows below it down: only the added line is reported
+    G.forEach((g,pi)=>{ const items=g.items, lines=E.rowsOf(items,3); if(lines.length<6) return; planted++;
+      const k=Math.floor(lines.length/3), below=lines[k+1].y, cut=(lines[k].y+below)/2;   // between two printed rows
+      const sp={page:g.page, form:g.form, items:items.map(i=>({x:i.x, y:i.y<cut?i.y-14:i.y, s:i.s}))};
+      sp.items.push({x:items[0].x, y:below, s:'ADDED LINE 4321'});
+      const rows=E.comparePage(g,sp,taxYear).filter(d=>!d.unreported);
+      if(!(rows.length===1 && rows[0].student==='ADDED LINE 4321')){ missed++; if(missed<=15) expect(`${c} page ${pi+1}: rows pushed down by an added line are not differences`, false, rows.slice(0,3).map(d=>d.golden+' / '+d.student).join(' | ')); } });
     // every page removed, one at a time, is a missing page
     G.forEach((g,pi)=>{ planted++; const S=copy(G); S.splice(pi,1); const r=E.compareReturn(G,S);
       if(!r.missingPages.some(m=>m.page===pi+1)){ missed++; if(missed<=15) expect(`${c}: removing page ${pi+1} shows it missing`, false, JSON.stringify(r.missingPages)); } });

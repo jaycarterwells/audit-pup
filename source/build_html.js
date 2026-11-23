@@ -23,7 +23,7 @@ const caseFiles=fs.readdirSync('cases').filter(f=>f.endsWith('.js')).sort((a,b)=
 // the golden files (cases/<case>/golden.json, made by tools/golden_data.js) that Instructor mode compares against
 const golden={};
 fs.readdirSync(path.join('..','cases')).forEach(c=>{ const f=path.join('..','cases',c,'golden.json'); if(fs.existsSync(f)) golden[c]=JSON.parse(fs.readFileSync(f,'utf8')); });
-const engineAndCases=[fs.readFileSync('engine.js','utf8'), fs.readFileSync('compare.js','utf8'),
+const engineAndCases=[fs.readFileSync('engine.js','utf8'), fs.readFileSync('unreported.js','utf8'), fs.readFileSync('compare.js','utf8'),
   '/* answer keys made from each case\'s answer sheet by tools/import_answer_sheet.js */\nvar ANSWER_KEYS = '+JSON.stringify(keys)+';',
   '/* golden files made by tools/golden_data.js, for Instructor mode */\nvar GOLDEN_DATA = '+JSON.stringify(golden)+';',
   ...caseFiles.map(f=>fs.readFileSync(path.join('cases',f),'utf8'))].join('\n');

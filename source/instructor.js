@@ -1,4 +1,4 @@
-/* ---------- Instructor mode: compare a student's final PDFs with the golden files ----------
+/* ---------- Instructor mode: compare a counselor's final PDFs with the golden files ----------
    Turned on from the Instructor link at the bottom of the page with the passcode, and kept on in this browser until
    Leave instructor mode. The comparison itself is compare.js (pure functions, tested in Node); this file is only the
    screen: passcode, drop zone, the report, the spot pictures, and Copy report. build_html.js puts it into the page's
@@ -51,15 +51,21 @@ window.addEventListener('drop',function(e){ if(!instructorOn()) return; e.preven
    case replaces the first. */
 async function addInstructorFiles(files){
   instrReport.dataset.state='busy';
-  instrReport.innerHTML='<p class="ibusy">Reading '+files.length+' PDF'+(files.length===1?'':'s')+'...</p>';
+  instrReport.innerHTML='<p class="ibusy" id="ibusy" role="status"></p>';
+  var busy=document.getElementById('ibusy');
+  /* say which file and case is being worked on, so the instructor sees progress */
+  function working(i,what){ busy.textContent='Reading and comparing '+(i+1)+' of '+files.length+': '+what+' ...'; }
   try{ ensurePdfjs(); }catch(e){}
   for(var i=0;i<files.length;i++){
     var f=files[i], entry={name:f.name, caseId:null, result:null, err:null};
+    working(i,f.name);
+    await new Promise(function(r){ setTimeout(r,0); });   // let the message show before the work starts
     try{
       if(!/\.pdf$/i.test(f.name) && f.type!=='application/pdf') throw new Error('This is not a PDF file.');
       var buf=await f.arrayBuffer(); entry.bytes=buf.slice(0);
       var pages=await loadPages(buf);
       entry.caseId=caseOfPages(CASES,pages);
+      if(entry.caseId){ working(i,'the '+caseShort(entry.caseId)+' case'); await new Promise(function(r){ setTimeout(r,0); }); }
       if(!entry.caseId) throw new Error('Audit Pup could not tell which case this PDF is for from the name on its Form 1040.');
       var golden=goldenPages(entry.caseId);
       if(!golden) throw new Error('There is no golden file for this case.');
@@ -69,6 +75,7 @@ async function addInstructorFiles(files){
     instrFiles.push(entry);
   }
   instrFiles=instrFiles.slice(-INSTR_MAX);
+  busy.textContent='Drawing the spots ...';
   renderInstructor();
   await drawSpots();
   instrReport.dataset.state='ready';
@@ -76,10 +83,10 @@ async function addInstructorFiles(files){
 
 /* ----- the report ----- */
 function caseShort(id){ var c=CASES.filter(function(x){ return x.id===id; })[0]; return c ? c.short : id; }
-function ruleName(id){ if(id==='mixed') return 'Several of the kinds above, in one row'; var r=UNREPORTED.filter(function(x){ return x.id===id; })[0]; return r ? r.name : id; }
+function ruleName(id){ if(id==='mixed') return 'More than one kind on the unreported list'; var r=UNREPORTED.filter(function(x){ return x.id===id; })[0]; return r ? r.name : id; }
+/* cases in alphabetical order by name; files Audit Pup could not read come last */
 function reportOrder(){
-  var order=CASES.map(function(c){ return c.id; });
-  return instrFiles.slice().sort(function(a,b){ var ia=order.indexOf(a.caseId), ib=order.indexOf(b.caseId); return (ia<0?99:ia)-(ib<0?99:ib); });
+  return instrFiles.slice().sort(function(a,b){ var na=a.caseId?caseShort(a.caseId):'~'+a.name, nb=b.caseId?caseShort(b.caseId):'~'+b.name; return na<nb?-1:na>nb?1:0; });
 }
 function studentLine(){
   var who=studentInitials(instrFiles.map(function(f){ return f.name; }), CASES.map(function(c){ return c.short; }));
@@ -94,7 +101,7 @@ function caseHeadline(r){
 }
 function renderInstructor(){
   if(!instrFiles.length){ instrReport.innerHTML=''; instrReport.dataset.state='ready'; return; }
-  var s=studentLine(), h='<div class="ihdr"><div><div class="iwho">Student: '+esc(s.who)+'</div>'+
+  var s=studentLine(), h='<div class="ihdr"><div><div class="iwho">Counselor: '+esc(s.who)+'</div>'+
     '<div class="isub">'+instrFiles.length+' PDF'+(instrFiles.length===1?'':'s')+(s.printed.length?', printed '+esc(s.printed.join(', ')):'')+'</div></div>'+
     '<button type="button" class="choose" id="icopy">Copy report</button></div><div class="icopied hidden" id="icopied" role="status">Report copied.</div>';
   reportOrder().forEach(function(f,fi){
@@ -103,12 +110,12 @@ function renderInstructor(){
     var r=f.result;
     h+='<h3>'+esc(caseShort(f.caseId))+': '+esc(caseHeadline(r))+'</h3><div class="ifile">'+esc(f.name)+'</div>';
     if(r.missingPages.length||r.extraPages.length||r.rows.length){
-      h+='<div class="itable" tabindex="0"><table><thead><tr><th scope="col">Form and page</th><th scope="col">Line or box</th><th scope="col">Golden</th><th scope="col">Student</th><th scope="col">The spot</th></tr></thead><tbody>';
+      h+='<div class="itable" tabindex="0"><table><thead><tr><th scope="col">Form and page</th><th scope="col">Line or box</th><th scope="col">Golden</th><th scope="col">Counselor</th><th scope="col">The spot</th></tr></thead><tbody>';
       r.missingPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (golden p. '+p.page+')</td><td>Whole page</td><td>printed</td><td class="ibad">missing</td><td></td></tr>'; });
       r.extraPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (p. '+p.page+')</td><td>Whole page</td><td>not printed</td><td class="ibad">extra</td><td></td></tr>'; });
       r.rows.forEach(function(d,di){
         h+='<tr><td>'+esc(d.name)+' (p. '+d.page+')</td><td>'+esc(d.label||'')+'</td><td>'+(d.golden?esc(d.golden):'<i>blank</i>')+'</td><td class="ibad">'+(d.student?esc(d.student):'<i>blank</i>')+'</td>'+
-           '<td><img class="ispot" alt="The spot on the student\'s page '+d.page+'" data-f="'+fi+'" data-d="'+di+'"></td></tr>'; });
+           '<td><img class="ispot" alt="The spot on page '+d.page+' of the counselor\'s PDF" data-f="'+fi+'" data-d="'+di+'"></td></tr>'; });
       h+='</tbody></table></div>';
     }
     if(r.unreported.length){
@@ -123,13 +130,13 @@ function renderInstructor(){
 }
 /* the report as plain text, for notes or an email */
 function reportText(){
-  var s=studentLine(), out=['Audit Pup Instructor report','Student: '+s.who+(s.printed.length?' (printed '+s.printed.join(', ')+')':''),''];
+  var s=studentLine(), out=['Audit Pup Instructor report','Counselor: '+s.who+(s.printed.length?' (printed '+s.printed.join(', ')+')':''),''];
   reportOrder().forEach(function(f){
     if(f.err){ out.push(f.name+': '+f.err,''); return; }
     var r=f.result; out.push(caseShort(f.caseId)+': '+caseHeadline(r));
     r.missingPages.forEach(function(p){ out.push('  Missing page: '+p.name); });
     r.extraPages.forEach(function(p){ out.push('  Extra page: '+p.name+' (p. '+p.page+')'); });
-    r.rows.forEach(function(d){ out.push('  '+d.name+' (p. '+d.page+')'+(d.label?', '+d.label:'')+': golden '+(d.golden||'blank')+'; student '+(d.student||'blank')); });
+    r.rows.forEach(function(d){ out.push('  '+d.name+' (p. '+d.page+')'+(d.label?', '+d.label:'')+': golden '+(d.golden||'blank')+'; counselor '+(d.student||'blank')); });
     if(r.unreported.length) out.push('  ('+r.unreported.length+' unreported differences not listed)');
     out.push('');
   });
@@ -141,7 +148,7 @@ function copyReport(){
 }
 function copyFallback(txt){ var t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); }catch(e){} t.remove(); }
 
-/* ----- the spot: a small picture of each difference's area on the student's page ----- */
+/* ----- the spot: a small picture of each difference's area on the counselor's page ----- */
 async function drawSpots(){
   var imgs=Array.prototype.slice.call(instrReport.querySelectorAll('img.ispot')), order=reportOrder(), docs={}, pageCanvas={};
   for(var i=0;i<imgs.length;i++){
@@ -157,6 +164,9 @@ async function drawSpots(){
       out.width=Math.max(1,w); out.height=Math.max(1,hgt);
       var ctx=out.getContext('2d'); ctx.drawImage(pc.cv,a[0],a[1],w,hgt,0,0,w,hgt);
       var m=pc.vp.convertToViewportPoint(d.x-3,d.y+11); ctx.strokeStyle='#b8892c'; ctx.lineWidth=3; ctx.strokeRect(m[0]-a[0],m[1]-a[1],Math.min(w-(m[0]-a[0])-3,300),30);
+      /* the PDF page number in the corner, so the instructor can find the place in the PDF */
+      var tag='PDF page '+d.page; ctx.font='bold 22px sans-serif'; var tw=ctx.measureText(tag).width+16;
+      ctx.fillStyle='#2a2e35'; ctx.fillRect(w-tw,0,tw,30); ctx.fillStyle='#ffffff'; ctx.fillText(tag,w-tw+8,22);
       img.src=out.toDataURL('image/png');
     }catch(e){ img.alt='The spot could not be drawn'; }
   }
