@@ -52,12 +52,17 @@ expect('step R2 sorts after R and before S', E.stepOrder('R')<E.stepOrder('R2') 
 (async()=>{
   // ----- suggestions for counselor DH's report: the 2026 comment for the mistake is among the first three -----
   const reports={};
-  for(const c of ['baylor','kent','parks']) reports[c]=E.compareReturn(goldenPages(c,E), await readPdf(studentFile(c),E));
+  for(const c of ['baylor','graham','kent','parks']) reports[c]=E.compareReturn(goldenPages(c,E), await readPdf(studentFile(c),E));
   const top3=(c,cn,pick,find)=>{ const row=reports[c].rows.find(pick)||null; if(!row) return null; return {row, list:E.suggestionsFor(built,cn,row).slice(0,3), find}; };
   const want=[
     ['baylor','Baylor','Willie for William on Form 1040', d=>d.name==='Form 1040' && d.golden==='WILLIAM', /Willie instead of/],
     ['kent','Kent','the Box E sale on Schedule D', d=>/Schedule D/.test(d.name) && /27403/.test(d.golden), /\$27,403 cost basis/],
     ['parks','Parks','Schedule A line 7', d=>d.name==='Schedule A' && d.golden==='921', /Line 7 should be \$921/],
+    // differences DH's graders did not comment on, but the 2026 list has a comment for (Carter, November 23)
+    ['baylor','Baylor','the missing X on the Betts W-2 (box 13)', d=>d.name==='Form W-2' && d.golden==='X', /Box 13/],
+    ['graham','Graham','DECEASED missing on Form 1040', d=>/DECEASED/.test(d.golden), /Spouse is Deceased/],
+    ['kent','Kent','the combined non-cash donation on Form 8283', d=>d.name==='Form 8283' && /FURNITURE/.test(d.golden), /non-cash donations/],
+    ['parks','Parks','the 365 days on Schedule E', d=>/^Schedule E/.test(d.name), /LAND/],
   ];
   for(const [c,cn,what,pick,find] of want){
     const t=top3(c,cn,pick,find);
