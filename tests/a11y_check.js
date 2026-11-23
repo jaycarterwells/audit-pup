@@ -40,6 +40,9 @@ const TAGS=['wcag2a','wcag2aa','wcag21a','wcag21aa'];
     await p.setInputFiles('#ifile',['Parks','Kent'].map(c=>require('path').join(__dirname,'fixtures','instructor',`DH ${c}.pdf`)));
     await p.waitForFunction(()=>document.getElementById('ireport').dataset.state==='ready',null,{timeout:180000});
     await p.click('.iunrep summary'); await scan('Instructor mode report');
+    await p.locator('input.ipickbox').first().check(); await p.locator('.iwrite').first().click();
+    await p.locator('.iother summary').first().click(); await p.locator('.itsrow input[value="missing"]').first().check();
+    await p.click('#iletterbtn'); await scan('Instructor comments, TS Notes checklist and feedback letter');
     await p.click('#ileave');
     await ctx.close();
   }

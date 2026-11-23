@@ -24,7 +24,7 @@ const reportReady=p=>p.waitForFunction(()=>document.getElementById('ireport').da
   expect('while it works, the screen names the file and case it is on', true);
   await reportReady(p);
   const rep=await p.evaluate(()=>({who:document.querySelector('.iwho').textContent, heads:[...document.querySelectorAll('.icase h3')].map(h=>h.textContent),
-    rows:[...document.querySelectorAll('.icase tbody tr')].map(r=>r.textContent), spots:[...document.querySelectorAll('img.ispot')].map(i=>!!i.src && i.naturalWidth>0),
+    rows:[...document.querySelectorAll('.icase tbody tr.idiff')].map(r=>r.textContent), spots:[...document.querySelectorAll('img.ispot')].map(i=>!!i.src && i.naturalWidth>0),
     unrep:[...document.querySelectorAll('.iunrep summary')].map(s=>s.textContent)}));
   expect('the header names the counselor from the file names', rep.who==='Counselor: DH', rep.who);
   expect('one section per case, in alphabetical order by case name', rep.heads.length===5 && rep.heads.map(h=>h.split(':')[0]).join(',')==='Baylor,Graham,Kent,Parks,Quinn' && rep.heads[4]==='Quinn: no differences', rep.heads.join(' | '));
@@ -39,6 +39,33 @@ const reportReady=p=>p.waitForFunction(()=>document.getElementById('ireport').da
   await p.click('#icopy');
   const text=await p.evaluate(()=>navigator.clipboard.readText()).catch(()=>'');
   expect('Copy report puts the report on the clipboard as text', /^Audit Pup Instructor report\nCounselor: DH/.test(text) && /Parks: /.test(text) && await p.isVisible('#icopied'), text.slice(0,80));
+  // ----- comments from the library, the TS Notes checklist, and the feedback letter -----
+  expect('the header names the comment library in use, the copy built into this version, with no warning',
+    /^Comment library version 1 \(November 20, 2026\), built into this version of Audit Pup\. \d+ comments\.$/.test(await p.textContent('.ilib')) && !(await p.$('.iwarn')), await p.textContent('.ilib'));
+  const n7=p.locator('.ipick',{hasText:'Line 7 should be $921'}).first();
+  expect('the Parks Schedule A row suggests answer sheet Note N7 with the counselor\'s $970 filled in', /your return has \$970\./.test(await n7.textContent()));
+  await n7.locator('input').check();
+  expect('ticking a comment opens its words for editing', await n7.locator('textarea').isVisible() && await n7.locator('.itext').isHidden());
+  await n7.locator('textarea').fill('Line 7 should be $921; your return has $970. Please look at the MAGI adjustment.');
+  const kentSec=p.locator('.icase',{hasText:'DH Kent.pdf'});
+  await kentSec.locator('.iacts > .iwrite').last().click();
+  const custom=kentSec.locator('.icustom').last();
+  await custom.locator('select').selectOption('K'); await custom.locator('textarea').fill('Please re-check the Schwab entries.');
+  expect('each case has a TS Notes checklist with Found and Missing for each TS Note it expects', await p.locator('.itsn').count()===5 &&
+    await kentSec.locator('.itsrow').count()===2 && await kentSec.locator('.itsrow input[value="found"]').count()===2);
+  await kentSec.locator('.itsrow',{hasText:'Step N'}).locator('input[value="missing"]').check();
+  await kentSec.locator('.itsrow',{hasText:'Step Q'}).locator('input[value="found"]').check();
+  await p.click('#iletterbtn');
+  const letter=await p.evaluate(()=>navigator.clipboard.readText()).catch(()=>'');
+  expect('Copy feedback letter: the chosen comments, edited, grouped by case and step, with the missing TS Note and the written comment',
+    /^Homework Problem Review\nCounselor: DH\n\nKent:\nStep K: Brokerage sales \(Schwab 1099-B\)\n\tPlease re-check the Schwab entries\.\n\nStep N: Itemized deductions\n\tThe TS Note for this step is missing\. An example of what is needed: STEP N - VA BENEFITS/.test(letter) &&
+    /\nParks:\nStep L: [^\n]+\n\tLine 7 should be \$921; your return has \$970\. Please look at the MAGI adjustment\.\n$/.test(letter) && !/Step Q/.test(letter) && await p.isVisible('#iletter'), letter);
+  // the Sheet cannot be reached (the network is off in this test): the built-in copy, with the yellow warning
+  await p.evaluate(()=>{ LIBRARY_SOURCE.comments='https://example.invalid/comments.csv'; instrLibLoading=null; });
+  await p.setInputFiles('#ifile',[files[3]]); await reportReady(p);
+  expect('when the library cannot be reached, a yellow warning says which copy is used',
+    /could not be reached\. Using version 1 \(November 20, 2026\), built into this version of Audit Pup, which may be out of date\./.test(await p.textContent('.iwarn')));
+  await p.evaluate(()=>{ LIBRARY_SOURCE.comments=''; instrLibLoading=null; });
   // a file named any other way gives Unknown initials
   await p.setInputFiles('#ifile',[{name:'final return.pdf', mimeType:'application/pdf', buffer:fs.readFileSync(files[0])}]); await reportReady(p);
   expect('initials that cannot be read from the file names show as Unknown', (await p.textContent('.iwho'))==='Counselor: Unknown');

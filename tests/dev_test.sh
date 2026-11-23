@@ -40,5 +40,6 @@ run cases_steps node tests/cases_steps.js $CASEARGS
 run golden_data node tests/golden_data.js
 run compare_golden node tests/compare_golden.js
 run compare_dh node tests/compare_dh.js
+run library node tests/library.js
 echo; [ $bad -eq 0 ] && echo "DEVELOPER TEST PASSED" || echo "DEVELOPER TEST FAILED"
 exit $bad

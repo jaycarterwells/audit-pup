@@ -75,10 +75,99 @@ async function addInstructorFiles(files){
     instrFiles.push(entry);
   }
   instrFiles=instrFiles.slice(-INSTR_MAX);
+  busy.textContent='Reading the comment library ...';
+  await ensureLibrary();
   busy.textContent='Drawing the spots ...';
   renderInstructor();
   await drawSpots();
   instrReport.dataset.state='ready';
+}
+
+/* ----- the comment library (library.js): read once when the first report is made ----- */
+var instrLib=null, instrLibLoading=null;
+function fetchText(url){
+  var ctl=window.AbortController ? new AbortController() : null, t=setTimeout(function(){ if(ctl) ctl.abort(); },5000);
+  return fetch(url,{cache:'no-store', signal:ctl?ctl.signal:undefined}).then(function(r){ clearTimeout(t); if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); },
+    function(e){ clearTimeout(t); throw e; });
+}
+function libStore(){ try{ var s=window.localStorage; s.getItem(LIBRARY_KEY); return s; }catch(e){ return {getItem:function(){ return null; }, setItem:function(){}}; } }
+function ensureLibrary(){
+  if(!instrLibLoading) instrLibLoading=loadLibrary(fetchText, libStore(), LIBRARY_SNAPSHOT, CASES.map(function(c){ return c.short; }))
+    .then(function(r){ instrLib=r; return r; });
+  return instrLibLoading;
+}
+function libraryLine(){
+  if(!instrLib) return '';
+  var L=instrLib, when=L.from==='sheet' ? 'read just now' : (L.from==='saved' ? 'saved in this browser'+(L.readAt?' on '+new Date(L.readAt).toLocaleDateString('en-US',{month:'long', day:'numeric'}):'') : 'built into this version of Audit Pup');
+  var h='<div class="ilib">Comment library '+esc(libraryName(L.lib))+', '+esc(when)+'. '+L.lib.comments.length+' comments.</div>';
+  if(L.warning) h+='<div class="iwarn" role="status">'+esc(L.warning)+'</div>';
+  if(L.lib.bad.length) h+='<details class="ibadrows"><summary>'+L.lib.bad.length+' library row'+(L.lib.bad.length===1?'':'s')+' Audit Pup could not use</summary><ul>'+
+    L.lib.bad.map(function(b){ return '<li>Row '+b.row+': '+esc(b.why)+'</li>'; }).join('')+'</ul></details>';
+  return h;
+}
+function caseOf(id){ return CASES.filter(function(c){ return c.id===id; })[0]; }
+function stepName(caseId, step){ var c=caseOf(caseId), s=c && c.steps.filter(function(x){ return x.id===step; })[0]; return s ? s.name : (step ? 'Step '+step : 'Other comments'); }
+/* one library comment the instructor can tick and then edit; the text is plain text, never HTML */
+function pickHtml(caseId, c, value){
+  var t=fillValue(c.comment, value);
+  return '<div class="ipick"><label><input type="checkbox" class="ipickbox" data-case="'+esc(caseId)+'" data-step="'+esc(c.step)+'"> '+
+    '<span class="istep">'+esc(c.step?'Step '+c.step:'Any step')+'</span>'+(/^check before use$/i.test(c.status)?' <span class="itag">Check before use</span>':'')+' <span class="itext">'+esc(t)+'</span></label>'+
+    '<textarea class="iedit hidden" rows="3" aria-label="Edit this comment for the letter">'+esc(t)+'</textarea></div>';
+}
+/* the comments under one report row (or a missing or extra page): the 3 best first, the rest folded */
+function suggestionHtml(caseId, row, value){
+  var cn=caseShort(caseId), list=instrLib ? suggestionsFor(instrLib.lib, cn, row) : [];
+  var h='<div class="isug">';
+
+  list.slice(0,3).forEach(function(c){ h+=pickHtml(caseId,c,value); });
+  if(list.length>3) h+='<details class="imore"><summary>More comments for '+esc(row.name)+' ('+(list.length-3)+')</summary>'+list.slice(3).map(function(c){ return pickHtml(caseId,c,value); }).join('')+'</details>';
+  h+='<div class="iacts">'+(list.length?'':'<span class="inone">No library comments for '+esc(row.name)+'.</span> ')+'<button type="button" class="ilink iwrite" data-case="'+esc(caseId)+'">Write a comment</button>';
+  var link=libraryFormLink({caseName:cn, form:row.name, line:row.label||''});
+  if(link) h+=' <a class="ilink" href="'+esc(link)+'" target="_blank" rel="noopener">Add to library</a>';
+  return h+'</div></div>';
+}
+/* a comment the instructor writes, with the step it goes under in the letter */
+function writeBox(caseId){
+  var c=caseOf(caseId), d=document.createElement('div'); d.className='icustom';
+  var opts=(c?c.steps:[]).map(function(s){ return '<option value="'+esc(s.id)+'">Step '+esc(s.id)+'</option>'; }).join('');
+  d.innerHTML='<label>Step <select class="icstep" data-case="'+esc(caseId)+'"><option value="">Other</option>'+opts+'</select></label>'+
+    '<textarea class="ictext" rows="3" aria-label="Your comment for the letter"></textarea>';
+  return d;
+}
+/* the TS Notes the case expects: TaxSlayer does not print them, so the instructor checks them live in TaxSlayer */
+function tsNotes(caseId){
+  var c=caseOf(caseId), out=[]; if(!c) return out;
+  var seen={};   /* a note listed at two steps (Quinn's one TS Note, at E and F) is one item, at its first step */
+  c.steps.forEach(function(s){ (s.notes||[]).forEach(function(id){ var N=c.notes[id];
+    if(N && N.kind==='confirm' && (N.chip||id)==='NN' && !seen[id]){ seen[id]=1; out.push({id:id, step:s.id, example:N.example||''}); } }); });
+  return out;
+}
+function tsHtml(fi, caseId){
+  var list=tsNotes(caseId); if(!list.length) return '';
+  var h='<fieldset class="itsn"><legend>TS Notes checklist</legend><p class="ilead2">TaxSlayer does not print TS Notes. Open the return in TaxSlayer and mark each one.</p>';
+  list.forEach(function(t,k){ var nm='its-'+fi+'-'+k;
+    h+='<div class="itsrow" data-case="'+esc(caseId)+'" data-step="'+esc(t.step)+'" data-example="'+esc(t.example)+'"><span class="itsname">Step '+esc(t.step)+' TS Note</span>'+
+      '<label><input type="radio" name="'+nm+'" value="found"> Found</label><label><input type="radio" name="'+nm+'" value="missing"> Missing</label></div>'; });
+  return h+'</fieldset>';
+}
+/* everything the instructor chose, for the letter */
+function letterPicks(){
+  var out=[];
+  Array.prototype.forEach.call(instrReport.querySelectorAll('input.ipickbox:checked'),function(b){
+    var t=b.closest('.ipick').querySelector('textarea').value.trim(); if(t) out.push({caseName:caseShort(b.dataset.case), step:b.dataset.step, stepName:stepName(b.dataset.case,b.dataset.step), text:t}); });
+  Array.prototype.forEach.call(instrReport.querySelectorAll('.icustom'),function(d){
+    var t=d.querySelector('textarea').value.trim(), s=d.querySelector('select'); if(t) out.push({caseName:caseShort(s.dataset.case), step:s.value, stepName:stepName(s.dataset.case,s.value), text:t}); });
+  Array.prototype.forEach.call(instrReport.querySelectorAll('.itsrow'),function(r){
+    var m=r.querySelector('input[value="missing"]'); if(!m.checked) return;
+    out.push({caseName:caseShort(r.dataset.case), step:r.dataset.step, stepName:stepName(r.dataset.case,r.dataset.step),
+      text:'The TS Note for this step is missing.'+(r.dataset.example?' An example of what is needed: '+r.dataset.example:'')}); });
+  return out;
+}
+function copyLetter(){
+  var txt=feedbackLetter(studentLine().who, letterPicks()), pre=document.getElementById('iletter');
+  pre.textContent=txt; pre.classList.remove('hidden');
+  var done=function(){ var c=document.getElementById('icopied'); c.textContent='Feedback letter copied.'; c.classList.remove('hidden'); };
+  try{ navigator.clipboard.writeText(txt).then(done,function(){ copyFallback(txt); done(); }); }catch(e){ copyFallback(txt); done(); }
 }
 
 /* ----- the report ----- */
@@ -104,21 +193,30 @@ function renderInstructor(){
   if(!instrFiles.length){ instrReport.innerHTML=''; instrReport.dataset.state='ready'; return; }
   var s=studentLine(), h='<div class="ihdr"><div><div class="iwho">Counselor: '+esc(s.who)+'</div>'+
     '<div class="isub">'+instrFiles.length+' PDF'+(instrFiles.length===1?'':'s')+(s.printed.length?', printed '+esc(s.printed.join(', ')):'')+'</div></div>'+
-    '<button type="button" class="choose" id="icopy">Copy report</button></div><div class="icopied hidden" id="icopied" role="status">Report copied.</div>';
+    '<div class="ibtns"><button type="button" class="choose" id="icopy">Copy report</button> <button type="button" class="choose" id="iletterbtn">Copy feedback letter</button></div></div>'+
+    libraryLine()+'<div class="icopied hidden" id="icopied" role="status">Report copied.</div><pre class="iletter hidden" id="iletter" tabindex="0" aria-label="The feedback letter"></pre>';
   reportOrder().forEach(function(f,fi){
     h+='<section class="icase">';
     if(f.err){ h+='<h3>'+esc(f.name)+'</h3><p class="ierr">'+esc(f.err)+'</p></section>'; return; }
-    var r=f.result;
+    var r=f.result, forms={};
     h+='<h3>'+esc(caseShort(f.caseId))+': '+esc(caseHeadline(r))+'</h3><div class="ifile">'+esc(f.name)+'</div>';
     if(r.missingPages.length||r.extraPages.length||r.rows.length){
       h+='<div class="itable" tabindex="0"><table><thead><tr><th scope="col">Form and page</th><th scope="col">Line or box</th><th scope="col">Golden</th><th scope="col">Counselor</th><th scope="col">The spot</th></tr></thead><tbody>';
-      r.missingPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (golden p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>printed</td><td class="ibad">missing</td><td></td></tr>'; });
-      r.extraPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>not printed</td><td class="ibad">extra</td><td></td></tr>'; });
+      var sug=function(row,value){ forms[row.name]=1; return '<tr class="isugrow"><td colspan="5">'+suggestionHtml(f.caseId,row,value)+'</td></tr>'; };
+      r.missingPages.forEach(function(p){ h+='<tr class="idiff"><td>'+esc(p.name)+' (golden p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>printed</td><td class="ibad">missing</td><td></td></tr>'+sug({name:p.name, label:'Whole page', golden:'', student:''},''); });
+      r.extraPages.forEach(function(p){ h+='<tr class="idiff"><td>'+esc(p.name)+' (p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>not printed</td><td class="ibad">extra</td><td></td></tr>'+sug({name:p.name, label:'Whole page', golden:'', student:''},''); });
       r.rows.forEach(function(d,di){
-        h+='<tr><td>'+esc(d.name)+' (p. '+d.page+')'+(d.also.length?'<div class="ialso">Also on p. '+esc(d.also.join(', '))+'</div>':'')+'</td><td>'+esc(d.label||'')+'</td><td>'+(d.golden?esc(d.golden):'<i>blank</i>')+'</td><td class="ibad">'+(d.student?esc(d.student):'<i>blank</i>')+'</td>'+
-           '<td><img class="ispot" alt="The spot on page '+d.page+' of the counselor\'s PDF" data-f="'+fi+'" data-d="'+di+'"></td></tr>'; });
+        h+='<tr class="idiff"><td>'+esc(d.name)+' (p. '+d.page+')'+(d.also.length?'<div class="ialso">Also on p. '+esc(d.also.join(', '))+'</div>':'')+'</td><td>'+esc(d.label||'')+'</td><td>'+(d.golden?esc(d.golden):'<i>blank</i>')+'</td><td class="ibad">'+(d.student?esc(d.student):'<i>blank</i>')+'</td>'+
+           '<td><img class="ispot" alt="The spot on page '+d.page+' of the counselor\'s PDF" data-f="'+fi+'" data-d="'+di+'"></td></tr>'+sug(d,d.student); });
       h+='</tbody></table></div>';
     }
+    if(instrLib){
+      var other=otherComments(instrLib.lib, caseShort(f.caseId), Object.keys(forms));
+      if(other.length) h+='<details class="iother"><summary>Other '+esc(caseShort(f.caseId))+' comments ('+other.length+'): for mistakes the PDF does not show, or forms with no difference above</summary>'+
+        other.map(function(c){ return pickHtml(f.caseId,c,''); }).join('')+'</details>';
+    }
+    h+=tsHtml(fi,f.caseId);
+    h+='<div class="iacts"><button type="button" class="ilink iwrite" data-case="'+esc(f.caseId)+'">Write a comment for '+esc(caseShort(f.caseId))+'</button></div>';
     if(r.unreported.length){
       h+='<details class="iunrep"><summary>'+r.unreported.length+' unreported difference'+(r.unreported.length===1?'':'s')+'</summary><ul>';
       r.unreported.forEach(function(d){ h+='<li>'+esc(d.name)+' (p. '+d.page+'): '+esc(d.golden||'blank')+' / '+esc(d.student||'blank')+' <span class="irule">('+esc(ruleName(d.rule))+')</span></li>'; });
@@ -128,7 +226,16 @@ function renderInstructor(){
   });
   instrReport.innerHTML=h;
   document.getElementById('icopy').addEventListener('click',copyReport);
+  document.getElementById('iletterbtn').addEventListener('click',copyLetter);
 }
+/* ticking a comment opens its words for editing; Write a comment adds a box under the button */
+instrReport.addEventListener('change',function(e){
+  if(e.target.classList && e.target.classList.contains('ipickbox')){ var pk=e.target.closest('.ipick'); pk.classList.toggle('on',e.target.checked); pk.querySelector('textarea').classList.toggle('hidden',!e.target.checked); }
+});
+instrReport.addEventListener('click',function(e){
+  var b=e.target.closest ? e.target.closest('.iwrite') : null; if(!b) return;
+  var box=writeBox(b.dataset.case); b.parentNode.parentNode.insertBefore(box,b.parentNode.nextSibling); box.querySelector('textarea').focus();
+});
 /* the report as plain text, for notes or an email */
 function reportText(){
   var s=studentLine(), out=['Audit Pup Instructor report','Counselor: '+s.who+(s.printed.length?' (printed '+s.printed.join(', ')+')':''),''];
@@ -144,7 +251,7 @@ function reportText(){
   return out.join('\n');
 }
 function copyReport(){
-  var txt=reportText(), done=function(){ document.getElementById('icopied').classList.remove('hidden'); };
+  var txt=reportText(), done=function(){ var c=document.getElementById('icopied'); c.textContent='Report copied.'; c.classList.remove('hidden'); };
   try{ navigator.clipboard.writeText(txt).then(done,function(){ copyFallback(txt); done(); }); }catch(e){ copyFallback(txt); done(); }
 }
 function copyFallback(txt){ var t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); }catch(e){} t.remove(); }

@@ -105,6 +105,9 @@ Instructor mode compares a counselor's final returns with the golden files, so y
 4. Read the report. Each case has its own section, in alphabetical order: missing and extra pages first, then one row per difference with the golden value, the counselor's value, and **The spot** (a small picture of that place on the counselor's page, with its PDF page number). A difference printed on several pages, such as an address on every form, is one row that lists its other pages.
 5. Differences instructors never comment on (dates after the tax year, the preparer's PTIN, self-select e-file PINs, TaxSlayer's own Link numbers, and a middle initial added or left out) are not rows. First and last names must match exactly. Each case counts them in a closed list you can open.
 6. Click **Copy report** to paste the report into your notes or an email.
+7. Under each row are suggested comments from the instructors' comment library for that form, the closest ones first (open **More comments** for the rest). Tick a comment to use it; its words open so you can change them. Where a comment says what the counselor entered, the counselor's value is already filled in. Click **Write a comment** to add your own, and pick the step it belongs to.
+8. Below each case's table: **Other comments** lists the case's comments for mistakes the PDF does not show, and the **TS Notes checklist** lists every TS Note the case expects. TaxSlayer does not print TS Notes, so open the return in TaxSlayer and mark each one **Found** or **Missing**.
+9. Click **Copy feedback letter**: it puts every comment you ticked or wrote, and each missing TS Note, into one letter grouped by case and step, ready to paste into an email. The header says which version of the comment library is in use; a yellow box means the library could not be reached and an older copy is used.
 
 ## For beta testers
 

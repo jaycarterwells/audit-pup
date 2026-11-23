@@ -1,0 +1,139 @@
+Case,Step,Form,Line or box,Comment,Status
+Baylor,A,Form 1040,First name,"Entered Willie instead of the name as it appears on the Social Security card, William.",Active
+Baylor,A,Form 1040,Identity Protection PIN,The IP PIN listed in the Interview Notes was not entered. The reminder was on the answer sheet under Note N2.,Active
+Baylor,A,Form 1040,Presidential Election Campaign,The Intake/Interview form shows a $3 contribution to the Presidential Election Campaign Fund; that box was not checked in TaxSlayer.,Active
+Baylor,A,CA Form 540,Line 46,"CA 540 line 46, Nonrefundable Renter's Credit: see Note N3 on the answer sheet.",Active
+Baylor,B,Form W-2,Employer name and address,"Employer name and address must be confirmed after entering the EIN. TaxSlayer fills them in; if what it fills in is wrong, it must be corrected. ""EIN does not match employer name"" is a common cause of an e-file reject.",Active
+Baylor,B,Form W-2,Employee address,"The employee address must match the paper W-2. TaxSlayer fills it in from Basic Information; it must be corrected to match the paper form, which shows the PO Box.",Active
+Baylor,B,Form W-2,Box 13,The Retirement plan box in Box 13 was not checked.,Active
+Baylor,B,Form W-2,Boxes 3 and 5,"Boxes 3 and 5 are not equal to Box 1, which TaxSlayer assumes and fills in. Boxes 3 and 5 need to be changed to the amounts on the paper W-2.",Active
+Baylor,B,Form W-2,Boxes 15 and 16,"Boxes 15 and 16 must be entered on every W-2, whether or not there is any state withholding in Box 17, because the CA 540 gets the state wages from Box 16.",Active
+Baylor,B,Form W-2,Box 15,"Box 15, the employer's state ID number, should not have any hyphens.",Active
+Baylor,C,Form W-2,Boxes 3 and 4,"Boxes 3 and 4 do not match the paper W-2; they should be zero. TaxSlayer fills these boxes from the Box 1 wages. If the paper form has nothing in them, which is often the case for teachers, make sure the TaxSlayer form shows no Social Security or Medicare. CA teachers have their own retirement system and do not pay into Social Security or Medicare.",Active
+Baylor,C,Form W-2,Box 13,The Retirement plan box in Box 13 was not checked.,Active
+Baylor,C,Form W-2,Box 14,"The correct drop-down choice for Box 14 'STRS/S $5,503.33' is 'Retirement (Not in Box 12) - Do not carry forward to form 8880' with an amount of $5,503.33. Since this is a required contribution, it cannot count for the Form 8880 Retirement Savings Credit. See the Duck Book under W-2 Box 14.",Active
+Baylor,C,Form W-2,Boxes 15 and 16,"Boxes 15 and 16 must be entered on every W-2, whether or not there is any state withholding in Box 17, because the CA 540 gets the state wages from Box 16.",Active
+Baylor,C,Form W-2,Box 15,"Box 15, the employer's state ID number, should not have any hyphens.",Active
+Baylor,E,Form W-2,Box 16,"CA state wages in Box 16 differ from the Box 1 wages on the paper W-2. TaxSlayer fills Box 16 to match Box 1; if the paper W-2 has a different amount, it needs to be changed.",Active
+Baylor,E,Form W-2,Boxes 15 and 16,"Boxes 15 and 16 must be entered on every W-2, whether or not there is any state withholding in Box 17, because the CA 540 gets the state wages from Box 16.",Active
+Baylor,E,Form W-2,Box 15,"Box 15, the employer's state ID number, should not have any hyphens.",Active
+Baylor,E,Schedule CA,Other adjustments,Did not make the manual entry for the state return. See Note N7 on the answer sheet.,Active
+Baylor,F,Schedule 1,Line 1,"Michael did not itemize in 2024, so the CA refund is not taxable. It should not have been entered in TaxSlayer.",Active
+Baylor,G,Form 1040,Line 25b,"Box 4, Federal income tax withheld, of the unemployment 1099-G was not entered.",Active
+Baylor,I,Preparer Notes,Whole page,"Review Note NP on page 2 of the Baylor answer sheet. A Preparer Note is required to tell the IRS how the election worker pay was entered. It must be entered under Miscellaneous Forms > Explanations > Preparer Notes, so it is sent with the return. Do not use a regular TaxSlayer Note (which stays internal), and do not explain it under Household Employee Income.",Active
+Baylor,J,Schedule 1,Lines 8h and 24a,"The jury duty income and the adjustment to income must not be netted against each other, since that would change the amount of taxable Social Security.",Active
+Baylor,L,Form 2441,Qualified expenses,"Willie was eligible for only 4 months of dependent care, since he turned 13 on 5/1. Enter only the qualified expenses, not the total expenses, in TaxSlayer.",Active
+Baylor,M,Schedule A,,"The itemized expenses the taxpayer gave are less than the CA standard deduction, so there is no need to itemize.",Active
+Baylor,N,Form 8889,Line 1,Michael has a family plan; the box for self-only was checked.,Active
+Baylor,N,Schedule CA (540),Line 2,"See the handout HSA Notes under Earnings. The $10 interest from the HSA is exempt for federal and taxable for CA. Enter it on the 1099-INT screen in Box 8, Tax Exempt Interest, and then on that screen use 'Add Interest Items' under 'Taxable State Interest' to make it taxable for CA.",Active
+Baylor,N,Schedule CA (540),Line 2,"See the handout HSA Notes under Earnings. The $10 interest from the HSA was correctly entered on the 1099-INT screen in Box 8, Tax Exempt Interest, but it was not made taxable for CA with 'Add Interest Items' under 'Taxable State Interest' further down that screen. There is no need to enter it by hand in the State Section under Other Income.",Active
+Baylor,N,Schedule CA (540),Line 8z,"The $600 adjustment for a non-qualified HSA distribution belongs in the State Section under Subtractions from Income > Taxable Health Saving Account Distribution (8889), not under Other Subtractions.",Active
+Baylor,O,Form 8863,Student,"Michael was the student, not William.",Active
+Baylor,O,Form 8863,Line 23,"The problem says Michael did not receive a 1098-T for the prior year, but the TaxSlayer box for a 1098-T received in the prior year was checked Yes.",Active
+Baylor,S,,Direct debit,"The Interview Notes say that if he owes, the amount should be taken from his checking account. 'Mail A Check' was selected. Please enter the direct debit information.",Active
+Graham,A,Form 1040,Name,"The Interview Notes say, in bold, to read the Duck Book under 'Social Security Number' in 'Starting a New Return' before starting this return. It explains that Stacey should be the taxpayer and Sean the spouse.",Active
+Graham,A,Return summary,Birth date,"Typo in Sean's birth date: it should be 9/8/1952, not 9/9/1952.",Check before use
+Graham,A,Form 1040,Dependents,"Gail's last name is Forsyth, as on her Social Security card. TaxSlayer's default of Graham was not corrected.",Active
+Graham,A,Form 1040,Spouse died,Did not check 'Spouse is Deceased' and enter the date of death for Sean in Basic Information.,Active
+Graham,A,Form 1040,Middle initial,"Middle initials are not a required field, since not everyone has one. If there is one on the Social Security card, it should be entered.",Active
+Graham,B,Schedule C (Form 1040),Line E,"If the business address is the home address, don't enter it.",Active
+Graham,B,Schedule C (Form 1040),Line H,Did not check the box for first year in business. The IRS wants to know if it is the first year of a business. The only time we use the Schedule C menu option 'Questions About the Operation of Your Business' is to check this box.,Active
+Graham,B,Schedule C (Form 1040),Line 33,'Method of Closing Inventory = Cost' was checked. This is set by TaxSlayer: the only thing to do under 'Questions about the operation of your Business' is check 'first year in business'. The other options are already set for what is in scope for AARP Tax-Aide; don't check or uncheck them.,Active
+Graham,B,Schedule C (Form 1040),Line 1,"Income not reported on a 1099-NEC goes under 'Gross Receipts', the top box on the Schedule C income screen, not 'Other Income', the bottom box. The IRS instructions say gross receipts are ""from your trade or business"", which this income is. Other income is unearned income such as interest, fuel credits, prizes or awards.",Active
+Graham,C,Form 1040,Line 4c,The Rollover box in TaxSlayer was not checked.,Active
+Graham,C,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,D,Form 1040,Line 4c,The Rollover box in TaxSlayer was not checked.,Active
+Graham,D,Form 1099-R,Box 2b,Box 2b 'Taxable amount not determined' was not checked.,Active
+Graham,D,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,E,Form 5329,Line 2,Form 5329 line 2 code should be 23.,Active
+Graham,E,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,F,Form 1099-R,Box 2b,Box 2b 'Taxable amount not determined' was not checked.,Active
+Graham,F,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,G,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,H,Form 1099-R,Payer name,Always correct what TaxSlayer fills in from the payer's TIN if it does not match the paper form. Here 'OF' was added at the end of the name OFFICE OF PERSONNEL MANAGEMENT on the 1099-R.,Active
+Graham,H,Form 1099-R,Box 5,Forgot to enter the amount in Box 5.,Active
+Graham,H,Form 1099-R,Box 5,Entered the wrong amount in Box 5. The correct amount is $xxxx.,Active
+Graham,H,Form 1099-R,Recipient,"This 1099-R was for Sean, not Stacey.",Active
+Graham,H,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,I,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,J,Form 1099-R,Boxes 5 and 6,The Box 5 amount of $650 was entered in Box 6.,Active
+Graham,J,Form 1099-R,Boxes 14 to 16,"If there is no state tax withheld on a 1099-R you don't have to enter anything in the state section, even if Boxes 15 and 16 are filled in on the paper form.",Active
+Graham,K,Form 1099-R,Simplified Method,The Simplified Method Worksheet should be filled out so TaxSlayer carries the information forward.,Active
+Graham,K,Form 1099-R,Box 9b,Forgot to enter the amount in Box 9b.,Active
+Graham,L,Form 1099-R,Simplified Method,The Simplified Method Worksheet should be filled out so TaxSlayer carries the information forward.,Active
+Graham,L,Form 1099-R,Box 2b,Forgot to check Box 2b 'Taxable amount not determined'.,Active
+Graham,L,Form 1099-R,Unrecovered investment,"Forgot to enter the unrecovered investment in the pension, $3,425, as the problem instructs.",Active
+Graham,L,Form 1099-R,Box 9b,"Box 9b, total employee contributions of $5,864, was not entered.",Active
+Graham,M,Form 1040,Line 1h,"Distribution code 3 means a disability pension. The problem says she was under the normal retirement age when she became disabled and still is. See Pub 4012, 'Form 1099-R Box 7 Distribution Codes'. Check the Disability box in TaxSlayer, which reports these earnings correctly on Form 1040 line 1.",Active
+Graham,N,Form 1040,Line 6a,Sean's Social Security was entered under the taxpayer instead of the spouse.,Active
+Graham,O,Form 1099-R,Payer name,The most common reason for an e-file reject is a payer EIN that does not match the payer's name on a 1099-R or RRB-1099-R. The payer's name should be entered as 'UNITED STATES RAILROAD RETIREMENT BOARD'.,Active
+Graham,O,Form 1099-R,Recipient,"Forgot to select 'Spouse' for 'Whose form is this' on the RRB-1099-R. As a result, the recipient's TIN is blank on the TaxSlayer 1099-R.",Active
+Graham,P,Schedule CA (540),Line 1h,"Did not exclude the $20,000 income for CA by manual entry, as the step directs.",Active
+Graham,Q,Schedule CA (540),Last name,"Alimony paid, CA State Section: even though the TaxSlayer screen says 'Enter the name of the person you paid alimony to', the correct entry is just the last name, as the CA 540 Schedule CA asks for 'Last Name'. The Duck Book, under Alimony Paid, says not to enter the full name. TaxSlayer has not changed its screen yet.",Active
+Graham,R,Schedule 1,Line 1,"They itemized last year and took the sales tax deduction, so this refund is not taxable. There is no reason to enter it on the return.",Active
+Graham,R2,Schedule A,,"No reason to itemize, since the amounts are lower than the CA standard deduction. Since the amounts were close, it was OK to enter them.",Active
+Graham,S,Form 8863,Student,"Jeremy is the college student for the education credit, not Joshua.",Active
+Graham,W,,Direct deposit,"Stacey asked for direct deposit of any refund, as stated in the Interview Notes. A paper check was selected for the CA refund.",Active
+Kent,A,Form 1040,Middle initial,"Middle initials are not a required field, since not everyone has one. If there is one on the Social Security card, it should be entered.",Active
+Kent,A,Form 1040,Dependents,"Even though Jane lived with Karl for only 7 months, the TaxSlayer screen says to enter 12 when a child is born during the year.",Active
+Kent,A,Form 1040,Dependents,The basic information was not fixed in Step A after the NOTE at the bottom of that step asked for it.,Active
+Kent,A,Form 1040,Dependents,"Neither Kendra Kent nor Susan Bryant should be listed on the return. The Resource Tool ends at Chart 2 Box 12 for both. Only list a person if the final blue box says 'Child Tax Credit' or 'Other Dependent Credit'; Box 12 has neither. See the handout 'CTC ODC Chart.pdf'. Listing them, even with 'not a dependent' checked, makes TaxSlayer list Kendra or Susan as the qualifying person for head of household, which they are not. To get credit for this problem, go back and fix this.",Active
+Kent,D,Form 1099-INT,Payer address,"Only the payer's name is required (red asterisk). In the future, don't enter boxes that are not required, such as the address.",Active
+Kent,D,Schedule CA (540),Line 2,"Box 3, the $500 US Savings Bond interest, is federally taxable and CA tax-exempt. Make it tax-exempt for CA on the TaxSlayer 1099-INT screen, in the box 'Amount of interest on US Savings Bonds that you want subtracted from your state return'. A manual entry on the CA return is an extra step, and it does not put the income on Schedule CA line 2 as investment income, which can affect credits like the CA EITC.",Active
+Kent,E,Form 1099-DIV,Payer address,"Only the payer's name is required (red asterisk). In the future, don't enter boxes that are not required, such as the address.",Active
+Kent,G,Schedule CA (540),Line 3,The CA taxable amount is not correct. Please watch the video.,Active
+Kent,H,Schedule 1,Line 1,The taxable amount is not correct. Please watch the video.,Active
+Kent,J,Form 8949,Date acquired,"The acquired date of the main home should be 'Inherited', since its value was set right after his wife's death.",Active
+Kent,J,Form 8949,Box F,"'No Form 1099-B' was not selected under 'Cost Basis', so this sale was entered as a long-term gain with Box F checked. It should be on Form 8949 Part II.",Active
+Kent,K,Form 8949,Box A,"For 'ST - reported to the IRS' (Box A in the problem), use 'Various-ST' as the acquired date when entering the summary.",Active
+Kent,K,Form 8949,Box D,"For 'LT - reported to the IRS' (Box D in the problem), it was entered the long way. Use 'Various-LT' as the acquired date when entering the summary, and enter adjustment code M. The TaxSlayer screen 'reported to the IRS with no adjustments' would have needed only 2 amounts.",Active
+Kent,K,Form 8949,Box E,"'LT - not reported to the IRS' (Box E in the problem) was entered on the screen 'Reported to the IRS with no adjustments', which is not right since it was not reported to the IRS. On the correct screen you would use 'Various-LT' as the acquired date and M as the adjustment code.",Active
+Kent,K,Form 8949,Summary lines,"The Duck Book and Pub 4012 say to enter broker transactions as one summary line for each category, not each transaction. This saves time at the site and means fewer chances for typing errors. See Pub 4012, Entering Capital Gains, 'Exception to entering each transaction'.",Active
+Kent,K,Form 8949,Description,"Please use the descriptions the problem suggests: 'Schwab ST box A', 'Schwab LT box D', and 'Schwab LT box E'.",Active
+Kent,K,Schedule D (Form 1040),Lines 8b to 10,"Both long-term sales on page 10, in the Year End Summary, were entered as having their cost basis reported to the IRS. The $15,000 was, and is correctly on the form with Box D checked. The $27,403 cost basis was not reported and should be on the form with Box E checked.",Active
+Kent,K,Form 8949,Wash sale,The $200 wash sale for 34 shares of LLY was not entered.,Active
+Kent,K,Form 8949,Code W,Forgot to enter code W for the wash sale on the 34 shares of LLY.,Active
+Kent,L,,PTP box,"Forgot to check the box for PTP, Publicly Traded Partnership, which is checked on the K-1 form.",Active
+Kent,L,,Passive entity box,Forgot to check the box 'This K-1 is from a passive entity'. The step gave this information. This can affect reporting on Form 3801.,Active
+Kent,L,,At-risk box,Forgot to check the box 'All Investment is At-Risk'. The step gave this information.,Active
+Kent,L,Schedule D (Form 1040),Line 12,"Box 8 is a capital loss, not a capital gain.",Active
+Kent,L,Schedule CA (540),Line 2,"The Box 18 tax-exempt interest was entered on the K-1 and then added to income by hand on the CA 540. The video teaches entering that interest on the TaxSlayer 1099-INT form and making it CA taxable there. That marks it as investment income, which matters for the CA Earned Income Tax Credit (too much investment income disqualifies a taxpayer). It also leaves a better audit trail and saves a manual entry on the CA 540.",Active
+Kent,N,Sales tax worksheet,,"The State Sales Tax Worksheet in TaxSlayer was not completed. Here it did not change the answers, because the income tax was larger than the sales tax, but on real returns the sales tax deduction is best for most of our clients. We teach filling it out whenever you itemize.",Active
+Kent,N,Sales tax worksheet,Line 8,"The general sales tax (line 8) on the State and Local General Sales Tax Deduction Worksheet should be $1,949.",Active
+Kent,N,Sales tax worksheet,Line 3,A 1.0% local sales tax was entered on line 3. That is only for inside the city limits of Placerville; Karl's address is Camino.,Active
+Kent,N,Sales tax worksheet,Line 7,Forgot to enter the $594 on line 7 for the sales tax on the car bought this year.,Active
+Kent,N,Sales tax worksheet,MAGI,"Forgot to increase the MAGI for the sales tax figure by the $30,000 of VA benefits.",Active
+Kent,N,Schedule A,Line 5b,"Add the property taxes on the main and second home together so they are entered as property taxes, not as 'Other Taxes'. The Duck Book says other taxes ""are likely to be rare, if ever used at all"".",Active
+Kent,N,Schedule A,Line 5c,The CA DMV license fee should be entered in the box under Taxes You Paid.,Active
+Kent,N,Form 8283,Section A,"The two non-cash donations were combined into one entry under Salvation Army. If total non-cash donations are over $500, they must be entered separately: one entry for Salvation Army of $400 and another for Snowline Hospice of $250.",Active
+Kent,O,Form 1040,Line 26,Last year's return applied his federal refund of $154 to this year's federal estimated payments.,Active
+Kent,O,CA Form 540,Line 72,Last year's return applied his CA refund of $437 to this year's CA estimated payments.,Active
+Kent,O,Schedule D (Form 1040),Lines 6 and 14,"Forgot to enter last year's capital loss carryover: short-term $800 and long-term $1,200.",Active
+Kent,O,Schedule D (Form 1040),Lines 6 and 14,Last year's short-term and long-term capital loss carryovers were not entered in the right place. They go under 'Other Capital Gains Data'.,Active
+Kent,P,Form 2441,Qualifying person,Jane Kent should be listed with $0 of day care expenses.,Active
+Kent,P,Form 2441,Qualifying person,"Susan Bryant should be added as a qualifying person with qualifying expenses of $6,000.",Check before use
+Kent,P,Form 2441,Qualifying person,"The problem says Karl paid $500 for his niece Melissa. She is not a dependent on his return, so she is not a qualifying person.",Active
+Kent,Q,Schedule 1,Line 20,"On the TaxSlayer IRA Deduction screen, 'do you have a retirement plan' means a retirement plan at work, which usually shows on the W-2 with the retirement box checked. Karl's W-2 does not have that box checked, so the answer is NO.",Active
+Kent,R,Form 8962,Line 1,"Do not change the family size by hand by adding a household member. The return would be out of scope with coverage for a family member not on the return. This changed Form 8962 line 1, family size, which should be 2.",Active
+Kent,R,Form 8962,Monthly amounts,"The 1095-A was not entered correctly. Totals can be entered only if all 12 months are the same, and here they are not. This kind of mismatch can lead to an IRS letter.",Active
+Kent,R,Form 8962,Line 2b,"The dependent in this problem had no income, so nothing should be entered on the 'Household Income' screen. This changed Form 8962 line 2b, which should be 0.",Active
+Kent,S,FTB 3532,Qualifying person,"Jane Kent should be listed on CA Form 3532 as the qualifying person for head of household. If anyone else is listed, the taxpayer will not get head of household status for CA. The FTB no longer sends a letter; it just denies the status.",Active
+Parks,A,Return summary,Address,"The apartment number was entered correctly in Basic Information. TaxSlayer does not carry it to the income forms, and there is no need to correct the address on each form.",Active
+Parks,A,Return summary,Address,Forgot to enter the apartment number.,Active
+Parks,A,Return summary,Relationship,"Sue Jones's relationship should be 'None': no family connection, just a friend. 'Other' is for a family connection not on the drop-down list.",Active
+Parks,D,Form 1099-MISC,Box 3,"The video and the Duck Book say to enter the 1099-NEC as a 1099-MISC with the income in Box 3, since it does not meet the definition of business income. Then add a TaxSlayer Note that the $30 was moved from Form 1099-NEC to Form 1099-MISC Box 3.",Active
+Parks,E,Schedule E (Form 1040),Line 1b,Comcast should be property type LAND on the drop-down menu; then there is no need to enter 365 fair rental days. Choosing Other instead of Land adds the $50 to passive income in the CA EITC worksheets.,Active
+Parks,E,Form 1099-MISC,Payer address,"Enter the address that is on the 1099-MISC, for IRS forms matching. The property address of the cell tower is entered on Schedule E.",Active
+Parks,H,Schedule CA (540),Line 16,"Forgot to subtract the CA lottery losses from itemized deductions for CA. CA does not tax the winnings, so the losses cannot be deducted. See the handout 'CA CA Instructions' page 4, Schedule CA line 16, Other Itemized Deductions. Enter the amount under State Section > Itemized Deductions > Other Miscellaneous Itemized Deductions > Subtractions; it appears in column B.",Active
+Parks,I,Form 1099-MISC,Whole page,"The 1099-MISC was not entered on the return. IRS forms matching needs every tax form entered, so the taxpayer does not get IRS mail asking about it.",Active
+Parks,K,Form 1099-R,Box 2b,Forgot to check the 'Taxable amount not determined' box.,Active
+Parks,L,Schedule A,,"Itemized deductions need to be entered, since the amount is higher than the CA standard deduction.",Active
+Parks,L,Schedule A,Line 7,"See answer sheet page 3, Note N7. Line 7 should be $921; your return has $xxxx. This comes from entering $10,000 on the Taxes You Paid screen under 'Amount to Adjust the Calculated MAGI by'. Where did this come from?",Active
+Parks,M,,Health coverage,"See the handout 'CA Healthcare Mandate TS Screens', Scenario 3, for Mary Parks with full-year insurance not through the marketplace and Sue Jones with no insurance. Answer YES for every month Mary had insurance and NO for every month Sue did not.",Active
+Parks,M,CA Form 540,Line 92,Did not figure the penalty for Sue Jones not having health insurance. The video with this step walks you through it.,Active
+Parks,O,Form 1040-ES voucher,Payment,Answer sheet page 3 says the quarterly amount should be $803. Please review the notes on the answer sheet to find where the error happened.,Active
+Parks,O,Form 1040-ES voucher,Whole page,The problem asked you to create the estimated payment vouchers; they are missing.,Active
+Quinn,A,Return summary,Months in home,"James lived with Raymond for 7 months, not 12.",Active
+Quinn,E,Form W-2,Medicaid Waiver Payment,"After the process in Section D of the handout, the W-2 in TaxSlayer should be exactly like the printed W-2. The amount under 'Medicaid Waiver Payment' below Box 14 should be blank, and the box 'Select if you want to include Medicaid Waiver payments in earned income' should be unchecked. If yours does not match, go back to Section D and see where it went wrong.",Active
+Quinn,E,FTB 3532,Days lived in home,"Alonzo lived with Raymond 214 days, not 365, as the Interview Notes say.",Active
+Quinn,E,FTB 3532,Gross income,"Social Security is not counted as gross income for a CA head of household qualifying person. See Pub 4012 Tab A, Chart A, For Most People Who Must File, the footnote on including Social Security benefits.",Active
