@@ -6,6 +6,12 @@ How to edit it: change the words under a version, keep the headings as they are,
 
 Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that names the improvement, with every word capitalized, then three lines, each indented two spaces: `Symptom:` what the counselor saw, `Cause:` what was wrong in the code, and `Fix:` what changed. Keep each line to one or two short sentences, start every sentence with a capital letter (also right after Symptom, Cause, or Fix), and state facts only: generic, with no blame on a person or a source file. The build refuses a Fixed item that does not follow this.
 
+## 0.20.0, November 23, 2026
+
+### Added
+
+* Instructor mode, for the instructors who grade students' final returns. Click Instructor at the bottom of the page and enter the passcode. Drop a student's Quality Review PDFs (up to 5) and Audit Pup compares each one with the case's golden file: missing and extra pages, then every difference by form and line, with a small picture of that place on the student's page. Dates, the preparer's PTIN, e-file PINs and minor name differences are counted in a closed list instead. Copy report puts the report into your notes or an email. Students see no change.
+
 ## 0.19.2, November 20, 2026
 
 ### Changed

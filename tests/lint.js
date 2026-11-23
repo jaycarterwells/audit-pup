@@ -14,11 +14,11 @@ const { expect }=require('./expect');
   if(start<0||end<0) throw new Error('the page script was not found in the template');
   const before=tpl.slice(0,start+'<script>\n'.length).split('\n').length-1;
   const pageScript='\n'.repeat(before)+tpl.slice(start+'<script>\n'.length,end);
-  const pageFiles=[['source/engine.js',fs.readFileSync(path.join(SRC,'engine.js'),'utf8')],
+  const pageFiles=[['source/engine.js',fs.readFileSync(path.join(SRC,'engine.js'),'utf8')],['source/compare.js',fs.readFileSync(path.join(SRC,'compare.js'),'utf8')],
     ...fs.readdirSync(path.join(SRC,'cases')).filter(f=>f.endsWith('.js')).map(f=>['source/cases/'+f,fs.readFileSync(path.join(SRC,'cases',f),'utf8')]),
-    ['source/audit-pup-template.html.page-script.js',pageScript]];   // a .js name so ESLint lints it; messages give template line numbers
+    ['source/audit-pup-template.html.page-script.js',pageScript],['source/instructor.js',fs.readFileSync(path.join(SRC,'instructor.js'),'utf8')]];   // a .js name so ESLint lints it; messages give template line numbers
   // names any page file defines at the top level are known to all of them
-  const shared={ ANSWER_KEYS:'readonly' };
+  const shared={ ANSWER_KEYS:'readonly', GOLDEN_DATA:'readonly' };
   for(const [,code] of pageFiles){
     for(const m of code.matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/gm)) shared[m[1]]='writable';
     for(const m of code.matchAll(/^var\s+([^;=\n]+(?:=[^;\n]*)?)/gm))

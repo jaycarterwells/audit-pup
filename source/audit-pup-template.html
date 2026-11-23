@@ -285,6 +285,27 @@
   .note{font-size:15.5px; color:var(--muted); background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:11px 13px; margin-top:12px}
 
   footer{color:var(--muted); font-size:14.5px; text-align:center; margin-top:24px}
+  /* Instructor mode */
+  .ihead-row{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+  .ihead-row h2{font-family:"Bitter",Georgia,serif; font-weight:800; font-size:24px; margin:0}
+  .ilead{margin:8px 0 14px}
+  .ihdr{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:6px}
+  .iwho{font-weight:700; font-size:19px}
+  .isub,.ifile,.irule{color:var(--muted); font-size:15px}
+  .icopied{color:var(--pass); font-weight:700; margin-top:6px}
+  .icase{border-top:1px solid var(--border); margin-top:16px; padding-top:12px}
+  .icase h3{font-family:"Bitter",Georgia,serif; font-size:19px; margin:0 0 2px}
+  .itable{overflow-x:auto; margin-top:10px}
+  .itable table{border-collapse:collapse; width:100%; font-size:15.5px}
+  .itable th{text-align:left; color:var(--muted); font-weight:700; border-bottom:2px solid var(--border); padding:6px 8px}
+  .itable td{border-bottom:1px solid var(--border); padding:6px 8px; vertical-align:top; overflow-wrap:anywhere}
+  .ibad,.ierr{color:var(--fail); font-weight:700}
+  img.ispot{display:block; width:260px; max-width:none; border:1px solid var(--border); border-radius:4px; background:#fff}
+  .iunrep{margin-top:10px}
+  .iunrep summary{cursor:pointer; font-weight:700; color:var(--gold-ink)}
+  .iunrep li{margin:4px 0; font-size:15.5px}
+  .pc form{display:flex; flex-direction:column; gap:10px; padding:16px 18px 20px}
+  .pc input{font:inherit; font-size:18px; padding:10px; border:1.5px solid var(--border); border-radius:8px; background:var(--surface); color:var(--text)}
   footer .ver{font-weight:700; margin-bottom:3px}
   .linkbtn{font:inherit; font-weight:700; color:var(--gold-ink); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline}
 
@@ -378,7 +399,7 @@
     </div>
   </header>
 
-  <div class="card">
+  <div class="card student-only">
     <div class="startup" id="startup" role="alert"><b>Audit Pup did not start.</b> This usually means the file is being shown in a preview
       (from email, Google Drive, or the Mac's Quick Look) instead of opened in a web browser. Save the file to your computer first, then open it
       in Chrome or Safari. On a Mac: right-click the file, choose <b>Open With</b>, then <b>Google Chrome</b> or <b>Safari</b>.
@@ -413,7 +434,7 @@
     <div class="progress" id="progress" aria-live="polite"></div>
   </div>
 
-  <div class="card" id="results" style="display:none">
+  <div class="card student-only" id="results" style="display:none">
     <div class="sticky" id="sticky">
       <div class="ctx" id="ctx"></div>
       <div class="stepwarn hidden" id="stepwarn" role="alert"></div>
@@ -441,6 +462,30 @@
     <div id="groups"></div>
   </div>
 
+  <!-- Instructor mode (instructor.js): a student's final PDFs compared with the golden files -->
+  <div class="card hidden" id="instructor">
+    <div class="ihead-row"><h2 id="ihead" tabindex="-1">Instructor mode</h2><button type="button" class="linkbtn" id="ileave">Leave instructor mode</button></div>
+    <p class="ilead">Drop one student's Quality Review PDFs, up to 5 (one per case). Each one is compared with that case's golden file.</p>
+    <div class="drop" id="idrop">
+      <div class="big">Drop the student's PDFs here</div>
+      <div class="small">Drag the PDFs onto this box, or</div>
+      <button type="button" class="choose" id="ichoose">Choose PDFs</button>
+    </div>
+    <input type="file" id="ifile" accept="application/pdf,.pdf" multiple class="hidden">
+    <div id="ireport" data-state="ready" aria-live="polite"></div>
+  </div>
+
+  <div class="wn-back hidden" id="pcback">
+    <div class="wn pc" id="pc" role="dialog" aria-modal="true" aria-labelledby="pctitle">
+      <div class="wn-head"><h2 id="pctitle">Instructor mode</h2><button type="button" class="theme-btn" id="pcclose">Close</button></div>
+      <form class="wn-body" id="pcform">
+        <label for="pcinput">Passcode</label>
+        <input id="pcinput" type="password" autocomplete="current-password">
+        <button type="submit" class="primary">Turn on Instructor mode</button>
+        <div class="err hidden" id="pcerr" role="alert">That passcode is not right. Ask the Tax-Aide instructor lead for it.</div>
+      </form>
+    </div>
+  </div>
   <div class="wn-back hidden" id="gdback">
     <div class="wn gd" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdtitle" tabindex="-1">
       <div class="wn-head"><h2 id="gdtitle">Audit Pup Users Guide</h2><button type="button" class="theme-btn" id="gdclose">Close</button></div>
@@ -457,7 +502,7 @@ __GUIDE_HTML__
   </div>
 
   <footer>
-    <div class="ver">Audit Pup version __APP_VERSION__, built __BUILD_DATE__. <button type="button" class="linkbtn" id="verlink">What's new</button></div>
+    <div class="ver">Audit Pup version __APP_VERSION__, built __BUILD_DATE__. <button type="button" class="linkbtn" id="verlink">What's new</button> <button type="button" class="linkbtn" id="instrlink">Instructor</button></div>
     Runs entirely in your browser. Nothing is uploaded. Checking works offline; the reward dog photo needs internet.
   </footer>
 </div>
@@ -1249,6 +1294,7 @@ document.addEventListener('DOMContentLoaded',function(){
   checkForUpdate();
 });
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') checkForUpdate(); });
+/*__INSTRUCTOR_SCREEN__*/   // built in from instructor.js: see build_html.js
 </script>
 <script id="pdfjslib-b64" type="text/plain">__PDFJS_LIB__</script>
 <script id="pdfjsworker-b64" type="text/plain">__PDFJS_WORKER__</script>

@@ -1,0 +1,208 @@
+/* Audit Pup comparison engine (Instructor mode). Pure functions with no page or browser use: they compare a student's
+   Quality Review PDF with the case's golden file, page by page and value by value. It calls the reading engine
+   (engine.js: rowsOf, classifyPage) and copies none of it. build_html.js puts this file into the page after engine.js;
+   tests load it in Node the same way.
+   Safety rule: never hide a real difference. A difference is left out of the report only when it is on the
+   UNREPORTED list below, and then it is still counted and listed under its case. */
+
+/* Text the PDF prints in a font that cannot be read as letters (form labels on some pages) is left out of the
+   comparison: the amounts, names and dates on those pages print in a readable font and are compared. */
+function readableText(s){ return !/[\u0000-\u001F\u00A1-\u00A6\u00A8-\u00BC\u00BE-\u02FF]/.test(s); }   // eslint-disable-line no-control-regex
+/* One TaxSlayer font prints every letter 29 places early (a space prints as character 3): such text is shifted back
+   so it can be read and compared. */
+function shiftedText(s){
+  if(!/[\u0000-\u001F]/.test(s)) return s;   // eslint-disable-line no-control-regex
+  var out='';
+  for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i)+29; if(c<32||c>126) return s; out+=String.fromCharCode(c); }
+  return out;
+}
+/* A page's items as the comparison reads them: shifted text put right, unreadable text left out */
+function pageItems(pg){
+  if(!pg.cmpItems) pg.cmpItems=pg.items.map(function(i){ return {x:i.x, y:i.y, s:shiftedText(i.s)}; }).filter(function(i){ return readableText(i.s); });
+  return pg.cmpItems;
+}
+
+/* A short, stable name for a page: its form when the reading engine knows it, else its first readable words
+   without numbers (so a page's name does not change with the values printed on it). */
+function pageTitle(pg){
+  if(pg.form && pg.form!=='other') return pg.form;
+  var words=[], its=pageItems(pg);
+  for(var i=0;i<its.length && words.length<10;i++){ var s=its[i].s;
+    s=s.replace(/[0-9]/g,'').replace(/[^A-Za-z ]+/g,' ').replace(/\s+/g,' ').trim();
+    if(s.length>=2) words.push(s.toUpperCase()); }
+  return words.join(' ').slice(0,80);
+}
+
+/* A page's name for the report: its form header, in plain words */
+var FORM_NAMES={fed:'Form 1040', sch1:'Schedule 1', sch2:'Schedule 2', sch3:'Schedule 3', schA:'Schedule A', f8880:'Form 8880',
+  ca540:'CA Form 540', ca3514:'FTB 3514', schCA:'Schedule CA (540)'};
+/* TaxSlayer's own Quality Review pages, named by how they start */
+var LEAD_NAMES=[[/^TAX YEAR/,'Return summary'],[/^CLIENT\b/,'Return summary, page 2'],[/^a Employee.s social security number/,'Form W-2'],
+  [/^THREE YEAR TAX COMPARISON/,'Three year tax comparison'],[/^Consent to Disclose/,'Consent to disclose'],[/^PIN Date/,'Consent signature page'],
+  [/^Preparer Notes/,'Preparer Notes'],[/^Supporting Statements/,'Supporting statements'],
+  [/FILE COPY ONLY.*SUPPORTING NOTES/,'TaxSlayer notes (file copy)'],[/^Estimated Tax/,'Form 1040-ES voucher'],
+  [/refund is taxable/,'State and local income tax refund worksheet'],[/^TIP QNA/,'Sales tax worksheet']];
+function pageName(pg){
+  if(FORM_NAMES[pg.form]) return FORM_NAMES[pg.form];
+  var lead=pageItems(pg).slice(0,8).map(function(i){ return i.s; }).join(' ').replace(/\s+/g,' ').trim();
+  var m=lead.match(/\b(Form|FORM|Schedule|SCHEDULE|FTB)\s+(?!\(|Department|DEPARTMENT)[0-9A-Z][\w-]*(\s*\(Form 1040\)|\s*\(540\))?/);
+  if(m && lead.indexOf(m[0])<48) return m[0].replace(/^FORM/,'Form').replace(/^SCHEDULE/,'Schedule');
+  for(var k=0;k<LEAD_NAMES.length;k++){ if(LEAD_NAMES[k][0].test(lead)) return LEAD_NAMES[k][1]; }
+  var ws=pageItems(pg).filter(function(i){ return /Worksheet/i.test(i.s) && i.s.length<70; })[0];
+  if(ws) return ws.s.replace(/[*_=]+/g,' ').replace(/\s+/g,' ').trim();
+  if(!/\b[a-z]{3,}\b/.test(lead) && !/\b(FORM|SCHEDULE|WORKSHEET|STATEMENT)\b/.test(lead)) return 'Page with no readable title';
+  return lead.replace(/\d[\d/-]*/g,' ').replace(/[*_:]+/g,' ').replace(/\s+/g,' ').trim().slice(0,48) || 'Page';
+}
+
+function itemsOf(pg){ return pageItems(pg); }
+function sameSpot(a,b,tol){ return Math.abs(a.x-b.x)<=tol && Math.abs(a.y-b.y)<=tol; }
+
+/* How alike two pages are: the share of readable text that prints in the same place on both */
+function pageLikeness(g,s){
+  var gi=itemsOf(g), si=itemsOf(s); if(!gi.length||!si.length) return 0;
+  var used=[], same=0;
+  var byText={}; si.forEach(function(b,j){ (byText[b.s]=byText[b.s]||[]).push(j); });
+  gi.forEach(function(a){ var c=byText[a.s]||[]; for(var k=0;k<c.length;k++){ var j=c[k]; if(!used[j] && sameSpot(a,si[j],3)){ used[j]=true; same++; return; } } });
+  return same/Math.max(gi.length,si.length);
+}
+
+/* Pair the student's pages with the golden pages. Pages pair only when they carry the same form; among pages of the
+   same form (several W-2s or 1099-Rs) the most alike pair first. A golden page left over is missing from the student's
+   PDF; a student page left over is extra. Page order does not matter. */
+function pairPages(golden,student){
+  var cand=[];
+  golden.forEach(function(g,gi){ var tg=pageTitle(g);
+    student.forEach(function(s,si){ if(pageTitle(s)!==tg) return; cand.push({g:gi, s:si, score:pageLikeness(g,s)}); }); });
+  cand.sort(function(a,b){ return b.score-a.score || Math.abs(a.g-a.s)-Math.abs(b.g-b.s); });
+  var gUsed={}, sUsed={}, pairs=[];
+  cand.forEach(function(c){ if(gUsed[c.g]||sUsed[c.s]) return; gUsed[c.g]=sUsed[c.s]=true; pairs.push({g:c.g, s:c.s}); });
+  // second pass: pages left over that carry the same report name and much of the same text (a supporting statement
+  // whose first words are the student's own entries)
+  var cand2=[];
+  golden.forEach(function(g,gi){ if(gUsed[gi]) return; var ng=pageName(g);
+    student.forEach(function(s,si){ if(sUsed[si] || pageName(s)!==ng) return; var sc=pageLikeness(g,s); if(sc>=0.1) cand2.push({g:gi, s:si, score:sc}); }); });
+  // the only page of a name left on each side pairs whatever its text (a signature page with a line added)
+  golden.forEach(function(g,gi){ if(gUsed[gi]) return; var ng=pageName(g);
+    var gl=golden.filter(function(x,k){ return !gUsed[k] && pageName(x)===ng; }), sl=[];
+    student.forEach(function(s,si){ if(!sUsed[si] && pageName(s)===ng) sl.push(si); });
+    if(gl.length===1 && sl.length===1 && !cand2.some(function(c){ return c.g===gi; })) cand2.push({g:gi, s:sl[0], score:0}); });
+  cand2.sort(function(a,b){ return b.score-a.score; });
+  cand2.forEach(function(c){ if(gUsed[c.g]||sUsed[c.s]) return; gUsed[c.g]=sUsed[c.s]=true; pairs.push({g:c.g, s:c.s}); });
+  pairs.sort(function(a,b){ return a.g-b.g; });
+  return { pairs:pairs,
+    missing: golden.map(function(_,i){ return i; }).filter(function(i){ return !gUsed[i]; }),
+    extra: student.map(function(_,i){ return i; }).filter(function(i){ return !sUsed[i]; }) };
+}
+
+/* Unreported differences (the product owner's list; docs/architecture shows the same table). Each rule names one kind
+   of difference instructors never comment on. A row is unreported only when every item in it is on the list. */
+var DATE_RE=/\b(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\b/g;
+function datesIn(s){ var out=[], m; DATE_RE.lastIndex=0; while((m=DATE_RE.exec(s))){ var y=+m[3]; if(y<100) y+=2000; out.push(y); } return out; }
+function withoutDates(s){ return s.replace(DATE_RE,'#DATE#'); }
+function letters(s){ return s.toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function initialsOf(s){ return (s.toUpperCase().match(/(^|\s)[A-Z]\.?(?=\s|$)/g)||[]); }
+function dropInitials(s){ return s.toUpperCase().replace(/(^|\s)[A-Z]\.?(?=\s|$)/g,' '); }
+var UNREPORTED=[
+  { id:'date', name:'Dates after the tax year (when the return was printed, prepared or signed)',
+    test:function(g,s,taxYear){ var dg=datesIn(g), ds=datesIn(s);
+      return (dg.length||ds.length) && withoutDates(g)===withoutDates(s) && dg.concat(ds).every(function(y){ return y>taxYear; }); } },
+  { id:'ptin', name:'Paid preparer details (PTIN)',
+    test:function(g,s,taxYear,ctx){ return (/^[PS]\d{8}$/.test(g) && /^[PS]\d{8}$/.test(s)) || (ctx.preparerRow && /^\d$/.test(g) && /^\d$/.test(s)); } },
+  { id:'pin', name:'Self-select e-file signature PINs',
+    test:function(g,s,taxYear,ctx){ return ctx.pinRow && /^\d{1,5}$/.test(g) && /^\d{1,5}$/.test(s) && g.length===s.length; } },
+  { id:'name', name:'Minor name and address differences (a middle initial, spaces, punctuation, or capital letters)',
+    test:function(g,s){ if(g===s) return false;                     // the same words in another place: moved, reported
+      if(!/[A-Za-z]{2}/.test(g) || !/[A-Za-z]{2}/.test(s)) return false;   // single letters and marks (X) are always reported
+      if(g.replace(/\D/g,'')!==s.replace(/\D/g,'')) return false;     // any number changed: reported
+      if(letters(g)===letters(s)) return true;
+      // a middle initial added or removed (on one side only): "STACEY A GRAHAM" and "STACEY GRAHAM"
+      var ig=initialsOf(g), is=initialsOf(s);
+      if(ig.length && is.length) return false;
+      var dg=letters(dropInitials(g)), ds=letters(dropInitials(s));
+      return dg.length>=2 && dg===ds; } }
+];
+/* the row's label words say it holds a self-select signature PIN (not the IP PIN, which is always reported) */
+function isPinRow(rowText){ return /\bPIN\b/i.test(rowText) && !/Identity Protection/i.test(rowText); }
+
+/* Compare one golden page with its student page. Returns the differences, one per printed row:
+   {y, label, golden, student, unreported (rule id or null)} */
+function comparePage(g,s,taxYear){
+  var gi=itemsOf(g).map(function(i){ return {x:i.x,y:i.y,s:i.s}; }), si=itemsOf(s).map(function(i){ return {x:i.x,y:i.y,s:i.s}; });
+  var gLeft=[], sUsed=[];
+  // 1. the same words in the same place: no difference
+  var byText={}; si.forEach(function(b,j){ (byText[b.s]=byText[b.s]||[]).push(j); });
+  gi.forEach(function(a){ var c=byText[a.s]||[]; for(var k=0;k<c.length;k++){ var j=c[k]; if(!sUsed[j] && sameSpot(a,si[j],3)){ sUsed[j]=true; a.matched=true; return; } } gLeft.push(a); });
+  // 2. a whole printed row that moved up or down (a line added above it) is the same row: every item the same, in the
+  //    same columns. A single value that moved to another line is not matched here, so it is reported.
+  var gRows=rowsOf(gi,3), sRows=rowsOf(si.map(function(i,j){ return {x:i.x,y:i.y,s:i.s,j:j}; }),3), sRowUsed=[];
+  gRows.forEach(function(gr){ if(gr.items.some(function(i){ return i.matched; })) return;     // only rows with nothing matched yet
+    for(var k=0;k<sRows.length;k++){ var sr=sRows[k]; if(sRowUsed[k] || sr.items.length!==gr.items.length) continue;
+      if(sr.items.some(function(b){ return sUsed[b.j]; })) continue;
+      if(!gr.items.every(function(a,n){ return a.s===sr.items[n].s && Math.abs(a.x-sr.items[n].x)<=3; })) continue;
+      sRowUsed[k]=true; gr.items.forEach(function(a){ a.matched=true; }); sr.items.forEach(function(b){ sUsed[b.j]=true; }); break; } });
+  gLeft=gi.filter(function(a){ return !a.matched; });
+  var sLeft=si.filter(function(_,j){ return !sUsed[j]; });
+  // 3. group what is left into printed rows; each row is one difference
+  var rows=[];
+  function rowFor(y){ for(var i=0;i<rows.length;i++){ if(Math.abs(rows[i].y-y)<=3) return rows[i]; } var r={y:y,g:[],s:[]}; rows.push(r); return r; }
+  gLeft.forEach(function(a){ rowFor(a.y).g.push(a); });
+  sLeft.forEach(function(b){ rowFor(b.y).s.push(b); });
+  var lines=rowsOf(gi,3);
+  return rows.map(function(r){
+    r.g.sort(function(a,b){ return a.x-b.x; }); r.s.sort(function(a,b){ return a.x-b.x; });
+    var x0=Math.min.apply(null,r.g.concat(r.s).map(function(i){ return i.x; }));
+    var line=lines.filter(function(l){ return Math.abs(l.y-r.y)<=3; })[0];
+    var labelWords=line ? line.items.filter(function(i){ return i.matched && i.x<x0; }).map(function(i){ return i.s; }) : [];
+    var label=labelWords.join(' ').replace(/(\s*\.){2,}/g,' ').replace(/_{2,}/g,' ').replace(/\s+/g,' ').trim();
+    if(label.length>48){ label=label.slice(-48); label=label.slice(label.indexOf(' ')+1); }
+    var near=gi.filter(function(i){ return Math.abs(i.y-r.y)<=14; }).map(function(i){ return i.s; }).join(' ');
+    var shown=function(list){ return list.map(function(i){ return i.s; }).join(' ').replace(/_{4,}/g,'___'); };
+    var d={y:r.y, x:x0, label:label, golden:shown(r.g), student:shown(r.s), unreported:null};
+    d.unreported=unreportedRule(r,taxYear,{pinRow:isPinRow(near), preparerRow:/PTIN/.test(gi.filter(function(i){ return Math.abs(i.y-r.y)<=30; }).map(function(i){ return i.s; }).join(' ')) && / S$/.test(label)});
+    return d;
+  }).sort(function(a,b){ return b.y-a.y; });
+}
+/* the rule that covers every item in a row, or null (reported). Items are paired left to right; a row whose two sides
+   have different numbers of items is compared as one piece of text. */
+function unreportedRule(r,taxYear,ctx){
+  var pairs=[];
+  if(r.g.length===r.s.length && r.g.length) r.g.forEach(function(a,i){ pairs.push([a.s,r.s[i].s]); });
+  else pairs.push([r.g.map(function(i){ return i.s; }).join(' '), r.s.map(function(i){ return i.s; }).join(' ')]);
+  for(var k=0;k<UNREPORTED.length;k++){ var rule=UNREPORTED[k];
+    if(pairs.every(function(p){ return p[0]!=='' && p[1]!=='' && rule.test(p[0],p[1],taxYear,ctx); })) return rule.id; }
+  // a row can mix kinds (a date and a PTIN in the preparer box): unreported when each pair has a rule
+  if(pairs.length>1 && pairs.every(function(p){ return UNREPORTED.some(function(rule){ return p[0]!=='' && p[1]!=='' && rule.test(p[0],p[1],taxYear,ctx); }); })) return 'mixed';
+  return null;
+}
+
+/* The tax year the golden return is for ("TAX YEAR: 2025" on its first page), else the year before the latest date */
+function taxYearOf(pages){
+  var t=pages.length ? pages[0].items.map(function(i){ return i.s; }).join(' ') : '';
+  var m=t.match(/TAX YEAR:\s*(\d{4})/); return m ? +m[1] : null;
+}
+/* When the student's PDF was printed ("PROCESS DATE" on its first page) */
+function printDateOf(pages){
+  var t=pages.length ? pages[0].items.map(function(i){ return i.s; }).join(' ') : '';
+  var m=t.match(/PROCESS DATE:\s*(\d{1,2}\/\d{1,2}\/\d{4})/); return m ? m[1] : null;
+}
+
+/* The whole comparison of one student PDF with its golden file:
+   {missingPages:[{page,name}], extraPages:[{page,name}], rows:[{page, name, label, golden, student, x, y}], unreported:[...same, rule]} */
+function compareReturn(golden,student){
+  var taxYear=taxYearOf(golden)||taxYearOf(student)||0, p=pairPages(golden,student), out={missingPages:[], extraPages:[], rows:[], unreported:[], printed:printDateOf(student)};
+  p.missing.forEach(function(i){ out.missingPages.push({page:i+1, name:pageName(golden[i])}); });
+  p.extra.forEach(function(i){ out.extraPages.push({page:i+1, name:pageName(student[i])}); });
+  p.pairs.forEach(function(pr){ var name=pageName(golden[pr.g]);
+    comparePage(golden[pr.g],student[pr.s],taxYear).forEach(function(d){
+      var row={page:pr.s+1, goldenPage:pr.g+1, name:name, label:d.label, golden:d.golden, student:d.student, x:d.x, y:d.y};
+      if(d.unreported){ row.rule=d.unreported; out.unreported.push(row); } else out.rows.push(row); }); });
+  return out;
+}
+
+/* The student's initials from the file names ("DH Quinn.pdf": initials, a space, the case name). Every file must give
+   the same initials, else 'Unknown'. */
+function studentInitials(names,caseNames){
+  var re=new RegExp('^\\s*([A-Za-z]{1,4})[\\s_-]+('+caseNames.join('|')+')\\b','i'), seen={};
+  names.forEach(function(n){ var m=String(n||'').match(re); seen[m ? m[1].toUpperCase() : '?']=true; });
+  var k=Object.keys(seen); return k.length===1 && k[0]!=='?' ? k[0] : 'Unknown';
+}
