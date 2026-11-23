@@ -65,6 +65,7 @@ npm test                          # the full suite, tests/run_all.sh, about 5 mi
 3b. Write every hint and note from the answer key, never from memory: a hint that names steps names every step where the key changes its line (`hint_steps.js`), notes are copied in full (`sheet_notes.js` compares every number with the sheet), and a note's facts are exact, never a range (`note_facts.js`).
 3a. Add `source/cases/<case>.js` with the case's lines, steps (expected values from `expectedFromKey(ANSWER_KEYS.<case>)`), notes, and one teaching hint per line (see `source/cases/baylor.js` as the pattern). Have Carter approve the hints.
 4. Run `bash tests/dev_test.sh <case>` while working, then `bash tests/run_all.sh`. `cases_steps.js` also fails if `case.json` and the page list different steps.
+4a. Add the instructors' golden file as `cases/<case>/<Case>_Golden.pdf` and run `node source/tools/golden_data.js`, so Instructor mode can compare students' returns for the case. `golden_data.js` and `compare_golden.js` then cover it.
 5. This is a MINOR version.
 
 ## Version rules (semantic versioning, MAJOR.MINOR.PATCH)
