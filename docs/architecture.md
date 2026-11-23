@@ -163,8 +163,3 @@ Next, each report row gets suggested comments from a library the instructors kee
 - The Sheet cannot be reached: Audit Pup uses the last copy saved in this browser, else the copy built into the release, and shows a yellow warning on the report, for example "The comment library could not be reached. Using version 6 from November 30, which may be out of date."
 - Comments are always shown as plain text, and a library that suddenly shrinks by a lot is flagged.
 - Tests: reading the CSV (moved columns, bad rows), every fallback with the network off, the warning when the Sheet cannot be reached, the TS Notes checklist for every case, and counselor DH, where each instructor comment the report shows must match a library row.
-
-### For the product owner when this starts
-
-- The second owner of the Sheet and the Form (the lead instructor, Joanne, owns them).
-- The instructors' 2026 comment list, the starting point for the library.
