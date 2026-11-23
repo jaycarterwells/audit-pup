@@ -37,6 +37,9 @@ const COMMENTS={
     const r=E.compareReturn(goldenPages(c,E), await readPdf(studentFile(c),E));
     if(c==='quinn') expect('quinn: the return the instructor called perfect shows no rows or page changes', !r.rows.length && !r.missingPages.length && !r.extraPages.length, r.rows.map(d=>d.golden+'/'+d.student).join(' | '));
     for(const [what,found] of list){ n++; expect(`${c} ${what}: shown in the report`, found(r)); }
+    expect(`${c}: each distinct difference is one row`, new Set(r.rows.map(d=>d.golden+'|'+d.student)).size===r.rows.length);
+    if(c==='baylor') expect('baylor: the FREEMONT address, printed on 6 pages, is one row naming the other pages', r.rows.filter(d=>d.golden==='516 FREMONT RD').length===1 && r.rows.find(d=>d.golden==='516 FREMONT RD').also.length>=4);
+    if(c==='graham') expect('graham: the TaxSlayer notes page is one row with both sets of notes', r.rows.filter(d=>d.name==='TaxSlayer notes (file copy)').length===1);
     expect(`${c}: the report header knows when the PDF was printed`, r.printed==='11/19/2026', r.printed);
   }
   expect('the student initials come from the file names', E.studentInitials(['DH Quinn.pdf','DH Kent.pdf'],['Quinn','Kent'])==='DH' &&

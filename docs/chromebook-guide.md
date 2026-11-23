@@ -102,7 +102,7 @@ Instructor mode compares a counselor's final returns with the golden files, so y
 1. Click **Instructor** at the bottom of the page and enter the passcode (ask the Tax-Aide instructor lead). Instructor mode stays on in this browser until you click **Leave instructor mode**.
 2. Name each PDF with the counselor's initials, a space, and the case name, for example `DH Quinn.pdf` or `DH Kent.pdf`. The report reads the initials from the file names; if they are missing or do not agree, it says **Unknown**.
 3. Drop the counselor's Quality Review PDFs on the box, or click **Choose PDFs**. Up to 5 at a time, one per case. Audit Pup picks each file's case from the name on its Form 1040, and says which file and case it is reading and comparing as it works.
-4. Read the report. Each case has its own section, in alphabetical order: missing and extra pages first, then one row per difference with the golden value, the counselor's value, and **The spot** (a small picture of that place on the counselor's page, with its PDF page number).
+4. Read the report. Each case has its own section, in alphabetical order: missing and extra pages first, then one row per difference with the golden value, the counselor's value, and **The spot** (a small picture of that place on the counselor's page, with its PDF page number). A difference printed on several pages, such as an address on every form, is one row that lists its other pages.
 5. Differences instructors never comment on (dates after the tax year, the preparer's PTIN, self-select e-file PINs, and a middle initial added or left out) are not rows. First and last names must match exactly. Each case counts them in a closed list you can open.
 6. Click **Copy report** to paste the report into your notes or an email.
 

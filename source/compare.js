@@ -165,14 +165,29 @@ function printDateOf(pages){
    {missingPages:[{page,name}], extraPages:[{page,name}], rows:[{page, name, label, golden, student, x, y}], unreported:[...same, rule]} */
 function compareReturn(golden,student){
   var taxYear=taxYearOf(golden)||taxYearOf(student)||0, p=pairPages(golden,student), out={missingPages:[], extraPages:[], rows:[], unreported:[], printed:printDateOf(student)};
-  p.missing.forEach(function(i){ out.missingPages.push({page:i+1, name:pageName(golden[i])}); });
-  p.extra.forEach(function(i){ out.extraPages.push({page:i+1, name:pageName(student[i])}); });
-  p.pairs.forEach(function(pr){ var name=pageName(golden[pr.g]);
-    comparePage(golden[pr.g],student[pr.s],taxYear).forEach(function(d){
-      var row={page:pr.s+1, goldenPage:pr.g+1, name:name, label:d.label, golden:d.golden, student:d.student, x:d.x, y:d.y};
-      if(d.unreported){ row.rule=d.unreported; out.unreported.push(row); } else out.rows.push(row); }); });
+  // pages of the same name (four estimate vouchers) are one row that names each page
+  function addPage(list,i,pages){ var name=pageName(pages[i]), same=list.filter(function(x){ return x.name===name; })[0];
+    if(same) same.also.push(i+1); else list.push({page:i+1, name:name, also:[]}); }
+  p.missing.forEach(function(i){ addPage(out.missingPages,i,golden); });
+  p.extra.forEach(function(i){ addPage(out.extraPages,i,student); });
+  var seen={};
+  p.pairs.forEach(function(pr){ var name=pageName(golden[pr.g]), diffs=comparePage(golden[pr.g],student[pr.s],taxYear);
+    // TaxSlayer's notes page holds each counselor's own wording: it is one row, the two sets of notes side by side
+    if(name===NOTES_PAGE){ var rep=diffs.filter(function(d){ return !d.unreported; });
+      if(rep.length) diffs=[{y:rep[0].y, x:rep[0].x, label:'', unreported:null,
+        golden:rep.map(function(d){ return d.golden; }).filter(Boolean).join(' / '), student:rep.map(function(d){ return d.student; }).filter(Boolean).join(' / ')}]
+        .concat(diffs.filter(function(d){ return d.unreported; })); }
+    diffs.forEach(function(d){
+      var row={page:pr.s+1, goldenPage:pr.g+1, name:name, label:d.label, golden:d.golden, student:d.student, x:d.x, y:d.y, also:[]};
+      if(d.unreported){ row.rule=d.unreported; out.unreported.push(row); return; }
+      // the same difference printed again on another page (an address on every form, an amount carried forward) is
+      // one row that names every page it is on
+      var key=d.golden+'\u0000'+d.student;
+      if(seen[key]){ if(seen[key].page!==row.page && seen[key].also.indexOf(row.page)<0) seen[key].also.push(row.page); seen[key].count++; return; }
+      row.count=1; seen[key]=row; out.rows.push(row); }); });
   return out;
 }
+var NOTES_PAGE='TaxSlayer notes (file copy)';
 
 /* The student's initials from the file names ("DH Quinn.pdf": initials, a space, the case name). Every file must give
    the same initials, else 'Unknown'. */

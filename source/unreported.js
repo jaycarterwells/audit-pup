@@ -1,5 +1,5 @@
 /* ---------- The unreported list: the differences Instructor mode leaves out of a counselor's report ----------
-   This is the product owner's file (a control file: see the architecture document). Each rule names one kind of
+   The instructors own this list (a control file: see docs/architecture.md). Each rule names one kind of
    difference instructors never comment on. A report row is left out only when every difference in it is covered by a
    rule; it is then counted and listed, closed, under its case, so nothing is lost. To add or change a rule, change it
    here and in the architecture document's Unreported differences table, then run tests/compare_golden.js (the compare

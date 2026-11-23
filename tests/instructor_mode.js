@@ -30,7 +30,8 @@ const reportReady=p=>p.waitForFunction(()=>document.getElementById('ireport').da
   expect('one section per case, in alphabetical order by case name', rep.heads.length===5 && rep.heads.map(h=>h.split(':')[0]).join(',')==='Baylor,Graham,Kent,Parks,Quinn' && rep.heads[4]==='Quinn: no differences', rep.heads.join(' | '));
   expect('the report columns say Counselor, not Student', await p.$eval('.icase thead',e=>/Golden\s*Counselor/.test(e.textContent)));
   expect('the Baylor section shows the missing Preparer Notes page and WILLIE for WILLIAM', rep.rows.some(r=>/Preparer Notes.*missing/.test(r)) && rep.rows.some(r=>/WILLIAM.*WILLIE/.test(r)));
-  expect('the Parks section shows Schedule A line 7: 921 golden, 970 student', rep.rows.some(r=>/Schedule A.*\b7\b.*921.*970/.test(r)));
+  expect('the Parks section shows Schedule A 921 golden, 970 counselor, once, naming the other pages', rep.rows.filter(r=>/^Schedule A \(p\. \d+\).*921970/.test(r)).length===1 && rep.rows.some(r=>/^Schedule A \(p\. \d+\)Also on p\. \d+.*921970/.test(r)), rep.rows.filter(r=>/921/.test(r)).join(' | '));
+  expect('four extra 1040-ES voucher pages are one row', rep.rows.filter(r=>/Form 1040-ES voucher/.test(r)).length===1 && rep.rows.some(r=>/Form 1040-ES voucher \(p\. 12, 13, 14, 15\)/.test(r)));
   expect('every difference has its spot picture', rep.spots.length>20 && rep.spots.every(Boolean), `${rep.spots.filter(Boolean).length} of ${rep.spots.length}`);
   expect('each case lists its unreported differences, closed', rep.unrep.length===5 && rep.unrep.every(s=>/^\d+ unreported difference/.test(s)), rep.unrep.join(' | '));
   await p.screenshot({path:path.join(OUT,'instructor_report.png'), fullPage:false});

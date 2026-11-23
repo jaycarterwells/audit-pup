@@ -94,9 +94,10 @@ function studentLine(){
   return {who:who, printed:Object.keys(printed)};
 }
 function caseHeadline(r){
+  var pc=function(list){ return list.reduce(function(s,p){ return s+1+p.also.length; },0); }, nm=pc(r.missingPages), ne=pc(r.extraPages);
   var n=r.rows.length, parts=[n===0?'no differences':n+' difference'+(n===1?'':'s')];
-  if(r.missingPages.length) parts.push(r.missingPages.length+' page'+(r.missingPages.length===1?'':'s')+' missing');
-  if(r.extraPages.length) parts.push(r.extraPages.length+' extra page'+(r.extraPages.length===1?'':'s'));
+  if(nm) parts.push(nm+' page'+(nm===1?'':'s')+' missing');
+  if(ne) parts.push(ne+' extra page'+(ne===1?'':'s'));
   return parts.join(', ');
 }
 function renderInstructor(){
@@ -111,10 +112,10 @@ function renderInstructor(){
     h+='<h3>'+esc(caseShort(f.caseId))+': '+esc(caseHeadline(r))+'</h3><div class="ifile">'+esc(f.name)+'</div>';
     if(r.missingPages.length||r.extraPages.length||r.rows.length){
       h+='<div class="itable" tabindex="0"><table><thead><tr><th scope="col">Form and page</th><th scope="col">Line or box</th><th scope="col">Golden</th><th scope="col">Counselor</th><th scope="col">The spot</th></tr></thead><tbody>';
-      r.missingPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (golden p. '+p.page+')</td><td>Whole page</td><td>printed</td><td class="ibad">missing</td><td></td></tr>'; });
-      r.extraPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (p. '+p.page+')</td><td>Whole page</td><td>not printed</td><td class="ibad">extra</td><td></td></tr>'; });
+      r.missingPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (golden p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>printed</td><td class="ibad">missing</td><td></td></tr>'; });
+      r.extraPages.forEach(function(p){ h+='<tr><td>'+esc(p.name)+' (p. '+[p.page].concat(p.also).join(', ')+')</td><td>Whole page</td><td>not printed</td><td class="ibad">extra</td><td></td></tr>'; });
       r.rows.forEach(function(d,di){
-        h+='<tr><td>'+esc(d.name)+' (p. '+d.page+')</td><td>'+esc(d.label||'')+'</td><td>'+(d.golden?esc(d.golden):'<i>blank</i>')+'</td><td class="ibad">'+(d.student?esc(d.student):'<i>blank</i>')+'</td>'+
+        h+='<tr><td>'+esc(d.name)+' (p. '+d.page+')'+(d.also.length?'<div class="ialso">Also on p. '+esc(d.also.join(', '))+'</div>':'')+'</td><td>'+esc(d.label||'')+'</td><td>'+(d.golden?esc(d.golden):'<i>blank</i>')+'</td><td class="ibad">'+(d.student?esc(d.student):'<i>blank</i>')+'</td>'+
            '<td><img class="ispot" alt="The spot on page '+d.page+' of the counselor\'s PDF" data-f="'+fi+'" data-d="'+di+'"></td></tr>'; });
       h+='</tbody></table></div>';
     }
@@ -135,8 +136,8 @@ function reportText(){
     if(f.err){ out.push(f.name+': '+f.err,''); return; }
     var r=f.result; out.push(caseShort(f.caseId)+': '+caseHeadline(r));
     r.missingPages.forEach(function(p){ out.push('  Missing page: '+p.name); });
-    r.extraPages.forEach(function(p){ out.push('  Extra page: '+p.name+' (p. '+p.page+')'); });
-    r.rows.forEach(function(d){ out.push('  '+d.name+' (p. '+d.page+')'+(d.label?', '+d.label:'')+': golden '+(d.golden||'blank')+'; counselor '+(d.student||'blank')); });
+    r.extraPages.forEach(function(p){ out.push('  Extra page: '+p.name+' (p. '+[p.page].concat(p.also).join(', ')+')'); });
+    r.rows.forEach(function(d){ out.push('  '+d.name+' (p. '+d.page+(d.also.length?'; also p. '+d.also.join(', '):'')+')'+(d.label?', '+d.label:'')+': golden '+(d.golden||'blank')+'; counselor '+(d.student||'blank')); });
     if(r.unreported.length) out.push('  ('+r.unreported.length+' unreported differences not listed)');
     out.push('');
   });
