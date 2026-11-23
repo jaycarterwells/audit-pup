@@ -13,6 +13,8 @@ var UNREPORTED=[
     test:function(g,s,taxYear,ctx){ return (/^[PS]\d{8}$/.test(g) && /^[PS]\d{8}$/.test(s)) || (ctx.preparerRow && /^\d$/.test(g) && /^\d$/.test(s)); } },
   { id:'pin', name:'Self-select e-file signature PINs (never the IP PIN)',
     test:function(g,s,taxYear,ctx){ return ctx.pinRow && /^\d{1,5}$/.test(g) && /^\d{1,5}$/.test(s) && g.length===s.length; } },
+  { id:'link', name:'TaxSlayer\'s own Link numbers (Link:5004), which TaxSlayer prints and the counselor never types',
+    test:function(g,s){ return /^Link:\d+$/.test(g) && /^Link:\d+$/.test(s); } },
   { id:'initial', name:'A middle initial added or left out (first and last names must match exactly)',
     test:function(g,s){
       var ig=initialsOf(g), is=initialsOf(s);

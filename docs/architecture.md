@@ -88,6 +88,7 @@ These differences are never shown as rows. Each case lists them in a closed list
 | Paid preparer details (PTIN, firm, phone) | Form 1040 page 2, California forms | Set by each practice lab account, not entered by the counselor |
 | Self-select e-file signature PINs | Form 8879, FTB 8879, consent forms | Any 5 digits the counselor chooses are correct. The IP PIN is still reported |
 | Page order | The whole printout | Pages are paired by form, so a different order is not a difference |
+| TaxSlayer's own Link numbers (for example Link:5004) | Schedule E and other forms TaxSlayer links | TaxSlayer prints them; the counselor never types them |
 | A middle initial added or left out | Names of the taxpayer, spouse and dependents | A middle initial does not matter. First and last names must be spelled exactly, so every other spelling difference in a name or address is reported |
 
 Everything else is reported.

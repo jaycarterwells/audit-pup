@@ -10,7 +10,7 @@ Each item under Fixed (from 0.19.1 on) is a short title of 3 to 5 words that nam
 
 ### Added
 
-* Instructor mode, for the instructors who grade students' final returns. Click Instructor at the bottom of the page and enter the passcode. Drop a counselor's Quality Review PDFs (up to 5) and Audit Pup compares each one with the case's golden file: missing and extra pages, then every difference by form and line, with a small picture of that place on the counselor's page and its PDF page number. A difference printed on several pages is one row that lists them. Dates, the preparer's PTIN, e-file PINs and middle initials are counted in a closed list instead. Copy report puts the report into your notes or an email. Counselors checking their steps see no change.
+* Instructor mode, for the instructors who grade students' final returns. Click Instructor at the bottom of the page and enter the passcode. Drop a counselor's Quality Review PDFs (up to 5) and Audit Pup compares each one with the case's golden file: missing and extra pages, then every difference by form and line, with a small picture of that place on the counselor's page and its PDF page number. A difference printed on several pages is one row that lists them. Dates, the preparer's PTIN, e-file PINs, TaxSlayer's Link numbers and middle initials are counted in a closed list instead. Copy report puts the report into your notes or an email. Counselors checking their steps see no change.
 
 ## 0.19.2, November 20, 2026
 

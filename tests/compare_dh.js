@@ -39,6 +39,7 @@ const COMMENTS={
     for(const [what,found] of list){ n++; expect(`${c} ${what}: shown in the report`, found(r)); }
     expect(`${c}: each distinct difference is one row`, new Set(r.rows.map(d=>d.golden+'|'+d.student)).size===r.rows.length);
     if(c==='baylor') expect('baylor: the FREEMONT address, printed on 6 pages, is one row naming the other pages', r.rows.filter(d=>d.golden==='516 FREMONT RD').length===1 && r.rows.find(d=>d.golden==='516 FREMONT RD').also.length>=4);
+    if(c==='kent') expect('kent: the TaxSlayer Link number on Schedule E is unreported', !r.rows.some(d=>/^Link:/.test(d.golden)) && r.unreported.some(d=>d.rule==='link'));
     if(c==='graham') expect('graham: the TaxSlayer notes page is one row with both sets of notes', r.rows.filter(d=>d.name==='TaxSlayer notes (file copy)').length===1);
     expect(`${c}: the report header knows when the PDF was printed`, r.printed==='11/19/2026', r.printed);
   }

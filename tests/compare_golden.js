@@ -24,7 +24,7 @@ const copy=pages=>pages.map(p=>({page:p.page, form:p.form, items:p.items.map(i=>
       const items=E.pageItems(g);
       const plainItems=g.items.filter(i=>E.readableText(i.s));   // plant only in text printed in a plain font
       // which planted changes the unreported list may cover
-      const covered=it=>E.datesIn(it.s).some(y=>y>taxYear) || /^[PS]\d{8}$/.test(it.s) ||
+      const covered=it=>E.datesIn(it.s).some(y=>y>taxYear) || /^[PS]\d{8}$/.test(it.s) || /^Link:\d+$/.test(it.s) ||
         (/^\d$/.test(it.s) && /PTIN/.test(items.filter(o=>Math.abs(o.y-it.y)<=30).map(o=>o.s).join(' '))) ||
         (/^\d{1,5}$/.test(it.s) && E.isPinRow(items.filter(o=>Math.abs(o.y-it.y)<=14).map(o=>o.s).join(' ')));   // a self-select PIN, never the IP PIN
       // one page compared with its planted copy, as compareReturn compares each pair of pages
