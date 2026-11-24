@@ -230,6 +230,25 @@ function worksheetOk(pages,want){
   return !!w && Object.keys(want).every(function(k){ return w[k]===want[k]; });
 }
 
+/* Next year's federal estimated tax vouchers (Form 1040-ES), one page each, as [{due:'04/15/2026', amount:803}, ...]:
+   the amount TaxSlayer prints beside "Payment", just below "Date to file by:". An unreadable amount is null. */
+function estimateVouchers(pages){
+  var out=[];
+  pages.forEach(function(pg){ var its=pg.items;
+    if(!its.some(function(i){ return i.s.trim()==='Estimated Tax Voucher Filing Instructions'; })) return;
+    var lab=its.filter(function(i){ return i.s.trim()==='Date to file by:'; })[0]; if(!lab) return;
+    var due=its.filter(function(i){ return Math.abs(i.y-lab.y)<=3 && i.x>lab.x && /^\d{2}\/\d{2}\/\d{4}$/.test(i.s.trim()); })[0];
+    var amt=its.filter(function(i){ return i.y<lab.y-12 && i.y>lab.y-36 && i.x>lab.x+100 && i.x<lab.x+350 && /^\$?[\d,]+(\.\d\d)?$/.test(i.s.trim()); })[0];
+    out.push({due:due?due.s.trim():null, amount:amt?+amt.s.trim().replace(/[$,]/g,''):null});
+  });
+  return out;
+}
+/* Are there exactly the vouchers the note asks for, each for its amount? */
+function vouchersOk(pages,N){
+  var v=estimateVouchers(pages);
+  return v.length===N.count && v.every(function(x){ return x.amount===N.amount; });
+}
+
 /* Text of TaxSlayer's Preparer Notes page, if one was printed */
 function preparerNotes(pages){
   for(var p=0;p<pages.length;p++){ var its=pages[p].items;
@@ -263,6 +282,7 @@ function noteOk(N,pages){
   if(N.kind==='w2text') return onW2(pages,N.employer,N.text)===true;
   if(N.kind==='prepnote') return !!preparerNotes(pages);
   if(N.kind==='carryws') return worksheetOk(pages,N.lines);
+  if(N.kind==='esvouchers') return vouchersOk(pages,N);
   return null;
 }
 /* The notes checked again at a step: every note marked carry:true that an EARLIER step lists, and this step does not.

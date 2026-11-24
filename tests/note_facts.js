@@ -6,6 +6,7 @@
 //   * the checked filing status, changed to another one, fails;
 //   * each listed dependent, renamed, fails;
 //   * one digit of the Identity Protection PIN, changed, fails.
+//   * each estimated tax voucher amount changed or blank, or a voucher left out, fails;
 //   * each Capital Loss Carryover Worksheet amount, one more or one less, blank, or the worksheet left out, fails.
 // Also: the Quinn printouts as the case author made them (cases/quinn/original/, 12 months) fail N1.
 // The planted-mistake sweep (engine_sweep.js) changes dollar amounts only; this is its counterpart for notes.
@@ -63,6 +64,20 @@ const STATUSES=['Single','Married filing jointly','Married filing separately','H
         }
         // the worksheet left out of the PDF
         if(pg){ const saved=pg.items; pg.items=[]; fails('the worksheet is not in the PDF',()=>{ pg.items=saved; }); }
+      }
+      if(N.kind==='esvouchers'){
+        // each voucher's amount, one more or one less, or blank; and each voucher page left out
+        const vp=pages.filter(p=>p.items.some(i=>i.s.trim()==='Estimated Tax Voucher Filing Instructions'));
+        expect(`${c.id} ${id}: the PDF has the ${N.count} voucher pages`, vp.length===N.count);
+        vp.forEach((pg,k)=>{
+          const lab=pg.items.find(i=>i.s.trim()==='Date to file by:');
+          const cell=lab && pg.items.find(i=>i.y<lab.y-12 && i.y>lab.y-36 && i.x>lab.x+100 && i.x<lab.x+350 && /^\$?[\d,]+(\.\d\d)?$/.test(i.s.trim()));
+          if(!expect(`${c.id} ${id}: voucher ${k+1} shows its amount`, !!cell)) return;
+          const orig=cell.s;
+          for(const w of [N.amount+1, N.amount-1]){ cell.s=String(w); fails(`voucher ${k+1} is $${w}, not $${N.amount}`,()=>{ cell.s=orig; }); }
+          cell.s=''; fails(`voucher ${k+1} has no amount`,()=>{ cell.s=orig; });
+          const saved=pg.items; pg.items=[]; fails(`voucher ${k+1} is not in the PDF`,()=>{ pg.items=saved; });
+        });
       }
       if(N.kind==='ippin'){
         // the PIN boxes beside the 1040 signature line, found the way the reader finds them

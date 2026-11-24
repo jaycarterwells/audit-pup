@@ -690,6 +690,12 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Box the student ticks: I added a TS Note for Step K (the IRA basis) in TaxSlayer
 * Example: STEP K - IRA BASIS: 2024 TAX RETURN HAD FORM 8606. ENTERED INFO FROM THAT, THE WELLS FARGO 1099-R, AND TOTAL VALUE OF IRAS TO GET TAXABLE AMOUNT SHOWN IN BOX 2A.
 
+**NES: Federal estimated tax vouchers** (Step O)
+
+* Answer key: four 2026 federal estimated tax vouchers (Form 1040-ES) of $803 each; no California estimated payments
+* Hint: The answer sheet's Step O section gives the quarterly amount: $803, from the IRS Tax Withholding Estimator, divided into 4 equal payments. Create the federal estimated tax vouchers in TaxSlayer, federal only (no California estimated taxes are needed), and print the return again so the 4 vouchers are in your PDF. If the amount is off, follow the answer sheet's steps for the estimator again.
+* Checked: at this step only
+
 **NN_O: TS Note added for Step O** (Step O)
 
 * Hint: Good TS Notes explain why items are treated differently than expected and flag anything unusual that next year's counselor should know.
