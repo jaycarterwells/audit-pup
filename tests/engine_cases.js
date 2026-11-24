@@ -59,7 +59,7 @@ const { loadCases } = require('./cases');
     for(const f of c.files) for(const s of K.steps){
       const {got,present}=results[f], pass=E.linesPass(s,got,present), alt=E.otherMatches(s,got,present), warn=pass && alt.length>0;
       cells++;
-      if(c.mayPass(f,s.id)){
+      if(c.mayPassLines(f,s.id)){
         const known=c.known(f,s.id), off=Object.keys(s.expected).filter(k=>E.matches(got[k],s.expected[k],present[K.lines[k].form],K.lines[k].form)!=='pass');
         const bad=off.filter(k=>!known.includes(k)), fixed=known.filter(k=>!off.includes(k));
         if(known.length){
@@ -67,8 +67,8 @@ const { loadCases } = require('./cases');
           expect(`${c.id}: ${f} at Step ${s.id}: the known difference is still there (remove it from case.json once the printout is fixed)`, !fixed.length, fixed.join(', '));
         } else expect(`${c.id}: ${f} passes Step ${s.id}`, pass && !warn, bad.slice(0,4).map(k=>`${k} read ${got[k]}, want ${s.expected[k]}`).join('; ')||'wrong-step warning shown');
       } else expect(`${c.id}: ${f} does not pass Step ${s.id} silently`, !pass || warn, 'passes with no warning');
-      if(!c.mayPass(f,s.id) && !c.stepsOf(f).some(x=>c.excused(x))) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
-        alt.length>0 && alt.every(x=>c.mayPass(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
+      if(!c.mayPassLines(f,s.id) && !c.stepsOf(f).some(x=>c.excused(x))) expect(`${c.id}: ${f} checked as Step ${s.id}: the "Did you pick the right step?" box names its own step, and only steps it may pass`,
+        alt.length>0 && alt.every(x=>c.mayPassLines(f,x.id)), alt.map(x=>x.id).join('/')||'no step named');
     }
     // 5. a note checked again at later steps must be met by the correct printout of every later step (no false failures)
     let carriedChecks=0;

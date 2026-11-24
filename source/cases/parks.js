@@ -103,11 +103,11 @@ var P_STEPS = [
   {id:'L', name:'Step L: Itemize for California', type:'check', expected:P_EXP.L, notes:[], hints:{ca540_18:P_N7}},
   {id:'M', name:'Step M: Health coverage (California penalty)', type:'check', expected:P_EXP.M, notes:[]},
   {id:'N', name:'Step N: no change expected from Step M', type:'nochange', basis:'Step M', expected:P_EXP.M, notes:[]},
-  {id:'O', name:'Step O: Estimated payments (no change expected from Step M)', type:'nochange', basis:'Step M', expected:P_EXP.M, notes:['NN_O']}
+  {id:'O', name:'Step O: Estimated payments (no change expected from Step M)', type:'nochange', basis:'Step M', expected:P_EXP.M, notes:['NES','NN_O']}
 ];
 
 var P_ORDER = ['fed_4a','fed_4b','fed_6a','fed_6b','fed_8','fed_9','fed_11a','fed_12e','fed_15','fed_16','fed_19','fed_24','fed_37',
-  'N1','NN_C','NN_D','NN_K','NN_O',
+  'N1','NN_C','NN_D','NN_K','NES','NN_O',
   'sch1_1','sch1_2a','sch1_5','sch1_8b','sch1_8z','schA_16',
   'ca540_11','ca540_14','ca540_16','ca540_18','ca540_19','ca540_31','ca540_46','ca540_48','ca540_78','ca540_96','ca540_111','ca540_115',
   'schCA_8b_B','schCA_9a_B','schCA_16_B'];
@@ -125,6 +125,11 @@ var P_NOTES = {
   NN_C:pNN('C','the Canadian pension',"STEP C - CANADIAN PENSION: MARY RECEIVES MONIES FROM A CANADIAN PENSION. BE SURE TO ASK HER FOR IT EACH YEAR IF SHE DOESN'T OFFER THE INFORMATION."),
   NN_D:pNN('D','the 1099-NEC',"STEP D - 1099-NEC: MARY IS A VOLUNTEER FOR EDAC. THE $30 THAT WAS REPORTED IN 1099-NEC BOX 1 IS NOT BUSINESS INCOME AND WAS MOVED TO 1099-MISC BOX 3 OTHER INCOME."),
   NN_K:pNN('K','the IRA basis',"STEP K - IRA BASIS: 2024 TAX RETURN HAD FORM 8606. ENTERED INFO FROM THAT, THE WELLS FARGO 1099-R, AND TOTAL VALUE OF IRAS TO GET TAXABLE AMOUNT SHOWN IN BOX 2A."),
+  /* Step O: next year's federal estimated tax vouchers, read from the PDF (Mary Ryan's review, November 2026). The answer
+     sheet's Step O section gives $803 a quarter, federal only. One-time: Step O is the last step. */
+  NES:{form:'fed', kind:'esvouchers', carry:false, chip:'ES', name:'Federal estimated tax vouchers', count:4, amount:803,
+    key:'four 2026 federal estimated tax vouchers (Form 1040-ES) of $803 each; no California estimated payments',
+    coach:"The answer sheet's Step O section gives the quarterly amount: $803, from the IRS Tax Withholding Estimator, divided into 4 equal payments. Create the federal estimated tax vouchers in TaxSlayer, federal only (no California estimated taxes are needed), and print the return again so the 4 vouchers are in your PDF. If the amount is off, follow the answer sheet's steps for the estimator again."},
   NN_O:pNN('O','the estimated tax vouchers',"STEP O - EST VOUCHERS: CREATED EST. TAX VOUCHERS, FED ONLY, $803 A QTR.")
 };
 

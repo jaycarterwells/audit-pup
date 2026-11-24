@@ -17,7 +17,7 @@ var B_LINES = {
   fed_9:   {form:'fed', line:'Line 9',   name:'Total income', read:['box','fed','9'],
     hint:"Line 9 is a sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself."},
   fed_11a: {form:'fed', line:'Line 11a', name:'Adjusted gross income', read:['box','fed','11a'],
-    hint:"Line 11a is total income minus the adjustments on Schedule 1, line 26. If total income is right, look at the adjustments (jury pay given to the employer, the HSA deduction)."},
+    hint:"Line 11a is total income (line 9) minus the adjustments on Schedule 1, line 26. Total income includes the Schedule 1 income on lines 1 through 9 (unemployment, cancellation of debt, jury pay, HSA income). If line 9 is right, look at the adjustments (jury pay given to the employer, the HSA deduction)."},
   fed_12e: {form:'fed', line:'Line 12e', name:'Standard or itemized deduction', read:['box','fed','12e'],
     hint:"The standard deduction follows from filing status. Michael is a qualifying surviving spouse (Step A, note N1). Itemizing is right only when Schedule A is larger, and here it is not."},
   fed_15:  {form:'fed', line:'Line 15',  name:'Taxable income', read:['box','fed','15'],

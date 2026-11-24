@@ -17,7 +17,7 @@ var K_LINES = {
   fed_3b:  {form:'fed', line:'Line 3b',  name:'Ordinary dividends', read:['box','fed','3b'],
     hint:"Line 3b is the ordinary dividends (box 1a) from the 1099-DIVs and the K-1. Compare box 1a of each form you entered with the problem."},
   fed_7a:  {form:'fed', line:'Line 7a',  name:'Capital gain or loss', read:['box','fed','7a'],
-    hint:"Line 7a comes from Schedule D: the capital gain distributions (Step E), the home sale (Step J), the Schwab 1099-B sales (Step K), and the K-1 (Step L). A net loss is limited to $3,000. Look at Schedule D in your PDF to find which part is off."},
+    hint:"Line 7a comes from Schedule D: the capital gain distributions (Step E), the home sale (Step J), the Schwab 1099-B sales (Step K), and the K-1 (Step L), and last year's capital loss carryover (Step O). A net loss is limited to $3,000, so a carryover mistake can leave line 7a at -$3,000: check Schedule D lines 6 and 14 too. Look at Schedule D in your PDF to find which part is off."},
   fed_8:   {form:'fed', line:'Line 8',   name:'Additional income (Schedule 1, line 10)', read:['box','fed','8'],
     hint:"Line 8 comes from Schedule 1, line 10: last year's taxable state refund (Step H) and the K-1 partnership income on Schedule E (Step L). Check the Schedule 1 lines first."},
   fed_9:   {form:'fed', line:'Line 9',   name:'Total income', read:['box','fed','9'],
@@ -133,10 +133,10 @@ var K_STEPS = [
   {id:'G', name:'Step G: Dividends (Wells Fargo 1099-DIV)', type:'check', expected:K_EXP.G, notes:[], hints:{ca540_16:K_N7}},
   {id:'H', name:'Step H: Last year’s California refund (1099-G)', type:'check', expected:K_EXP.H, notes:[]},
   {id:'J', name:'Step J: Sale of home (1099-S)', type:'check', expected:K_EXP.J, notes:[], hints:{fed_7a:K_N8}},
-  {id:'K', name:'Step K: Brokerage sales (Schwab 1099-B)', type:'check', expected:K_EXP.K, notes:[], hints:{fed_7a:K_N9}},
+  {id:'K', name:'Step K: Brokerage sales (Schwab 1099-B)', type:'check', expected:K_EXP.K, notes:['N9'], hints:{fed_7a:K_N9}},
   {id:'L', name:'Step L: Partnership K-1', type:'check', expected:K_EXP.L, notes:[], hints:{sch1_5:K_N10, fed_8:K_N10, ca540_16:K_N11}},
   {id:'N', name:'Step N: Itemized deductions', type:'check', expected:K_EXP.N, notes:['NN_N'], hints:{fed_12e:K_N12, schA_5a:K_N12}},
-  {id:'O', name:'Step O: Estimated payments and last year’s return', type:'check', expected:K_EXP.O, notes:[], hints:{fed_12e:K_N13, fed_7a:K_N13b, fed_15:K_N13b}},
+  {id:'O', name:'Step O: Estimated payments and last year’s return', type:'check', expected:K_EXP.O, notes:['N13b'], hints:{fed_12e:K_N13, fed_7a:K_N13b, fed_15:K_N13b}},
   {id:'P', name:'Step P: Child and dependent care', type:'check', expected:K_EXP.P, notes:[], hints:{sch3_2:K_N14, fed_21:K_N14}},
   {id:'Q', name:'Step Q: IRA contribution', type:'check', expected:K_EXP.Q, notes:['NN_Q']},
   {id:'R', name:'Step R: Health insurance (1095-A)', type:'check', expected:K_EXP.R, notes:[], hints:{fed_12e:K_N15}},
@@ -146,7 +146,7 @@ var K_STEPS = [
 
 var K_ORDER = ['fed_1a','fed_2a','fed_2b','fed_3a','fed_3b','fed_7a','fed_8','fed_9','fed_10','fed_11a','fed_12e','fed_13a','fed_13b','fed_15','fed_16',
   'fed_19','fed_20','fed_21','fed_22','fed_24','fed_25d','fed_26','fed_31','fed_33','fed_35a','fed_37',
-  'N1','NN_N','NN_Q',
+  'N1','N9','NN_N','N13b','NN_Q',
   'sch1_5','sch1_18','sch1_20','sch3_1','sch3_2','sch3_9','schA_5a',
   'ca540_11','ca540_14','ca540_16','ca540_17','ca540_18','ca540_19','ca540_31','ca540_35','ca540_46','ca540_48','ca540_64','ca540_72','ca540_76','ca540_78','ca540_111','ca540_115'];
 
@@ -160,6 +160,14 @@ var K_NOTES = {
     deps:[{first:'JANE', name:'Jane', box:'ctc', months:12}],
     key:"Filing status = HOH. Using the 'Qualifying Child or Relative Resource Tool', Jane = Box 35, CTC. Kendra and Susan = Chart 2 Box 12, not a dependent, no EIC, but medical and dependent care allowed. The CTC ODC Chart shows these two are not entered on the tax return in the dependents area.",
     coach:"Start the 'Qualifying Child or Relative Resource Tool' with Karl and Kendra, then Jane and Susan. Only Jane is listed, for the child tax credit, and she lived with Karl all 12 months. Kendra and Susan are not entered as dependents at all, even as 'not a dependent'. Check the filing status and the dependents area."},
+  /* The Capital Loss Carryover Worksheet, read from the PDF (Mary Ryan's review, November 2026: line 7a stops at
+     -$3,000, so it cannot show these). One-time: the worksheet changes at later steps. */
+  N9:{form:'fed', kind:'carryws', carry:false, name:'Capital Loss Carryover Worksheet', lines:{'8':0, '13':2783},
+    key:'Capital Loss Carryover Worksheet line 8 = 0 and line 13 = 2,783',
+    coach:"The Schwab sales (Step K) make a net capital loss larger than $3,000, so part of it carries over to next year. Line 7a stops at -$3,000, so it cannot show a mistake here. Scroll down in your PDF to the Capital Loss Carryover Worksheet (Worksheet 4-1), after Schedule D. If it does not match, compare each sale you entered from the Schwab 1099-B with the problem."},
+  N13b:{form:'fed', kind:'carryws', carry:false, name:'Capital Loss Carryover Worksheet', lines:{'8':786, '13':3992},
+    key:'Capital Loss Carryover Worksheet line 8 = 786 and line 13 = 3,992',
+    coach:"Last year's return (Step O) adds last year's capital loss carryover on Schedule D, lines 6 and 14. Line 7a stops at -$3,000, so it cannot show a mistake here. Scroll down in your PDF to the Capital Loss Carryover Worksheet (Worksheet 4-1), after Schedule D. If it does not match, compare the carryover amounts you entered with last year's return in the problem."},
   NN_N:kNN('N','the VA benefits',"STEP N - VA BENEFITS: ENTERED $30,000 OF NON-TAXABLE VA BENEFITS INTO THE SALES TAX MAGI."),
   NN_Q:kNN('Q','the IRA contribution',"STEP Q - IRA CONTRIBUTION: KARL AGREED TO MAKE HIS 2025 IRA CONTRIBUTION OF $8,000 PRIOR TO 4/15.")
 };
