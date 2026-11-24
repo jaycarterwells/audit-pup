@@ -10,6 +10,8 @@
   "todoWhy": "Steps C, D, K, and O each leave one TS Note box for the student to tick (the answer sheet marks NN at C, D, and K, and its TS Note examples include Step O).",
   "ownTsNoteBox": ["C", "D", "K", "O"],
   "ownTsNoteBoxWhy": "Each of these steps keeps its own TS Note box: ticking one must not tick another.",
-  "sameReturn": [["M", "N", "O"]],
+  "sameReturn": [["M", "N"]],
+  "sameLines": [["M", "N", "O"]],
+  "sameReturnWhy": "Step O is not the same return as M and N: it adds the four federal estimated tax vouchers (note NES), so the Step M printout, which has none, must fail Step O.",
   "speed": { "step": "M", "maxSeconds": 20 }
 }
