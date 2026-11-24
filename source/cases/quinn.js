@@ -6,8 +6,8 @@ var Q_EXP = expectedFromKey(ANSWER_KEYS.quinn);   /* from cases/quinn/answer_key
 var Q_LINES = {
   fed_1a:  {form:'fed', line:'Line 1a',  name:'Wages (W-2 box 1)', read:['box','fed','1a'],
     hint:'Line 1a comes straight from box 1 of the W-2 you entered. Re-open that W-2 in TaxSlayer and compare box 1 to the source document.'},
-  fed_1d:  {form:'fed', line:'Line 1d',  name:'Medicaid Waiver Payment not on a W-2', read:['box','fed','1d'],
-    hint:'Line 1d is where a Medicaid Waiver Payment with no W-2 is reported. Look again at the MWP handout and at the Medicaid Waiver Payment field below Box 14 on the W-2 screen.'},
+  fed_1d:  {form:'fed', line:'Line 1d',  name:'Medicaid Waiver Payment not in W-2 box 1', read:['box','fed','1d'],
+    hint:'Line 1d is a Medicaid Waiver Payment that is not in box 1 of a W-2. In this problem it comes on a W-2 with nothing in box 1. Look again at the MWP handout and at the Medicaid Waiver Payment field below Box 14 on the W-2 screen.'},
   fed_8:   {form:'fed', line:'Line 8',   name:'Additional income (Schedule 1)', read:['box','fed','8'],
     hint:'Line 8 pulls from Schedule 1, where the excludable MWP is subtracted back out. Revisit the handout on how the payment is removed from taxable income, and check your Medicaid Waiver Payment entry.'},
   fed_9:   {form:'fed', line:'Line 9',   name:'Total income', read:['box','fed','9'],

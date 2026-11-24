@@ -1,6 +1,6 @@
 # Audit Pup hints for review
 
-Every hint a counselor can see, for every case, as Audit Pup 0.20.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
+Every hint a counselor can see, for every case, as Audit Pup 0.21.0 shows it. Made from the case files by `source/tools/hints_report.js`, so it always matches the page: change a hint in `source/cases/<case>.js`, then run the tool.
 
 How hints work: when a line fails, the counselor opens one hint. It shows the answer key value ("Answer key: ...") and the text below, which says where to look in the problem. Lines that are blank on the answer sheet are checked together in one row, "Lines that should be blank"; when it fails, its hint lists each line that has an amount, with that line's hint below. A step can replace a line's hint with an answer sheet note for that step only. Answer key notes have their own text.
 
@@ -23,7 +23,7 @@ Steps: A, B, D, E, F.
 | Line | What it is | Hint |
 | --- | --- | --- |
 | Line 1a | Wages (W-2 box 1) | Line 1a comes straight from box 1 of the W-2 you entered. Re-open that W-2 in TaxSlayer and compare box 1 to the source document. |
-| Line 1d | Medicaid Waiver Payment not on a W-2 | Line 1d is where a Medicaid Waiver Payment with no W-2 is reported. Look again at the MWP handout and at the Medicaid Waiver Payment field below Box 14 on the W-2 screen. |
+| Line 1d | Medicaid Waiver Payment not in W-2 box 1 | Line 1d is a Medicaid Waiver Payment that is not in box 1 of a W-2. In this problem it comes on a W-2 with nothing in box 1. Look again at the MWP handout and at the Medicaid Waiver Payment field below Box 14 on the W-2 screen. |
 | Line 8 | Additional income (Schedule 1) | Line 8 pulls from Schedule 1, where the excludable MWP is subtracted back out. Revisit the handout on how the payment is removed from taxable income, and check your Medicaid Waiver Payment entry. |
 | Line 9 | Total income | Line 9 is a sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
 | Line 11a | Adjusted gross income | Line 11a is total income minus adjustments. If total income is right, look for an unexpected adjustment above this line. |
@@ -107,7 +107,7 @@ Steps: A, B, C, E, F, G, H, I, J, L, M, N, O, P, R.
 | Line 2a | Tax-exempt interest | Line 2a is the $10 HSA interest from Step N. The handout 'HSA Notes' explains how to enter it so it is tax-exempt for the IRS but taxable for California. |
 | Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10. Check the Schedule 1 lines in this list first; this total follows from them. |
 | Line 9 | Total income | Line 9 is a sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
-| Line 11a | Adjusted gross income | Line 11a is total income minus the adjustments on Schedule 1, line 26. If total income is right, look at the adjustments (jury pay given to the employer, the HSA deduction). |
+| Line 11a | Adjusted gross income | Line 11a is total income (line 9) minus the adjustments on Schedule 1, line 26. Total income includes the Schedule 1 income on lines 1 through 9 (unemployment, cancellation of debt, jury pay, HSA income). If line 9 is right, look at the adjustments (jury pay given to the employer, the HSA deduction). |
 | Line 12e | Standard or itemized deduction | The standard deduction follows from filing status. Michael is a qualifying surviving spouse (Step A, note N1). Itemizing is right only when Schedule A is larger, and here it is not. |
 | Line 15 | Taxable income | Taxable income is AGI minus the deduction. If lines 11a and 12e are right, this follows. |
 | Line 16 | Tax | Tax comes from taxable income through the tax table. If taxable income is right, this follows. |
@@ -452,7 +452,7 @@ Steps: A, B, C, D, E, G, H, J, K, L, N, O, P, Q, R, S, T.
 | Line 2b | Taxable interest | Line 2b adds the seller-financed mortgage interest (Step C), the ZYX 1099-INT (Step D), and the K-1 interest (Step L). Check each amount you entered against the problem. |
 | Line 3a | Qualified dividends | Line 3a is the qualified dividends (box 1b) from the 1099-DIVs and the K-1. Compare box 1b of each form you entered with the problem. |
 | Line 3b | Ordinary dividends | Line 3b is the ordinary dividends (box 1a) from the 1099-DIVs and the K-1. Compare box 1a of each form you entered with the problem. |
-| Line 7a | Capital gain or loss | Line 7a comes from Schedule D: the capital gain distributions (Step E), the home sale (Step J), the Schwab 1099-B sales (Step K), and the K-1 (Step L). A net loss is limited to $3,000. Look at Schedule D in your PDF to find which part is off. |
+| Line 7a | Capital gain or loss | Line 7a comes from Schedule D: the capital gain distributions (Step E), the home sale (Step J), the Schwab 1099-B sales (Step K), and the K-1 (Step L), and last year's capital loss carryover (Step O). A net loss is limited to $3,000, so a carryover mistake can leave line 7a at -$3,000: check Schedule D lines 6 and 14 too. Look at Schedule D in your PDF to find which part is off. |
 | Line 8 | Additional income (Schedule 1, line 10) | Line 8 comes from Schedule 1, line 10: last year's taxable state refund (Step H) and the K-1 partnership income on Schedule E (Step L). Check the Schedule 1 lines first. |
 | Line 9 | Total income | Line 9 is the sum of the income lines above it. If it is off, the mistake is in one of those income entries, not on line 9 itself. |
 | Line 10 | Adjustments to income (Schedule 1, line 26) | Line 10 comes from Schedule 1, line 26: the early withdrawal penalty from the 1099-INT (Step D) and, from Step Q, the IRA deduction. Check the Schedule 1 lines in this list. |
@@ -551,6 +551,18 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Answer key: Filing status = HOH. Using the 'Qualifying Child or Relative Resource Tool', Jane = Box 35, CTC. Kendra and Susan = Chart 2 Box 12, not a dependent, no EIC, but medical and dependent care allowed. The CTC ODC Chart shows these two are not entered on the tax return in the dependents area.
 * Hint: Start the 'Qualifying Child or Relative Resource Tool' with Karl and Kendra, then Jane and Susan. Only Jane is listed, for the child tax credit, and she lived with Karl all 12 months. Kendra and Susan are not entered as dependents at all, even as 'not a dependent'. Check the filing status and the dependents area.
 * Checked: at this step and again at every later step
+
+**N9: Capital Loss Carryover Worksheet** (Step K)
+
+* Answer key: Capital Loss Carryover Worksheet line 8 = 0 and line 13 = 2,783
+* Hint: The Schwab sales (Step K) make a net capital loss larger than $3,000, so part of it carries over to next year. Line 7a stops at -$3,000, so it cannot show a mistake here. Scroll down in your PDF to the Capital Loss Carryover Worksheet (Worksheet 4-1), after Schedule D. If it does not match, compare each sale you entered from the Schwab 1099-B with the problem.
+* Checked: at this step only
+
+**N13b: Capital Loss Carryover Worksheet** (Step O)
+
+* Answer key: Capital Loss Carryover Worksheet line 8 = 786 and line 13 = 3,992
+* Hint: Last year's return (Step O) adds last year's capital loss carryover on Schedule D, lines 6 and 14. Line 7a stops at -$3,000, so it cannot show a mistake here. Scroll down in your PDF to the Capital Loss Carryover Worksheet (Worksheet 4-1), after Schedule D. If it does not match, compare the carryover amounts you entered with last year's return in the problem.
+* Checked: at this step only
 
 **NN_N: TS Note added for Step N** (Step N)
 
@@ -677,6 +689,12 @@ At these steps the line's hint above is replaced by the answer sheet note, or th
 * Checked: at this step only
 * Box the student ticks: I added a TS Note for Step K (the IRA basis) in TaxSlayer
 * Example: STEP K - IRA BASIS: 2024 TAX RETURN HAD FORM 8606. ENTERED INFO FROM THAT, THE WELLS FARGO 1099-R, AND TOTAL VALUE OF IRAS TO GET TAXABLE AMOUNT SHOWN IN BOX 2A.
+
+**NES: Federal estimated tax vouchers** (Step O)
+
+* Answer key: four 2026 federal estimated tax vouchers (Form 1040-ES) of $803 each; no California estimated payments
+* Hint: The answer sheet's Step O section gives the quarterly amount: $803, from the IRS Tax Withholding Estimator, divided into 4 equal payments. Create the federal estimated tax vouchers in TaxSlayer, federal only (no California estimated taxes are needed), and print the return again so the 4 vouchers are in your PDF. If the amount is off, follow the answer sheet's steps for the estimator again.
+* Checked: at this step only
 
 **NN_O: TS Note added for Step O** (Step O)
 

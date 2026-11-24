@@ -15,6 +15,10 @@ function loadCases(){
     m.todo=m.todo||{}; m.sameReturn=m.sameReturn||[]; m.awaiting=m.awaiting||{}; m.printoutErrors=m.printoutErrors||{};
     // a PDF may pass a step when it is that step's printout or a printout of a step with the same return
     m.mayPass=(file,step)=>m.stepsOf(file).some(s=>s===step||m.sameReturn.some(g=>g.includes(s)&&g.includes(step)));
+    // checking lines only (the engine tests): steps whose answer key lines are the same, even when a later one adds a note the
+    // earlier printout cannot meet (case.json "sameLines"; Parks M, N and O: O adds the voucher note). Defaults to sameReturn.
+    m.sameLines=m.sameLines||m.sameReturn;
+    m.mayPassLines=(file,step)=>m.stepsOf(file).some(s=>s===step||m.sameLines.some(g=>g.includes(s)&&g.includes(step)));
     // lines a printout is known to get wrong: while a corrected file is awaited (case.json "awaiting", blocks a release), or
     // for good when the case author confirmed the printout is wrong and no corrected one will come ("printoutErrors").
     // Every other line must pass.

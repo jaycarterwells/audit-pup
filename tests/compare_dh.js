@@ -40,6 +40,13 @@ const COMMENTS={
     expect(`${c}: each distinct difference is one row`, new Set(r.rows.map(d=>d.golden+'|'+d.student)).size===r.rows.length);
     if(c==='baylor') expect('baylor: the FREEMONT address, printed on 6 pages, is one row naming the other pages', r.rows.filter(d=>d.golden==='516 FREMONT RD').length===1 && r.rows.find(d=>d.golden==='516 FREMONT RD').also.length>=4);
     if(c==='kent') expect('kent: the TaxSlayer Link number on Schedule E is unreported', !r.rows.some(d=>/^Link:/.test(d.golden)) && r.unreported.some(d=>d.rule==='link'));
+    if(c==='parks'){
+      expect('parks: DH\'s four 1040-ES vouchers match the golden file (its November 20 version has them)', !r.extraPages.length && !r.rows.some(d=>/1040-ES|803/.test(d.golden+d.student)));
+      // pages of the same name are one row: the same comparison against the golden file without its voucher pages
+      const g=goldenPages(c,E).filter(p=>!p.items.some(i=>i.s.trim()==='Estimated Tax Voucher Filing Instructions'));
+      const x=E.compareReturn(g, await readPdf(studentFile(c),E)).extraPages;
+      expect('parks: four extra voucher pages of the same name are one row naming its other pages', x.length===1 && x[0].name==='Form 1040-ES voucher' && x[0].also.length===3, JSON.stringify(x));
+    }
     if(c==='graham') expect('graham: the TaxSlayer notes page is one row with both sets of notes', r.rows.filter(d=>d.name==='TaxSlayer notes (file copy)').length===1);
     expect(`${c}: the report header knows when the PDF was printed`, r.printed==='11/19/2026', r.printed);
   }
